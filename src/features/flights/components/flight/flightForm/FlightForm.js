@@ -26,6 +26,9 @@ import { SelectAirline } from '../../../fligthSlice';
 import { useSelector, useDispatch } from 'react-redux';
 import createFlight from '../../../../../assets/airlines.jpg';
 import { FlightModel, costPerKm, speed } from '../../../models/flightModel';
+import FilightMap from '../../FilightMap';
+import {geolocation} from '../../../../../constants/configuration';
+import {  } from '../../../../../constants/configuration';
 
 const boxesHorizPadding = 10;
 const primaryColor = '#15291b';
@@ -35,7 +38,7 @@ const nowDateTime = moment(new Date()).format('DD/MM/YYYY HH24:MM');
 const defaultCapcityModelUrl = '';
 
 //FLIGHT MODEL
-const model = new FlightModel(); 
+const model = new FlightModel();
 
 const FlightForm = () => {
     const { airlineId } = useParams();
@@ -54,7 +57,7 @@ const FlightForm = () => {
     //CAPAITY MODEL
     const capacityModelUrl = flightData.capacityModelUrl || defaultCapcityModelUrl;
 
-    useEffect(()=>{
+    useEffect(() => {
         model.setParams(countries);
     }, []);
 
@@ -65,15 +68,15 @@ const FlightForm = () => {
         setFlightData(newData);
 
     }
-    const handleOriginCountrySelected = (name) => {
+    const handleOriginCountrySelected = async(name) => {
         model.copyData(flightData);
-        model.originCountryUpdated(name);
+        await model.originCountryUpdated(name);
         const newData = model.retval;
         setFlightData(newData);
     }
-    const handleDestinationCountrySelected = async(name) => {
+    const handleDestinationCountrySelected = async (name) => {
         model.copyData(flightData);
-        model.destCountryUpdated(name);
+        await model.destCountryUpdated(name);
         const newData = model.retval;
         setFlightData(newData);
     }
@@ -113,7 +116,7 @@ const FlightForm = () => {
             renderInput={(params) => (
                 <TextField
                     size="small"
-                    sx={{ width: '100%' }}
+                    sx={{ width: '100%', color:'black' }}
                     {...params}
                     label="Origin Country"
                     variant="outlined"
@@ -150,8 +153,9 @@ const FlightForm = () => {
             InputAdornmentProps={{ position: 'start' }}
             renderInput={(params) =>
                 <TextField
+                sx={{color:'black'}}
                     InputLabelProps={{
-                    shrink: true,
+                        shrink: true,
                     }}
                     size="small"
                     {...params} />
@@ -169,9 +173,9 @@ const FlightForm = () => {
             disableClearable
             options={countries.map((option) => option.name).sort(CompareByCountryName)}
             renderInput={(params) => (
-                <TextField               
+                <TextField
                     size="small"
-                    sx={{ width: '100%' }}
+                    sx={{ width: '100%', color: 'black' }}
                     {...params}
                     label="Destination Country"
                     variant="outlined"
@@ -200,7 +204,7 @@ const FlightForm = () => {
         />,
         //LANDING TIME
         <DateTimePicker
-            
+
             label="Landing Time"
             value={flightData.landing_time || ''}
             inputFormat="DD/MM/yyyy HH:mm"
@@ -210,6 +214,7 @@ const FlightForm = () => {
             InputAdornmentProps={{ position: 'start' }}
             renderInput={(params) =>
                 <TextField
+                    sx={{color:'black'}}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -223,7 +228,6 @@ const FlightForm = () => {
             <Select
                 size="small"
                 name='capcityModel'
-                sx={{ fontSize: '0.9rem' }}
                 value={flightData.capacityModelId || ''}
                 onChange={handleCapacityChange}
                 input={
@@ -244,11 +248,12 @@ const FlightForm = () => {
             name='distance'
             label="Distance"
             variant='outlined'
-            value={`${flightData.distance != null && flightData.distance != undefined ? flightData.distance  + ' Km': '' }`}
+            value={`${flightData.distance != null && flightData.distance != undefined ? flightData.distance + ' Km' : ''}`}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <StraightIcon sx={{ color: primaryColor }} />
@@ -259,12 +264,13 @@ const FlightForm = () => {
             name='price'
             label="Price Per Ticket"
             variant='outlined'
-            value={`${flightData.price != null && flightData.price != undefined ? flightData.price : '' }`}
+            value={`${flightData.price != null && flightData.price != undefined ? flightData.price : ''}`}
             onChange={handlePriceChange}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
@@ -279,7 +285,8 @@ const FlightForm = () => {
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <LocalGasStationIcon sx={{ color: primaryColor }} />
@@ -290,11 +297,12 @@ const FlightForm = () => {
             name='totalIncome'
             label="Total Income (Potential)"
             variant='outlined'
-            value={`${flightData.revenues != null && flightData.revenues != undefined ? flightData.revenues :'' }`}
+            value={`${flightData.revenues != null && flightData.revenues != undefined ? flightData.revenues : ''}`}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
@@ -305,11 +313,12 @@ const FlightForm = () => {
             name='totaCost'
             label="Total Cost"
             variant='outlined'
-            value={`${flightData.cost != null && flightData.cost != undefined ? flightData.cost :'' }`}
+            value={`${flightData.cost != null && flightData.cost != undefined ? flightData.cost : ''}`}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
@@ -320,11 +329,12 @@ const FlightForm = () => {
             name='profit'
             label="Profit"
             variant='outlined'
-            value={`${flightData.profit != null && flightData.profit != undefined ? flightData.profit :'' }`}
+            value={`${flightData.profit != null && flightData.profit != undefined ? flightData.profit : ''}`}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
@@ -335,11 +345,12 @@ const FlightForm = () => {
             name='margin'
             label="Margin (%)"
             variant='outlined'
-            value={`${flightData.margin != null && flightData.margin != undefined ? flightData.margin :'' }`}
+            value={`${flightData.margin != null && flightData.margin != undefined ? flightData.margin : ''}`}
             InputProps={{
                 style: {
                     height: 40,
-                    textAlign: 'center'
+                    textAlign: 'center',
+                    color: 'black'
                 },
                 startAdornment: <InputAdornment position="start">
                     <PercentIcon sx={{ color: primaryColor }} />
@@ -386,7 +397,7 @@ const FlightForm = () => {
                     <Box width={'100%'} height={'60px'}
                         sx={{ padding: '5px' }}
                     >
-                        <Box width={'100%'} height={'100%'} 
+                        <Box width={'100%'} height={'100%'}
                             sx={{
                                 backgroundColor: primaryColor,
                                 borderRadius: 1,
@@ -397,10 +408,10 @@ const FlightForm = () => {
                                 justifyContent={'space-between'}
                                 alignItems={'center'}
                             >
-                                
-                                <Box sx={{ width: '65%', height: '100%', paddingTop: '5px'}}>
+
+                                <Box sx={{ width: '65%', height: '100%', paddingTop: '5px' }}>
                                     <Typography
-                                        sx={{marginLeft: '5px'}}
+                                        sx={{ marginLeft: '5px' }}
                                         component="span"
                                         variant="h6"
                                         color="white"
@@ -433,6 +444,26 @@ const FlightForm = () => {
             >
                 <Stack direction='column'
                     alignItems={'center'}
+                    justifyContent={'space-around'}
+                    height={'100%'}
+                    sx={{ border: `2px solid ${primaryColor}` }}>
+                    <Box
+                        flex={1}
+                        width={'100%'}
+                    >
+                        <FilightMap
+                            center={{ lat: -34.397, lng: 150.644 }}
+                            isMarkerShown
+                            googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${geolocation.geocoderApiKey}&v=3.exp&libraries=geometry,drawing,places`}
+                            loadingElement={<div style={{ height: `100%` }} />}
+                            containerElement={<div style={{ height: `530px` }} />}
+                            mapElement={<div style={{ height: `100%` }} />}
+                        />
+                    </Box>
+                    <Box flex={1} width={'100%'} sx={{ border: `1px solid black` }}></Box>
+                </Stack>
+                {/* <Stack direction='column'
+                    alignItems={'center'}
                     justifyContent={'space-between'}
                     height={'100%'}
                     sx={{ border: `2px solid ${primaryColor}` }}>
@@ -447,7 +478,7 @@ const FlightForm = () => {
                         }}>
                     </Box>
                     <Box flex={1} width={'100%'} sx={{ border: `1px solid black` }}></Box>
-                </Stack>
+                </Stack> */}
             </Box>
         </FormFrameBox>
 

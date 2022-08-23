@@ -15,12 +15,11 @@ import { useDispatch , useSelector} from 'react-redux';
 import { SelectFlights } from '../../fligthSlice';
 import { DataGrid } from '@mui/x-data-grid';
 import { FlightModel } from '../../models/flightModel';
-import moment from 'moment';
-import { NavLink } from 'react-router-dom';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
 import PageviewIcon from '@mui/icons-material/Pageview';
+import { endpoints } from '../../../../constants/configuration';
 
 const searchInputsHeight = 24;
 
@@ -218,8 +217,13 @@ const FlightsSearch = () => {
 
 const MyFlights = () => {
     console.count('render MyFlights');
-
+    const countries = useQuery('countries', getAlCountries).data;
     const myFlights = useSelector(SelectFlights);
+
+    const getCountryImageUrl=(name)=>{
+        const countryFlagUrl = `url(${endpoints.countriesFlags}${name})`;
+        return countryFlagUrl;
+    }
 
     const searchPanel = {
         panelItmes: [
@@ -266,6 +270,16 @@ const MyFlights = () => {
                 headerClassName: 'dataGridHeader',
                 align: 'center',
                 cellClassName: 'dg-alignCenter',
+                renderCell: (params) => (
+                    <div style={{
+                        backgroundImage: getCountryImageUrl(params.row.origin_country_name),
+                        backgroundSize: 'cover',
+                        width: '2.1rem',
+                        height: '1.4rem',
+                        backgroundRepeat: 'no-repeat'
+                    }}>
+                    </div>
+                )
             },
             {
                 field: 'dest_country_name',
@@ -275,6 +289,16 @@ const MyFlights = () => {
                 headerClassName: 'dataGridHeader',
                 align: 'center',
                 cellClassName: 'dg-alignCenter',
+                renderCell: (params) => (
+                    <div style={{
+                        backgroundImage: getCountryImageUrl(params.row.dest_country_name),
+                        backgroundSize: 'cover',
+                        width: '2.1rem',
+                        height: '1.4rem',
+                        backgroundRepeat: 'no-repeat'
+                    }}>
+                    </div>
+                )
             },
             {
                 field: 'soldTickets',

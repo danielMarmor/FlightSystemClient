@@ -3,7 +3,7 @@ import { getDistance } from "../../../api/geolocation";
 import moment from 'moment';
 
 export const speed = 800;
-export const costPerKm = 250;
+export const costPerKm = 16.75;
 
 export class FlightModel {
     constructor(){
@@ -41,7 +41,7 @@ export class FlightModel {
             this.distanceUpdated(calcedDistance);
         }
     }
-    destCountryUpdated = async (destCountryName) => {
+    destCountryUpdated = async(destCountryName) => {
         const country = this.countries.find(cou => cou.name == destCountryName);
         if (!country) {
             this.updated.destination_country_id = null;

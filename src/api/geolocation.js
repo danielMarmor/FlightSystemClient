@@ -1,16 +1,15 @@
-import distance from 'google-distance-updated';
+import { DistanceMatrixService } from '@react-google-maps/api';
 import { geolocation } from '../constants/configuration';
 import axios from 'axios';
 
-distance.apiKey = geolocation.geocoderApiKey;
 
-export const getDistance = async(origin, destination) => {
+export const getDistance = async (origin, destination) => {
     //GOOGEL GEOCODE API
     let kilometers = await fetchDistance(origin, destination);
     if (kilometers == null) {
         //EMPTY DATA ===> CALCULATE MANULY BY FORMULA
         const originLocation = await getLocation(origin);
-        const destLocation =await getLocation(destination); 
+        const destLocation = await getLocation(destination);
         kilometers = calcDistance(originLocation, destLocation);
     }
     const roundedKilometers = Math.round(kilometers);
@@ -18,26 +17,64 @@ export const getDistance = async(origin, destination) => {
 }
 
 const fetchDistance = async (origin, destination) => {
-    const promise = new Promise((resolve, reject) => {
-        distance.get({
-            origin: origin,
-            destination: destination
-        },
-            (err, data) => {
-                if (err) {
-                    resolve(null);
-                    return;
-                }
-                //console.log(data);
-                const distanceValue = data.distanceValue;
-                const kilometers = Math.round(distanceValue / 1000);
-                resolve(kilometers);
+    const promise = new Promise((resolve) => {
+        const service = new window.google.maps.DistanceMatrixService();
+        service.getDistanceMatrix({
+            origins: [origin],
+            destinations: [destination],
+            travelMode: window.google.maps.TravelMode.DRIVING
+        }, (response, status) => {
+            if(status != 'OK'){
+                resolve(null);
                 return;
             }
-        )
+            const rows = response.rows;
+            if (!rows){
+                resolve(null);
+                return;
+            }
+            const elements =rows[0].elements;
+            if (!elements){
+                resolve(null);
+                return;
+            }
+            const elem =  elements[0];
+            if (elem.status == 'ZERO_RESULTS'){
+                resolve(null);
+                return;
+            }
+            const distance =  elem.distance.value;
+            const kilometers = Math.round(parseFloat(distance/1000));
+            resolve(kilometers);
+            return;
+        });
     });
     return promise;
+
+
 }
+
+// const fetchDistance = async (origin, destination) => {
+//     const promise = new Promise((resolve, reject) => {
+//         distance.get({
+//             origin: origin,
+//             destination: destination
+//         },
+//             (err, data) => {
+//                 if (err) {
+//                     resolve(null);
+//                     return;
+//                 }
+//                 //console.log(data);
+//                 const distanceValue = data.distanceValue;
+//                 const kilometers = Math.round(distanceValue / 1000);
+//                 resolve(kilometers);
+//                 return;
+//             }
+//         )
+//     });
+//     return promise;
+// }
 
 const calcDistance = (origin, destination) => {
     const latitudeFrom = origin.lat;
@@ -56,16 +93,16 @@ const calcDistance = (origin, destination) => {
     return miles2Kilommeters;
 }
 
-const getLocation =async(countryName)=>{
+const getLocation = async (countryName) => {
     const requestedUrl = `${geolocation.googlApiBaseUrl}address=${countryName}&key=${geolocation.geocoderApiKey}`;
     const response = await axios.get(requestedUrl);
-    const data= response.data;
+    const data = response.data;
     const results = data.results;
     if (results.length == 0) {
         return null;
     }
     const location = results[0].geometry.location;
-    return location;          
+    return location;
 }
 
 const deg2rad = (degrees) => {
