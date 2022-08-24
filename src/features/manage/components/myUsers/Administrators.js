@@ -191,6 +191,7 @@ const Administrators = () => {
                     columns={columns}
                     pageSize={12}
                     rowHeight={36}
+                    hideFooter 
                     sx={{
                         padding: '0px !important',
                         margin: '0px !important',

@@ -15,11 +15,16 @@ export const CapacityModels=[
         url :`url(${Boeing747})`
     },
     {   id : 3,
+        name : '200 Seats',
+        numSeats : 200,
+        url :`url(${Dreamlines787})`
+    },
+    {   id : 4,
         name : '240 Seats',
         numSeats : 240,
         url :`url(${Dreamlines787})`
     },
-    {   id : 4,
+    {   id : 5,
         name : '300 Seats',
         numSeats : 300,
         url :`url(${Airbus380})`

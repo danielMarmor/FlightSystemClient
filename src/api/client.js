@@ -33,7 +33,7 @@ const put =async(endpoint ,params, body)=>{
 }
 
 const remove =async(endpoint ,params)=>{
-    const composedEndPoint = composeEndPoint(endpoint, params. null); 
+    const composedEndPoint = composeEndPoint(endpoint, params,  null); 
     const response = await axios.delete(composedEndPoint, axisoConfig);
     const reponseStatus = response.status;
     return reponseStatus;     

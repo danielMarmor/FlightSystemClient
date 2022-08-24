@@ -43,8 +43,13 @@ const fetchDistance = async (origin, destination) => {
                 resolve(null);
                 return;
             }
-            const distance =  elem.distance.value;
-            const kilometers = Math.round(parseFloat(distance/1000));
+            const distance =  elem.distance;
+            if (!distance || !distance.value){
+                resolve(null);
+                return;
+            }
+            const disatnceValue =distance.value; 
+            const kilometers = Math.round(parseFloat(disatnceValue/1000));
             resolve(kilometers);
             return;
         });
@@ -93,7 +98,7 @@ const calcDistance = (origin, destination) => {
     return miles2Kilommeters;
 }
 
-const getLocation = async (countryName) => {
+export const getLocation = async (countryName) => {
     const requestedUrl = `${geolocation.googlApiBaseUrl}address=${countryName}&key=${geolocation.geocoderApiKey}`;
     const response = await axios.get(requestedUrl);
     const data = response.data;

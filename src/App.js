@@ -36,7 +36,7 @@ function App() {
                     {/* ROUTER         */}
                     <Routes>
                       <Route path="/Flights" element={<FlightsList />} />
-                      <Route path="/NewFlight/:airlineId" element={<FlightForm />} />
+                      <Route path="/NewFlight" element={<FlightForm />} />
                       <Route path="/MyFlights" element={<MyFlights />} />
                       <Route path="/Login" element={<Login />} />
                       <Route path="/SignUp" element={<SignUp />} />

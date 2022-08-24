@@ -15,7 +15,8 @@ const SearchLine = (props) => {
             height: height,
             padding: '0',
             margin: '0',
-            border: '2px solid #15291b'
+            border: '2px solid #15291b',
+            width:'100%'
         }}
         >
             <Stack spacing={0} padding={'5px'}

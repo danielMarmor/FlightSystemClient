@@ -28,3 +28,8 @@ export const CompareByAirlineName=(first, second)=>{
     const retval =first.name.localeCompare(second.name);
     return retval;
 }
+
+export const CompareByFligthId=(first, second)=>{
+   const retval = second.id -first.id;
+   return retval;
+}

@@ -103,7 +103,7 @@ export const navbarsList =(userTypeId, identityId)=>{
                 {id : 4,
                 icon : <AddCircleIcon/>,
                 text : 'New Flight',
-                url : `/NewFlight/${identityId}`
+                url : `/NewFlight?mode=insert`
                 },
                 {id : 5,
                 icon : <AccountCircleIcon/>,

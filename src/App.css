@@ -120,7 +120,7 @@
   height:32px;
   color:black;
   font-size: 0.85rem;
-  border-bottom: 1px solid  #15291b !important;
+  /* border-bottom: 1px solid  #15291b !important; */
   /* border-right: 2px solid  #15291b !important; */
   text-align:center;
 }

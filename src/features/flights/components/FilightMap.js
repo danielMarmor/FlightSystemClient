@@ -1,17 +1,36 @@
-import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
+import { withScriptjs, withGoogleMap, GoogleMap, Marker, Polyline } from 'react-google-maps';
 import InfoBox from 'react-google-maps/lib/components/addons/InfoBox';
 import React from 'react'
 
 const FilightMap = withScriptjs(withGoogleMap((props) => {
-    const { center } = props;
+    const { center, markers, polygons } = props;
+    const focusMarker = markers && markers.find(mark => mark.focus == true);
+    const focusCenter = !focusMarker ? center : focusMarker.markerLocation;
+    const arrPolyline = markers && markers.map(marker => { return marker.markerLocation });
+
     return (
         <GoogleMap
             defaultZoom={1}
-            defaultCenter={props.center}
+            center={focusCenter}
+            defaultCenter={center}
         >
-            {props.isMarkerShown && <Marker position={center} />}
+            {markers && markers.map(marker =>
+                <Marker
+                    key={marker.markerType}
+                    position={marker.markerLocation}
+                    label={marker.markerName}
+                />
+            )}
+            {arrPolyline && <Polyline path={arrPolyline}
+                geodesic={true}
+                options={{
+                    strokeColor: "#ff2527",
+                    strokeOpacity: 0.75,
+                    strokeWeight: 2
+                }}
+            />}
 
-            <InfoBox
+            {/* <InfoBox
                 defaultPosition={new window.google.maps.LatLng(center.lat, center.lng)}
                 options={{ closeBoxURL: ``, enableEventPropagation: true }}
             >
@@ -20,15 +39,7 @@ const FilightMap = withScriptjs(withGoogleMap((props) => {
                         Hello, Taipei!
                     </div>
                 </div>
-            </InfoBox>
-            {/* <DistanceMatrixService
-                options={{
-                    destinations: [{ lat: 1.296788, lng: 103.778961 }],
-                    origins: [{ lng: 103.780267, lat: 1.291692 }],
-                    travelMode: "DRIVING",
-                }}
-                callback={(response) => { console.log(response) }}
-            /> */}
+            </InfoBox> */}
         </GoogleMap>
     )
 }));
