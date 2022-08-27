@@ -1,9 +1,10 @@
-import { createSlice , createAsyncThunk} from "@reduxjs/toolkit/dist";
-import { status , entries, ticketsActions, result} from "../../constants/enums";
+import { createSlice , createAsyncThunk} from "@reduxjs/toolkit";
+import { status , entries, ticketsActions, result, resources, cusotmerFlightStatus, userType} from "../../constants/enums";
 import { convertUserTypeToEntry } from "../../constants/converters";
 import { combineHost } from "../../constants/configuration";
 import {client} from '../../api/client';
-
+import moment from "moment";
+import { Data } from "@react-google-maps/api";
 
 const initialState ={
     tickets: [],
@@ -31,6 +32,9 @@ const ticketsSlice = createSlice({
     name: 'tickets',
     initialState,
     reducers:{
+      flitersChanged(state, action){
+         state.fligtsFilters =action.payload;
+      }
     },
     extraReducers: builder =>{
         builder
@@ -86,7 +90,7 @@ const ticketsSlice = createSlice({
 export const fetchTickets =createAsyncThunk(ticketsActions.fetchTickets, async(data) =>{
     const customerId = data;
     const entry = entries.customer;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.tickets}`;
     const param = {customerId: customerId, my: 'my'};
     const tickets = await client.get(endpoint, param, null);
     return tickets;
@@ -97,7 +101,7 @@ export const fetchFligths =createAsyncThunk(ticketsActions.fetchFlights, async(d
     const globalState = thunkApi.getState();
     const userTypeId = globalState.profile.currentUser.userTypeId;
     const entry = convertUserTypeToEntry(userTypeId);
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.flightsSearch}`;
     const flights = await client.get(endpoint, null, searchParams);
     return flights;
    
@@ -119,5 +123,56 @@ export const removeTicket =createAsyncThunk(ticketsActions.removeTicket, async(d
     const responseStatus =await client.remove(endpoint, params);
     return responseStatus;
 });
+
+const getTicketFlightStatus=(flight, userTypeId, tickets)=>{
+   if (userTypeId == userType.admin || userTypeId == userType.airline){
+      return cusotmerFlightStatus.userTypeBlocked;
+   }
+   if (tickets){
+       const ticket = tickets.find(tick =>tick.flight_id == flight.flight_id);
+       if (ticket){
+            return cusotmerFlightStatus.booked;
+       }
+   }
+   const nowDate = new Date();
+   const departureTime = moment(flight.departure_time);
+   const departured = departureTime<=nowDate;
+   if (departured){
+      return cusotmerFlightStatus.departured;
+   }
+   if (flight.remaining_tickets == 0){
+      return cusotmerFlightStatus.soldout;
+   }
+   return cusotmerFlightStatus.availiable;
+}
+
+
+export const SelectFlightsSearch=(state)=>{
+   const results = state.tickets.flights;
+   const tickets = state.tickets.tickets;
+   const userTypeId = state.profile.currentUser.userTypeId;
+   const statusResults = results.map(res =>{
+      const resStatus = {...res, 
+         status :getTicketFlightStatus(res, userTypeId, tickets)
+      }
+      return resStatus;
+   });
+   const dicResults = statusResults.reduce((datesMemo, flight)=>{
+         const departure_date = moment(flight.departure_time).format('DD/MM/YYYY');
+         if (!datesMemo[departure_date]){
+            datesMemo[departure_date] = [];
+      }
+         datesMemo[departure_date].push(flight);
+         return datesMemo;
+   }, {});
+
+   const arrResults = Object.keys(dicResults).map(date =>{
+      const result = {date : date, dateFlights :dicResults[date]};
+      return result;
+   })
+   return arrResults;
+}
+
+export const {flitersChanged} =ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

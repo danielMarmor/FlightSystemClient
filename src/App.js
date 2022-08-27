@@ -7,7 +7,8 @@ import { useEffect } from 'react';
 import { useQuery } from 'react-query';
 import { getAlCountries } from './api/cache';
 import { Route, Routes } from 'react-router-dom';
-import FlightsList from './features/tickets/components/flightsList/FlightsList' 
+//import FlightsList from './features/tickets/components/flightsList/FlightsList' 
+import FlightsList from './features/tickets/components/flightsList/FlightsList';
 import Login from './features/profiles/components/login/Login';
 import SignUp from './features/profiles/components/signUp/SignUp';
 import MyUsers from './features/manage/components/myUsers/MyUsers';
@@ -16,6 +17,7 @@ import FlightForm from './features/flights/components/flight/flightForm/FlightFo
 import MyFlights from './features/flights/components/myFlights/MyFlights';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers';
+import ErrorDialogSlide from './app/components/smoothAlerts/ErrorDialogSlide';
 
 function App() { 
   const countries = useQuery('countries', getAlCountries);
@@ -55,6 +57,7 @@ function App() {
             </Grid>
         </Grid>       
       </div> 
+      <ErrorDialogSlide/>
       </LocalizationProvider> 
     </Layout> 
   );

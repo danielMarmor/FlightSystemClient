@@ -24,6 +24,7 @@
     "google-distance-updated": "^2.0.2",
     "jwt-decode": "^3.1.2",
     "moment": "^2.29.4",
+    "moment-duration-format": "^2.3.2",
     "prop-types": "^15.8.1",
     "react": ">=16.8.0",
     "react-dom": ">=16.8.0",

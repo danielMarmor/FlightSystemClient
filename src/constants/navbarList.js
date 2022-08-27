@@ -27,7 +27,7 @@ export const navbarsList =(userTypeId, identityId)=>{
                 {id : 2,
                 icon : <HomeIcon/>,
                 text : 'Home',
-                url : '/',
+                url : '/Flights'
                 },
                 {id : 3,
                 icon : <LoginIcon/>,

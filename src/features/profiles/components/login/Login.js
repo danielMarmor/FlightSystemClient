@@ -1,12 +1,13 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { unwrapResult } from '@reduxjs/toolkit'
 import Box from '@mui/material/Box';
 import InputAdornment from '@mui/material/InputAdornment';
 import { FormBox, FormFrameBox, FormButton, FormTextField, FormBoxGrid } from '../../../../app/components/FormStyles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HttpsIcon from '@mui/icons-material/Https';
-import {useNavigate} from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { login } from '../../profilesSlice';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
@@ -25,15 +26,17 @@ const Login = () => {
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
     }
-    const handleSubmit =async() => {
+    const handleSubmit = async () => {
         const isValidated = username && password;
         if (isValidated) {
             const loginData = { username, password };
-            await dispatch(login(loginData));
-            navigate('/Flights');
+            dispatch(login(loginData)).unwrap()
+                .then(payload => navigate('/Flights'))
+                .catch((error) => {
+                    console.log(error);
+            });
         }
     }
-
     return (
         // FRAME
         <FormFrameBox sx={{
@@ -122,7 +125,7 @@ const Login = () => {
                     </FormBox>
                     <Box sx={{
                         height: '35%',
-                        width :'100%',
+                        width: '100%',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'flex-end',
@@ -131,7 +134,7 @@ const Login = () => {
                         <FormButton
                             variant="contained"
                             onClick={handleSubmit}
-                            sx={{width :'100%'}}
+                            sx={{ width: '100%' }}
                         >
                             Login
                         </FormButton>

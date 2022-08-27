@@ -1,9 +1,9 @@
 import { styled } from "@mui/system";
 import { TextField, Button } from "@mui/material";
-import Box from "@mui/material/Box";
+import {Box, Typography } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 
-const primaryColor = '#15291b';
+export const primaryColor = '#15291b';
 
 export const FormFrameBox =  styled(Box)(({ theme }) =>({
     width : '100%',
@@ -88,3 +88,13 @@ export const RowFlexBox =  styled(Box)(({ theme }) =>({
     alignItems : 'center',
     boxSizing : 'border-box'
 }));
+
+
+export const BoldTextTypography =({text})=>{
+    const typography = <Typography
+    variant="h6" component="div"  fontWeight={'bold'}
+    >
+        {text}
+    </Typography>
+    return typography;
+}

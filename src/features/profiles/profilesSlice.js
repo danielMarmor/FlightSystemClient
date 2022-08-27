@@ -1,11 +1,11 @@
 import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit/dist";
 import { fetchTickets } from "../tickets/ticketsSlice";
 import { fetchAirline, fetchFlights } from "../flights/fligthSlice";
-import { userType, profileActions, entries, resources, status, result } from "../../constants/enums";
+import { catchAppError } from "../../app/appSlice";
+import { userType, profileActions, entries, resources, status, result, loginErrorTemplate } from "../../constants/enums";
 import { convertUserTypeToEntry } from "../../constants/converters";
 import { combineHost , authentication} from "../../constants/configuration";
 import {client} from "../../api/client";
-
 
 const initialState = { 
     currentUser : {
@@ -103,8 +103,15 @@ export const login =createAsyncThunk(profileActions.login, async(data, thunkApi)
     const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.login}`;
     //LOGIN
-    const userToken = await client.post(endpoint, null, loginData);
-    //PARSE TOKEN AND SET CURR USER
+    let userToken;
+    try{
+        userToken = await client.post(endpoint, null, loginData);
+    }
+    catch(error){
+        thunkApi.dispatch(catchAppError(loginErrorTemplate(error.message)));
+        return thunkApi.rejectWithValue('Error');
+    }  
+     //PARSE TOKEN AND SET CURR USER
     thunkApi.dispatch(tokenAccepted(userToken));
     const globalState = thunkApi.getState();
     //FETCH IDENETITY = CUSTOMER ID 
@@ -178,6 +185,10 @@ export const editAirline =createAsyncThunk(profileActions.editAirline, async(dat
      thunkApi.dispatch(profileSlice.tokenAccepted(userToken));
      return true;
 });
+
+const handleAppErrors=(error)=>{
+
+}
 
 export const {tokenAccepted} =profileSlice.actions; 
 

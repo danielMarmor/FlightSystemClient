@@ -326,7 +326,7 @@ export class FlightModel {
         const flightsToGrid = flights.map(fli => {
             const soldTickets = fli.num_seats - fli.remaining_tickets;
             const occupance = fli.num_seats === 0 ? 0 : (parseFloat(soldTickets / fli.num_seats) * 100).toFixed(2);
-            const revenue = soldTickets * fli.price;
+            const revenue = fli.revenues
             const cost = fli.distance * costPerKm;
             const profit = revenue - cost;
             const result = {
@@ -348,5 +348,14 @@ export class FlightModel {
         });
         return orderedFlights;
     }
+    static getDurationFormat = (departure, landing) =>{
+        const diferenceMinutes = moment
+          .duration(moment(landing, 'YYYY/MM/DD HH:mm')
+            .diff(moment(departure, 'YYYY/MM/DD HH:mm'))
+          ).asMinutes();
+        const duration = moment.duration(diferenceMinutes, 'minutes');
+        const durationFormat = duration.format('HH:mm')
+        return durationFormat; 
+      }
 
 }
