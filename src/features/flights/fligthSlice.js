@@ -97,7 +97,6 @@ const flightsSlice = createSlice({
 
 export const fetchAirline = createAsyncThunk(flightsActions.fetchAirline, async (data, thunkApi) => {
    const airlineId = data;
-   console.log(`fetchAirline/${airlineId}`);
    const globalState = thunkApi.getState();
    const userTypeId = globalState.profile.currentUser.userTypeId;
    const entry = convertUserTypeToEntry(userTypeId);
@@ -109,7 +108,6 @@ export const fetchAirline = createAsyncThunk(flightsActions.fetchAirline, async 
 
 export const fetchFlights = createAsyncThunk(flightsActions.fetchFlights, async (data, thunkApi) => {
    const airlineId = data;
-   console.log(`fetchFlights/${fetchFlights}`);
    const globalState = thunkApi.getState();
    const userTypeId = globalState.profile.currentUser.userTypeId;
    const entry = convertUserTypeToEntry(userTypeId);
@@ -119,11 +117,10 @@ export const fetchFlights = createAsyncThunk(flightsActions.fetchFlights, async 
    return flights;
 });
 
-export const addFlight = createAsyncThunk(flightsActions.addFlight, async (data, thunkApi) => {
-   let newFlight = data;
+const prepareAddFlightParams = (newFlight) => {
    const departure_time = newFlight.departure_time;
    const landing_time = newFlight.landing_time;
-   newFlight = {
+   const mapFlight = {
       ...newFlight,
       remaining_tickets : newFlight.num_seats, 
       departure_date: moment(departure_time).format('DD/MM/YYYY'),
@@ -133,35 +130,32 @@ export const addFlight = createAsyncThunk(flightsActions.addFlight, async (data,
       landing_hour: moment(landing_time).hour(),
       landing_minute: moment(landing_time).minutes()
    }
+   return mapFlight;
+}
+
+
+export const addFlight = createAsyncThunk(flightsActions.addFlight, async (data, thunkApi) => {
+   let flight = data;
+   const mappedFlight = prepareAddFlightParams(flight);
    const globalState = thunkApi.getState();
    const userTypeId = globalState.profile.currentUser.userTypeId;
    const entry = convertUserTypeToEntry(userTypeId);
    const endpoint = `${combineHost}/${entry}/${resources.flights}`;
-   const retval = await client.post(endpoint, null, newFlight);
+   const newFlight = await client.post(endpoint, null, mappedFlight);
    const airlineId = globalState.profile.currentUser.identityId;
    const flights =await thunkApi.dispatch(fetchFlights(airlineId));
-   return flights;
+   return newFlight;
    
 });
 
-export const editFlight = createAsyncThunk(flightsActions.editFlight, async (data, thunkApi) => {
-   let { flightId, flight } = data;
+const prepareEditFlightParams = (flight) => {
    const departure_time = flight.departure_time;
    const landing_time = flight.landing_time;
-   // flight = {
-   //    ...flight,
-   //    remaining_tickets : flight.num_seats, 
-   //    departure_date: moment(departure_time).format('DD/MM/YYYY'),
-   //    departure_hour: moment(departure_time).hour(),
-   //    departure_minute: moment(departure_time).minutes(),
-   //    landing_date: moment(landing_time).format('DD/MM/YYYY'),
-   //    landing_hour: moment(landing_time).hour(),
-   //    landing_minute: moment(landing_time).minutes()
-   // }
+
    const mapFlight = {
       airline_company_id  : flight.airline_company_id,
       origin_country_id : flight.origin_country_id,
-      destination_country_id :flight.destination_country_id,
+   destination_country_id :flight.destination_country_id,
       departure_date: moment(departure_time).format('DD/MM/YYYY'),
       departure_hour: moment(departure_time).hour(),
       departure_minute: moment(departure_time).minutes(),
@@ -169,10 +163,17 @@ export const editFlight = createAsyncThunk(flightsActions.editFlight, async (dat
       landing_hour: moment(landing_time).hour(),
       landing_minute: moment(landing_time).minutes(), 
       price :flight.price,
-      remaining_tickets :flight.num_seats,
+      remaining_tickets :flight.remaining_tickets,
       distance :flight.distance,
       num_seats :flight.num_seats
   }
+  return mapFlight;
+}
+
+export const editFlight = createAsyncThunk(flightsActions.editFlight, async (data, thunkApi) => {
+   let { flightId, flight } = data;
+   
+   const mapFlight =prepareEditFlightParams(flight);
    const globalState = thunkApi.getState();
    const userTypeId = globalState.profile.currentUser.userTypeId;
    const entry = convertUserTypeToEntry(userTypeId);

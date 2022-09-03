@@ -15,158 +15,185 @@ import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
 import DashboardCustomizeIcon from '@mui/icons-material/DashboardCustomize';
 
 
-export const navbarsList =(userTypeId, identityId)=>{
-    switch(userTypeId){
+export const navbarsList = (userTypeId, identityId) => {
+    switch (userTypeId) {
         case userType.anonym:
             return [
-                {id : 1,
-                icon : <AllInclusiveIcon/>,
-                url : '',
-                text : 'About',
+                {
+                    id: 1,
+                    icon: <AllInclusiveIcon />,
+                    url: '/Order',
+                    text: 'About',
                 },
-                {id : 2,
-                icon : <HomeIcon/>,
-                text : 'Home',
-                url : '/Flights'
+                {
+                    id: 2,
+                    icon: <HomeIcon />,
+                    text: 'Home',
+                    url: '/Flights'
                 },
-                {id : 3,
-                icon : <LoginIcon/>,
-                text : 'Login',
-                url : '/Login'
+                {
+                    id: 3,
+                    icon: <LoginIcon />,
+                    text: 'Login',
+                    url: '/Login'
                 },
-                {id : 4,
-                icon : <PersonAddIcon/>,
-                text : 'Sign Up',
-                url : '/SignUp'
+                {
+                    id: 4,
+                    icon: <PersonAddIcon />,
+                    text: 'Sign Up',
+                    url: '/SignUp'
                 },
-                {id : 5,
-                icon : <ContactMailIcon/>,
-                text : 'Contact Us',
-                url : ''
+                {
+                    id: 5,
+                    icon: <ContactMailIcon />,
+                    text: 'Contact Us',
+                    url: ''
                 },
             ]
         case userType.customer:
             return [
-                {id : 1,
-                icon : <AllInclusiveIcon/>,
-                text : 'About',
-                url : ''
+                {
+                    id: 1,
+                    icon: <AllInclusiveIcon />,
+                    text: 'About',
+                    url: ''
                 },
-                {id : 2,
-                icon : <HomeIcon/>,
-                text : 'Home',
-                url : '/'
+                {
+                    id: 2,
+                    icon: <HomeIcon />,
+                    text: 'Home',
+                    url: '/Flights'
                 },
-                {id : 3,
-                icon : <AirplaneTicketIcon/>,
-                text : 'My Tickets',
-                url : ''
+                {
+                    id: 3,
+                    icon: <AirplaneTicketIcon />,
+                    text: 'My Tickets',
+                    url: '/MyTickets'
                 },
-                {id : 4,
-                icon : <AccountCircleIcon/>,
-                text : 'Profile',
-                url : ''
+                {
+                    id: 4,
+                    icon: <AccountCircleIcon />,
+                    text: 'Profile',
+                    url: `/Profile/Customer/Details/${identityId}`
                 },
-                {id : 5,
-                icon : <LogoutIcon/>,
-                text : 'Logout',
-                url : ''
+                {
+                    id: 5,
+                    icon: <LogoutIcon />,
+                    text: 'Logout',
+                    url: ''
                 },
-                {id : 6,
-                icon : <PersonAddIcon/>,
-                text : 'Sign Up',
-                url : '/SignUp'
+                {
+                    id: 6,
+                    icon: <PersonAddIcon />,
+                    text: 'Sign Up',
+                    url: '/SignUp'
                 },
-                {id :7,
-                icon : <ContactMailIcon/>,
-                text : 'Contact Us',
-                url : ''
+                {
+                    id: 7,
+                    icon: <ContactMailIcon />,
+                    text: 'Contact Us',
+                    url: ''
                 },
             ]
         case userType.airline:
             return [
-                {id : 1,
-                icon : <AllInclusiveIcon/>,
-                text : 'About',
-                url : ''
+                {
+                    id: 1,
+                    icon: <AllInclusiveIcon />,
+                    text: 'About',
+                    url: ''
                 },
-                {id : 2,
-                icon : <HomeIcon/>,
-                text : 'Home',
-                url : '/Flights'
+                {
+                    id: 2,
+                    icon: <HomeIcon />,
+                    text: 'Home',
+                    url: '/Flights'
                 },
-                {id : 3,
-                icon : <FlightTakeoffIcon/>,
-                text : 'My Fligths',
-                url : '/MyFlights'
+                {
+                    id: 3,
+                    icon: <FlightTakeoffIcon />,
+                    text: 'My Fligths',
+                    url: '/MyFlights'
                 },
-                {id : 4,
-                icon : <AddCircleIcon/>,
-                text : 'New Flight',
-                url : `/NewFlight?mode=insert`
+                {
+                    id: 4,
+                    icon: <AddCircleIcon />,
+                    text: 'New Flight',
+                    url: `/NewFlight?mode=insert`
                 },
-                {id : 5,
-                icon : <AccountCircleIcon/>,
-                text : 'Profile',
-                url : ''
+                {
+                    id: 5,
+                    icon: <AccountCircleIcon />,
+                    text: 'Profile',
+                    url: `/Profile/Airline/Details/${identityId}`
                 },
-                {id : 6,
-                icon : <LogoutIcon/>,
-                text : 'Logout',
-                url : ''
+                {
+                    id: 6,
+                    icon: <LogoutIcon />,
+                    text: 'Logout',
+                    url: ''
                 },
-                {id : 7,
-                icon : <PersonAddIcon/>,
-                text : 'Sign Up',
-                url :  '/SignUp'
+                {
+                    id: 7,
+                    icon: <PersonAddIcon />,
+                    text: 'Sign Up',
+                    url: '/SignUp'
                 },
-                {id : 8,
-                icon : <ContactMailIcon/>,
-                text : 'Contact Us',
-                url : ''
+                {
+                    id: 8,
+                    icon: <ContactMailIcon />,
+                    text: 'Contact Us',
+                    url: ''
                 },
             ]
         case userType.admin:
             return [
-                {id : 1,
-                icon : <AllInclusiveIcon/>,
-                text : 'About',
-                url : ''
+                {
+                    id: 1,
+                    icon: <AllInclusiveIcon />,
+                    text: 'About',
+                    url: ''
                 },
-                {id : 2,
-                icon : <HomeIcon/>,
-                text : 'Home',
-                url : '/'
+                {
+                    id: 2,
+                    icon: <HomeIcon />,
+                    text: 'Home',
+                    url: '/Flights'
                 },
-                {id : 3,
-                icon : <PeopleAltIcon/>,
-                text : 'Customers',
-                url : ''
-                },    
-                {id : 4,
-                    icon : <PeopleAltIcon/>,
-                    text : 'My Users',
-                    url : '/MyUsers'
+                {
+                    id: 3,
+                    icon: <PeopleAltIcon />,
+                    text: 'My Users',
+                    url: '/MyUsers'
                 },
-                {id : 5,
-                icon : <LogoutIcon/>,
-                text : 'Logout',
-                url : ''
+                {
+                    id: 4,
+                    icon: <AccountCircleIcon />,
+                    text: 'Profile',
+                    url: `/Profile/Admin/Details/${identityId}`
                 },
-                {id : 6,
-                icon : <PersonAddIcon/>,
-                text : 'Sign Up',
-                url :  '/SignUp'
+                {
+                    id: 5,
+                    icon: <LogoutIcon />,
+                    text: 'Logout',
+                    url: ''
                 },
-                {id : 7,
-                icon : <ContactMailIcon/>,
-                text : 'Contact Us',
-                url : ''
+                {
+                    id: 6,
+                    icon: <PersonAddIcon />,
+                    text: 'Sign Up',
+                    url: '/SignUp'
+                },
+                {
+                    id: 7,
+                    icon: <ContactMailIcon />,
+                    text: 'Contact Us',
+                    url: ''
                 },
             ]
-        }
-}   
-        
+    }
+}
 
-    
-    
+
+
+

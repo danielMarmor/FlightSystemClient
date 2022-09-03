@@ -18,9 +18,25 @@ import MyFlights from './features/flights/components/myFlights/MyFlights';
 import { AdapterMoment } from '@mui/x-date-pickers/AdapterMoment';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import ErrorDialogSlide from './app/components/smoothAlerts/ErrorDialogSlide';
+import SuccessDialogSlide from './app/components/smoothAlerts/SuccesDialogSlide';
+import OrderTicket from './features/tickets/components/orderTicket/OrderTicket';
+import CustomerForm from './features/profiles/components/customerForm/CustomerForm';
+import AirlineForm from './features/profiles/components/airilineForm/AirlineForm';
+import AdminForm from './features/profiles/components/adminForm/AdminForm';
+import CustomerDetails from './features/profiles/components/customerDetails/CustomerDetails';
+import AirlineDetails from './features/profiles/components/airlineDetails/AirlineDetails';
+import AdminDetails from './features/profiles/components/adminDetails/AdminDetails';
+import PayTicket from './features/tickets/components/payTicket/PayTicket';
+import MyTickets from './features/tickets/components/myTickets/MyTickets';
+
 
 function App() { 
-  const countries = useQuery('countries', getAlCountries);
+  console.log('app start');
+  const {data, isLoading} = useQuery('countries', getAlCountries);
+  if (isLoading){
+    return(<div></div>);
+  }
+  const countries = data;
 
   return ( 
     <Layout>
@@ -37,12 +53,21 @@ function App() {
                     }}> 
                     {/* ROUTER         */}
                     <Routes>
-                      <Route path="/Flights" element={<FlightsList />} />
-                      <Route path="/NewFlight" element={<FlightForm />} />
-                      <Route path="/MyFlights" element={<MyFlights />} />
+                      <Route path="/Flights" element={<FlightsList countries={countries}/>} />
+                      <Route path="/Ticket/Order/:flightId" element={<OrderTicket />} />
+                      <Route path="/Ticket/Pay/:flightId" element={<PayTicket/>} />
+                      <Route path="/MyTickets" element={<MyTickets />} />
+                      <Route path="/NewFlight" element={<FlightForm countries={countries}/>} />
+                      <Route path="/Profile/Customer/Details/:id" element={<CustomerDetails />} />
+                      <Route path="/Profile/Customer/:mode/:customerId" element={<CustomerForm />} />
+                      <Route path="/Profile/Airline/Details/:id" element={<AirlineDetails />} />
+                      <Route path="/Profile/Airline/:mode/:airlineId" element={<AirlineForm countries={countries}/>} />
+                      <Route path="/Profile/Admin/Details/:id" element={<AdminDetails />} />
+                      <Route path="/Profile/Admin/:mode/:administratorId" element={<AdminForm />} />
+                      <Route path="/MyFlights" element={<MyFlights countries={countries}/>} />
                       <Route path="/Login" element={<Login />} />
-                      <Route path="/SignUp" element={<SignUp />} />
-                      <Route path="/MyUsers" element={<MyUsers />} />                      
+                      <Route path="/SignUp" element={<SignUp countries={countries}/>} />
+                      <Route path="/MyUsers" element={<MyUsers countries={countries}/>} />                      
                     </Routes>
                 </Box>
             </Grid>
@@ -58,6 +83,7 @@ function App() {
         </Grid>       
       </div> 
       <ErrorDialogSlide/>
+      <SuccessDialogSlide/>
       </LocalizationProvider> 
     </Layout> 
   );

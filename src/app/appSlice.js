@@ -5,7 +5,9 @@ import { client } from "../api/client";
 
 const initialState = {
     errorStatus: status.idle,
-    error: null
+    error: null,
+    successStatus: status.idle,
+    success: null
 }
 
 
@@ -21,6 +23,15 @@ const appSlice = createSlice({
         resetAppError(state, action) {
             state.errorStatus = status.idle;
             state.error = null;
+        },
+        showSuccessMessage(state, action) {
+            const { feature, message, details, url} = action.payload;
+            state.successStatus = status.success;
+            state.success = { feature: feature, message: message, details: details, url : url}
+        },
+        resetSuccessMessage(state, action) {
+            state.successStatus = status.idle;
+            state.success = null;
         }
     },
     extraReducers: builder => {
@@ -37,12 +48,25 @@ const appSlice = createSlice({
     }
 });
 
-export const { catchAppError, resetAppError } = appSlice.actions;
+export const {
+    catchAppError,
+    resetAppError,
+    showSuccessMessage,
+    resetSuccessMessage
+} = appSlice.actions;
 
 export const SelectApplicationError = (state) => {
     const isError = state.app.errorStatus == status.error;
     if (isError) {
         return state.app.error;
+    }
+    return null;
+}
+
+export const SelectSuccessMessgae = (state) => {
+    const isSuccess = state.app.successStatus == status.success;
+    if (isSuccess) {
+        return state.app.success;
     }
     return null;
 }

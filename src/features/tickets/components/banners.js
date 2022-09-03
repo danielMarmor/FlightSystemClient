@@ -1,6 +1,6 @@
 import React from 'react'
 import { Stack, Box } from '@mui/material';
-import bannerFlights7 from '../../../assets/bannerFlights7.png'
+import bannerFlights5 from '../../../assets/bannerFlights5.jpg'
 import bannerFlights8 from '../../../assets/bannerFlights8.jpg'
 import bannerFlights3 from '../../../assets/bannerFlights3.jpg'
 import bannerFlights4 from '../../../assets/bannerFlights4.jpg'
@@ -23,7 +23,8 @@ const Banners = () => {
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                     
                 }}>
             </Box>
@@ -33,7 +34,8 @@ const Banners = () => {
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                 }}>
             </Box>
             <Box key={'banner4'} flex={1} height={'100%'}
@@ -42,16 +44,18 @@ const Banners = () => {
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                 }}>
             </Box>
             <Box key={'banner2'} flex={1} height={'100%'}
                 sx={{
-                    backgroundImage: `url(${bannerFlights7})`,
+                    backgroundImage: `url(${bannerFlights5})`,
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                 }}>
             </Box>
             <Box key={'banner5'} flex={1} height={'100%'}
@@ -60,7 +64,8 @@ const Banners = () => {
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                 }}>
             </Box>
             <Box key={'banner6'} flex={1} height={'100%'}
@@ -69,7 +74,8 @@ const Banners = () => {
                     backgroundSize: 'cover',
                     // width: '162px',
                     // height: '130px',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition :'center'
                 }}>
             </Box>
             

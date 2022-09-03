@@ -4,11 +4,10 @@ import { composeEndPoint } from './composeReuqests';
 
 const axisoConfig ={
     headers: {
-        'Content-Type': 'application/json;charset=UTF-8',
-        
+        'Content-Type': 'application/json;charset=UTF-8'      
     },
     withCredentials: true,
-    timeout : 15000    
+    timeout : 800000    
 }
 
 const get =async(endpoint ,params, queryParams)=>{
@@ -40,8 +39,8 @@ const put =async(endpoint ,params, body)=>{
         const errorData = await handleError(error);
         return errorData;
     });
-    const reponseStatus = response.status;
-    return reponseStatus;      
+    const data = await response.data;
+    return data;      
 }
 
 const remove =async(endpoint ,params)=>{

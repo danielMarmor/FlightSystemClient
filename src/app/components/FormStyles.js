@@ -1,65 +1,66 @@
 import { styled } from "@mui/system";
-import { TextField, Button } from "@mui/material";
-import {Box, Typography } from "@mui/material";
+import { TextField, Button, InputAdornment } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
+
 
 export const primaryColor = '#15291b';
 
-export const FormFrameBox =  styled(Box)(({ theme }) =>({
-    width : '100%',
-    height : '100%',
-    display : 'flex',
-    justifyContent :'space-around',
-    alignItems :'center',
+export const FormFrameBox = styled(Box)(({ theme }) => ({
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'space-around',
+    alignItems: 'center',
     padding: '10px',
-    margin : 0,
-    border : `4px solid ${primaryColor}`,
-    borderRadius : '4px',
-    backgroundColor :theme.palette.background.default
+    margin: 0,
+    border: `4px solid ${primaryColor}`,
+    borderRadius: '4px',
+    backgroundColor: theme.palette.background.default
 }));
 
-export const FormTextField =  styled(TextField)(({ theme }) =>({
-    width : '100%',
-    boxSizing:'border-box',
-    borderColor : primaryColor,
+export const FormTextField = styled(TextField)(({ theme }) => ({
+    width: '100%',
+    boxSizing: 'border-box',
+    borderColor: primaryColor,
 }));
 
 
-export const ShortFormTextField =  styled(TextField)(({ theme }) =>({
-    width : '50%',
-    boxSizing:'border-box',
-    borderColor : primaryColor,
+export const ShortFormTextField = styled(TextField)(({ theme }) => ({
+    width: '50%',
+    boxSizing: 'border-box',
+    borderColor: primaryColor,
 }));
 
-export const FormBox =  styled(Box)(({ theme }) =>({
-    width : '100%',
-    height : '100%',
-    display : 'flex',
-    flexDirection :'column',  
-    boxSizing : 'border-box',
+export const FormBox = styled(Box)(({ theme }) => ({
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    boxSizing: 'border-box',
 }));
 
 // 2 X 7
-export const FormBoxGrid =  styled(Box)(({ theme }) =>({
-    width : '100%',
-    display : 'grid',
-    gridTemplateColumns : 'auto auto',
-    gridTemplateRows :'auto auto auto auto auto',
-    gridRowGap : '30px',
-    gridColumnGap: '20px',  
-    alignContent : 'space-between'
+export const FormBoxGrid = styled(Box)(({ theme }) => ({
+    width: '100%',
+    display: 'grid',
+    gridTemplateColumns: 'auto auto',
+    gridTemplateRows: 'auto auto auto auto auto',
+    gridRowGap: '30px',
+    gridColumnGap: '20px',
+    alignContent: 'space-between'
 }));
 
-export const FormButton =  styled(Button)(({ theme }) =>({
-    width : '100%',
-    height : '32px',
+export const FormButton = styled(Button)(({ theme }) => ({
+    width: '100%',
+    height: '32px',
     backgroundColor: '#C00000 !important'
 }));
 
 
-export const FormCancelButton =  styled(Button)(({ theme }) =>({
-    width : '100%',
-    height : '32px',
+export const FormCancelButton = styled(Button)(({ theme }) => ({
+    width: '100%',
+    height: '32px',
     backgroundColor: '#C00000 !important'
 }));
 
@@ -68,33 +69,202 @@ export const AutoCompleteBox = styled(Autocomplete)`
     height: 0.4rem;
   }
 `;
-export const ColumnFlexBox =  styled(Box)(({ theme }) =>({
-    width : '100%',
-    height : '100%',
-    display : 'flex',
-    flexDirection : 'column',
-    justifyContent : 'space-around',
-    alignItems : 'center',
-    boxSizing : 'border-box'
+export const ColumnFlexBox = styled(Box)(({ theme }) => ({
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    boxSizing: 'border-box'
 }));
 
 
-export const RowFlexBox =  styled(Box)(({ theme }) =>({
-    width : '100%',
-    height : '100%',
-    display : 'flex',
-    flexDirection : 'row',
-    justifyContent : 'space-around',
-    alignItems : 'center',
-    boxSizing : 'border-box'
+export const RowFlexBox = styled(Box)(({ theme }) => ({
+    width: '100%',
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    boxSizing: 'border-box'
 }));
 
-
-export const BoldTextTypography =({text})=>{
-    const typography = <Typography
-    variant="h6" component="div"  fontWeight={'bold'}
+export const SubHeaderTypography = ({ children, ...props }) => {
+    return (<Typography
+        variant="h6"
+        component="div"
+        color={'white'}
+        {...props}
     >
-        {text}
-    </Typography>
-    return typography;
+        {children}
+    </Typography>)
+
 }
+
+
+export const PrimaryTextTypography = ({ children, ...props }) => {
+    return (<Typography
+        variant="body1"
+        component="div"
+        fontWeight={'bold'}
+        fontSize={'1.1rem'}
+        sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden',
+            textAlign : 'left'
+        }}
+        {...props}
+    >
+        {children}
+    </Typography>)
+
+}
+export const SecTextTypography = ({ children, ...props }) => {
+    return (<Typography
+        variant="body2"
+        component="div"
+        textAlign={'left'}
+        fontSize={'1.1rem'}
+        sx={{
+            whiteSpace: 'nowrap',
+            overflow: 'hidden'
+        }}
+        {...props}
+    >
+        {children}
+    </Typography>)
+
+}
+
+export const HorizonStack = ({ children, ...props }) => {
+    return (<Stack
+        width={'100%'}
+        height={'100%'}
+        direction={'row'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+        {...props}
+    >
+        {children}
+    </Stack>)
+}
+
+export const VerticalStack = ({ children, ...props }) => {
+    return (<Stack
+        width={'100%'}
+        height={'100%'}
+        direction={'column'}
+        justifyContent={'space-between'}
+        alignItems={'center'}
+        {...props}
+    >
+        {children}
+    </Stack>)
+}
+
+
+export const LeftCenterBox = ({ children, ...props }) => {
+    return (<Box
+        width={'100%'}
+        height={'100%'}
+        display={'flex'}
+        flexDirection={'column'}
+        justifyContent={'space-around'}
+        alignItems={'flex-start'}
+        {...props}
+    >
+        {children}
+    </Box>)
+}
+
+export const CenterBox = ({ children, ...props }) => {
+    return (<Box
+        width={'100%'}
+        height={'100%'}
+        display={'flex'}
+        flexDirection={'column'}
+        justifyContent={'center'}
+        alignItems={'center'}
+        {...props}
+    >
+        {children}
+    </Box>)
+}
+
+export const IconStack = ({ icon, label, value, proportions }) => {
+    //PRORPRTIONS
+    const flexIcon = proportions[0];
+    const flexLabel = proportions[1];
+    const flexValue = proportions[2];
+    //STACK
+    return (<HorizonStack>
+        <LeftCenterBox
+            flex={flexIcon}
+            sx={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden'
+            }}
+        >{icon}
+        </LeftCenterBox>
+        <LeftCenterBox
+            flex={flexLabel}
+            sx={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden'
+            }}
+        >{label}
+        </LeftCenterBox>
+        <LeftCenterBox
+            flex={flexValue}
+            sx={{
+                whiteSpace: 'nowrap',
+                overflow: 'hidden'
+            }}>
+            {value}
+        </LeftCenterBox>
+    </HorizonStack >)
+}
+
+export const IconTextBox = ({ children, name, label, details, icon, handleChange, validation, ...props }) => {
+    
+    let req, maxLength, type, mask;
+    if (validation){
+        req = validation.required;
+        maxLength = validation.maxLength;
+        type = validation.type;
+        mask = validation.mask;
+    }
+    return (<TextField
+        width={'100%'}
+        required={req}
+        name={name}
+        size="small"
+        label={label}
+        helperText=""
+        value={details[name] || ''}
+        onChange={handleChange}
+        inputProps={{ maxLength: maxLength }}
+        InputProps={{
+            fontSize:'0.8rem',
+            type: type,
+            startAdornment: <InputAdornment position="start">
+                {icon}
+            </InputAdornment>
+        }}
+        sx={{
+            boxSizing: 'border-box',
+            borderColor: primaryColor,
+            '& .MuiFormLabel-root':{
+                color :primaryColor,
+                fontWeight : '700'
+            }
+        }}
+
+        {...props}
+    >
+        {children}
+    </TextField>
+    )
+}
+

@@ -13,12 +13,13 @@ import Typography from '@mui/material/Typography';
 import { OutlinedInput } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
-import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import CustomerListItem from '../CustomerListItem';
 import List from '@mui/material/List';
 import { GetCustomersBussiness, SortCustomerBusinnes } from '../../../../models/customersBusiness';
 import { sortByField, directions } from '../../../../constants/enums';
+import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 const inputHeights = '24px';
 
@@ -30,6 +31,7 @@ const initFilters = {
 }
 
 const CustomerSearch = ({ fetchCustomers }) => {
+    const navigate = useNavigate();
     const [filters, setFilters] = useState(initFilters);
     const handleChange = (e) => {
         setFilters({
@@ -55,6 +57,10 @@ const CustomerSearch = ({ fetchCustomers }) => {
 
     const handleSearch = () => {
         fetchCustomers(filters);
+    }
+    
+    const handleAddNew = () => {
+        navigate(`/Profile/Customer/Insert/999`)
     }
     //SEARCH LINE
     return [<Box sx={{ minWidth: 200 }}>
@@ -135,7 +141,7 @@ const CustomerSearch = ({ fetchCustomers }) => {
     </Box>,
     <Box>
     <FormButton variant="contained"
-        onClick={() => handleSearch()}
+        onClick={() => handleAddNew()}
         sx={{
             height: 26,
             width: 26,
@@ -191,7 +197,7 @@ const Customers = () => {
                 columnGap: '10px'
             }}>
                 {customers.map((cust) =>
-                    <CustomerListItem key={cust.id} customer={cust} />
+                    <CustomerListItem key={cust.id} customer={cust} fetchCustomers={fetchCustomers} filters={initFilters}/>
                 )}
             </List>
         </ColumnFlexBox>)

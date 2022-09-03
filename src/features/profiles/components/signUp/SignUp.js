@@ -17,7 +17,7 @@ TabPanel.propTypes = {
 };
 
 
-const SignUp = () => {
+const SignUp = ({countries}) => {
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -72,7 +72,7 @@ const SignUp = () => {
                 </TabPanel>
                 <TabPanel id='TabPanel2' value={value} index={1}>
                     {/* AIRLINES */}
-                    <AirlineSignUp />
+                    <AirlineSignUp countries={countries}/>
                 </TabPanel>
             </FormBox>
         </FormFrameBox>

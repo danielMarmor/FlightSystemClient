@@ -11,6 +11,9 @@ import { useNavigate } from 'react-router-dom';
 import { login } from '../../profilesSlice';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
+import { loginErrorTemplate , fields} from '../../../../constants/enums';
+import { catchAppError } from '../../../../app/appSlice';
+import { LoginValidations as validations } from '../../../../models/validation';
 
 const Login = () => {
     const [username, setUserName] = useState('');
@@ -26,16 +29,22 @@ const Login = () => {
     const handlePasswordChange = (e) => {
         setPassword(e.target.value);
     }
-    const handleSubmit = async () => {
-        const isValidated = username && password;
-        if (isValidated) {
-            const loginData = { username, password };
-            dispatch(login(loginData)).unwrap()
-                .then(payload => navigate('/Flights'))
-                .catch((error) => {
-                    console.log(error);
-            });
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const isValidated = username && password;
+            if (isValidated) {
+                const loginData = { username, password };
+                const response = await dispatch(login(loginData)).unwrap();
+                navigate('/Flights');               
+            }
         }
+        catch (err) {
+            handleError(err)
+        }
+    }
+    const handleError = (err) => {
+        dispatch(catchAppError(loginErrorTemplate(err.message)))
     }
     return (
         // FRAME
@@ -48,8 +57,8 @@ const Login = () => {
             {/* FORM CONTAINER */}
             <FormBox
                 component='form'
-                noValidate
                 autoComplete="off"
+                onSubmit={handleSubmit}
                 sx={{
                     display: 'flex',
                     flexDirection: 'column',
@@ -95,6 +104,8 @@ const Login = () => {
                             name="username"
                             size="small"
                             label="User Name"
+                            type={validations(fields.username).type}
+                            required={validations(fields.username).required}
                             placeholder="User Name"
                             autoFocus={true}
                             defaultValue=""
@@ -112,6 +123,8 @@ const Login = () => {
                             label="Password"
                             placeholder="Password"
                             size="small"
+                            type={validations(fields.password).type}
+                            required={validations(fields.password).required}
                             defaultValue=""
                             helperText=""
                             onChange={handlePasswordChange}
@@ -132,8 +145,8 @@ const Login = () => {
                         alignItems: 'center'
                     }}>
                         <FormButton
+                            type="submit"
                             variant="contained"
-                            onClick={handleSubmit}
                             sx={{ width: '100%' }}
                         >
                             Login

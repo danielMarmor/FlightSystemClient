@@ -1,6 +1,6 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { SelectUserTypeId, SelectIdentityId } from '../../../features/profiles/profilesSlice';
 import { navbarsList } from '../../../constants/navbarList';
 import List from '@mui/material/List';
@@ -11,6 +11,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import { Link } from 'react-router-dom';
 import Box from "@mui/material/Box";
 import { useNavigate, NavLink } from 'react-router-dom';
+import { logout } from '../../../features/profiles/profilesSlice';
 import './navbar.css';
 //ICONS LIST
 
@@ -21,19 +22,29 @@ const Navbar = () => {
   const identityId = useSelector(SelectIdentityId);
 
   const [navbarItems, setNavbarItems] = useState([]);
+  const dispatch = useDispatch();
+
+  const handleClick = (e, item) => {
+    e.preventDefault();
+    if (item.text == 'Logout') {
+        dispatch(logout());    
+        navigate('/Login')  
+    }
+  }
 
   useEffect(() => {
     const userTypeItems = navbarsList(userTypeId, identityId);
     setNavbarItems(userTypeItems);
   }, [userTypeId]);
 
+  
   return (
     <Box sx={{ overflow: 'auto' }}>
       <List>
         {navbarItems.map((item) =>
           <ListItem key={item.id} disablePadding>
-            <ListItemButton component="button">
-              <NavLink to={item.url} style={{display:'flex', alignItems: 'center', padding :0, margin :0}}>
+            <ListItemButton component="button" onClick={(e) => handleClick(e, item)}>
+              <NavLink to={item.url} style={{ display: 'flex', alignItems: 'center', padding: 0, margin: 0 }}>
                 <ListItemIcon sx={{ color: 'White' }}>
                   {item.icon}
                 </ListItemIcon>

@@ -194,54 +194,65 @@ export const fetchStatistics =createAsyncThunk(manageActions.fetchStatistics, as
    return statistics;
 });
 
+export const fetchAdminById =createAsyncThunk(manageActions.fetchAdminById, async(data, thunkApi)=>{
+   const administratorId = data;
+   const entry = entries.admin;
+   const endpoint = `${combineHost}/${entry}/${resources.administrators}`;
+   const param ={administratorId :administratorId}
+   const administrator = await client.get(endpoint, param, null);
+   return administrator;
+});
 
 export const addCustomer =createAsyncThunk(manageActions.addCustomer, async(data, thunkApi)=>{
     const customerData = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.customers}`;
     const newCustomer = await client.post(endpoint, null, customerData);
     return newCustomer;
 });
-
+//IN THIS SLICE === DONE BY MANAGER OFFCOURSE( EDIR CUSTOMER THUNK ALSO INITIATED BY CUSTOMER ITSELF ON 'PROFILE SLICE')
 export const editCustomer =createAsyncThunk(manageActions.editCustomer, async(data, thunkApi)=>{
-    const {customerId, customerData} = data;;
+    const {customerId, customerData} = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.customers}`;
     const params = {customerId: customerId};
-    const reponseStatus = await client.put(endpoint, params, customerData);
-    return reponseStatus;
+    const reponseData = await client.put(endpoint, params, customerData);
+    return reponseData;
 });
-
+//CAN BE DISPATCHED BY ADMIN IN 2 OPTIONS
+//1- IN MYUSERS/CUSTOMERS LIST DELETE ICON ('TRASH')
+//2= IN CUSTOMER PROFILE DETAILS
 export const removeCustomer =createAsyncThunk(manageActions.removeCustomer, async(data, thunkApi)=>{
     const customerId = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.customers}`;
     const params = {customerId: customerId};
     const responseStatus = await client.remove(endpoint, params, null);
     return responseStatus;
 });
-
+//CAN BE DISPATCHED BY ADMIN BY  '+' BUTTON IN 'MYUSERS' COMPONENT 
 export const addAirline =createAsyncThunk(manageActions.addAirline, async(data, thunkApi)=>{
     const airlineData = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
     const newAirline = await client.post(endpoint, null, airlineData);
     return newAirline;
 });
-
+//BY MANAGER (SIBLING DISPATCH ==> BY  CUSTOMER ITSELF)
 export const editAirline =createAsyncThunk(manageActions.editAirline, async(data, thunkApi)=>{
     const {airlineId, airlineData} = data;;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
     const params = {airlineId: airlineId};
-    const reponseStatus = await client.put(endpoint, params, airlineData);
-    return reponseStatus;
+    //REGULAR UPDATE ===> PROFILE NOT UPDATED ===> RESPONSE STATUS
+    const response = await client.put(endpoint, params, airlineData);
+    return true;
 });
 
 export const removeAirline =createAsyncThunk(manageActions.removeAirline, async(data, thunkApi)=>{
     const airlineId = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
     const params = {airlineId: airlineId};
     const responseStatus = await client.remove(endpoint, params);
     return responseStatus;
@@ -249,15 +260,15 @@ export const removeAirline =createAsyncThunk(manageActions.removeAirline, async(
 export const addAdministrator =createAsyncThunk(manageActions.addAdministrator, async(data, thunkApi)=>{
     const adminData = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.administrators}`;
     const newAdministrator = await client.post(endpoint, null, adminData);
     return newAdministrator;
 });
 
 export const editAdministrator =createAsyncThunk(manageActions.editAdministrator, async(data, thunkApi)=>{
-    const {administratorId, adminData} = data;;
+    const {administratorId, adminData} = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.administrators}`;
     const params = {administratorId: administratorId};
     const reponseStatus = await client.put(endpoint, params, adminData);
     return reponseStatus;
@@ -266,7 +277,7 @@ export const editAdministrator =createAsyncThunk(manageActions.editAdministrator
 export const removeAdministrator =createAsyncThunk(manageActions.removeAdministrator, async(data, thunkApi)=>{
     const administratorId = data;
     const entry = entries.admin;
-    const endpoint = `${combineHost}/${entry}`;
+    const endpoint = `${combineHost}/${entry}/${resources.administrators}`;
     const params = {administratorId: administratorId};
     const responseStatus = await client.remove(endpoint, params);
     return responseStatus;

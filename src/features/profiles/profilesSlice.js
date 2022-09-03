@@ -4,195 +4,242 @@ import { fetchAirline, fetchFlights } from "../flights/fligthSlice";
 import { catchAppError } from "../../app/appSlice";
 import { userType, profileActions, entries, resources, status, result, loginErrorTemplate } from "../../constants/enums";
 import { convertUserTypeToEntry } from "../../constants/converters";
-import { combineHost , authentication} from "../../constants/configuration";
-import {client} from "../../api/client";
+import { combineHost, authentication } from "../../constants/configuration";
+import { client } from "../../api/client";
 
-const initialState = { 
-    currentUser : {
-        userTypeId : userType.anonym,
-        username : null,
-        identityId : null
+const initialState = {
+    currentUser: {
+        userTypeId: userType.anonym,
+        username: null,
+        identityId: null
     },
-    profileStatus : status.idle,
-    profileResult : result.idle
+    profileStatus: status.idle,
+    profileResult: result.idle
 }
 const profileSlice = createSlice({
-    name :'profile',
+    name: 'profile',
     initialState,
-    reducers :{
-        tokenAccepted(state, action){
-            const {user_role_id, identity} =action.payload.payload;
+    reducers: {
+        tokenAccepted(state, action) {
+            const { user_role_id, identity } = action.payload.payload;
             state.currentUser.userTypeId = user_role_id;
-            state.currentUser.username = `${identity.first_name} ${identity.last_name}`;
+            switch (state.currentUser.userTypeId) {
+                case userType.customer:
+                case userType.admin:
+                    state.currentUser.username = `${identity.first_name} ${identity.last_name}`;
+                    break;
+                case userType.airline:
+                    state.currentUser.username = `${identity.name}`;
+                    break;
+            }
+
             state.currentUser.identityId = identity.id;
-            }            
+        },
+        logout(state, action) {
+            state.currentUser = {
+                userTypeId: userType.anonym,
+                username: null,
+                identityId: null
+            };
         }
-    ,
-    extraReducers: builder =>{
+    },
+
+    extraReducers: builder => {
         builder
-        //LOGIN
-        .addCase(login.pending ,(state, action)=>{
-            state.profileStatus = status.pending; 
-         })
-        .addCase(login.fulfilled, (state, action)=>{
-            state.profileStatus = status.idle; 
-            const succeeded = action.payload;
-            state.profileResult = succeeded ? result.success :result.error;
-         })
-        .addCase(login.rejected, (state, action)=>{
-            state.profileStatus = status.idle;
-            state.profileResult = status.error; 
-         })
-         //ADD CUSTOMER
-        .addCase(addCusotmer.pending, (state, action)=>{
-            state.profileStatus = status.pending; 
-         })
-        .addCase(addCusotmer.fulfilled, (state, action)=>{
-            state.profileStatus = status.idle; 
-            const succeeded = action.payload;
-            state.profileResult = succeeded ? result.success :result.error;
-         })
-         .addCase(addCusotmer.rejected, (state, action)=>{
-            state.profileStatus = status.idle;
-            state.profileResult = status.error; 
-         })
-         //EDIT CUSTOMER
-         .addCase(editCustomer.pending, (state, action)=>{
-            state.profileStatus = status.pending; 
-         })
-        .addCase(editCustomer.fulfilled, (state, action)=>{
-            state.profileStatus = status.idle; 
-            const succeeded = action.payload;
-            state.profileResult = succeeded ? result.success :result.error;
-         })
-         .addCase(editCustomer.rejected, (state, action)=>{
-            state.profileStatus = status.idle;
-            state.profileResult = status.error; 
-         })
-         //ADD AIRLINE
-         .addCase(addAirline.pending, (state, action)=>{
-            state.profileStatus = status.pending; 
-         })
-        .addCase(addAirline.fulfilled, (state, action)=>{
-            state.profileStatus = status.idle; 
-            const succeeded = action.payload;
-            state.profileResult = succeeded ? result.success :result.error;
-         })
-         .addCase(addAirline.rejected, (state, action)=>{
-            state.profileStatus = status.idle;
-            state.profileResult = status.error; 
-         })
-        //EDIT AIRLINE
-         .addCase(editAirline.pending, (state, action)=>{
-            state.profileStatus = status.pending; 
-         })
-        .addCase(editAirline.fulfilled, (state, action)=>{
-            state.profileStatus = status.idle; 
-            const succeeded = action.payload;
-            state.profileResult = succeeded ? result.success :result.error;
-         })
-         .addCase(editAirline.rejected, (state, action)=>{
-            state.profileStatus = status.idle;
-            state.profileResult = status.error; 
-         })
+            //LOGIN
+            .addCase(login.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(login.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                const succeeded = action.payload;
+                state.profileResult = succeeded ? result.success : result.error;
+            })
+            .addCase(login.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
+            //FETCH CUSTOMER 
+            .addCase(fetchCustomerById.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(fetchCustomerById.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = result.success;
+            })
+            .addCase(fetchCustomerById.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
+            //ADD CUSTOMER
+            .addCase(addCusotmer.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(addCusotmer.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                const succeeded = action.payload;
+                state.profileResult = succeeded ? result.success : result.error;
+            })
+            .addCase(addCusotmer.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
+            //EDIT CUSTOMER
+            .addCase(editCustomer.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(editCustomer.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                const succeeded = action.payload;
+                state.profileResult = succeeded ? result.success : result.error;
+            })
+            .addCase(editCustomer.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
+            //ADD AIRLINE
+            .addCase(addAirline.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(addAirline.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                const succeeded = action.payload;
+                state.profileResult = succeeded ? result.success : result.error;
+            })
+            .addCase(addAirline.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
+            //EDIT AIRLINE
+            .addCase(editAirline.pending, (state, action) => {
+                state.profileStatus = status.pending;
+            })
+            .addCase(editAirline.fulfilled, (state, action) => {
+                state.profileStatus = status.idle;
+                const succeeded = action.payload;
+                state.profileResult = succeeded ? result.success : result.error;
+            })
+            .addCase(editAirline.rejected, (state, action) => {
+                state.profileStatus = status.idle;
+                state.profileResult = status.error;
+            })
     }
 });
 
-export const login =createAsyncThunk(profileActions.login, async(data, thunkApi)=>{
+export const login = createAsyncThunk(profileActions.login, async (data, thunkApi) => {
     const loginData = data;
     const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.login}`;
     //LOGIN
-    let userToken;
-    try{
-        userToken = await client.post(endpoint, null, loginData);
-    }
-    catch(error){
-        thunkApi.dispatch(catchAppError(loginErrorTemplate(error.message)));
-        return thunkApi.rejectWithValue('Error');
-    }  
-     //PARSE TOKEN AND SET CURR USER
+    const userToken = await client.post(endpoint, null, loginData);
+    //PARSE TOKEN AND SET CURR USER
     thunkApi.dispatch(tokenAccepted(userToken));
     const globalState = thunkApi.getState();
     //FETCH IDENETITY = CUSTOMER ID 
     const userTypeId = globalState.profile.currentUser.userTypeId;
-    switch(userTypeId){
+    switch (userTypeId) {
         case userType.customer:
             const customerId = globalState.profile.currentUser.identityId;
             //LOAD TICKETS
             thunkApi.dispatch(fetchTickets(customerId));
             break;
         case userType.airline://WRIRE CODE!
-           const airlineId = globalState.profile.currentUser.identityId;
-           await thunkApi.dispatch(fetchAirline(airlineId));
-           await thunkApi.dispatch(fetchFlights(airlineId));
+            const airlineId = globalState.profile.currentUser.identityId;
+            await thunkApi.dispatch(fetchAirline(airlineId));
+            await thunkApi.dispatch(fetchFlights(airlineId));
             break;
         case userType.admin://WRITE CODE !
             break;
         default: throw Error('Invalid User Type!')
-    }   
+    }
     return true;
 });
-//IN THIS SLICE ===>BY SIGN UP ONLY!
-export const addCusotmer =createAsyncThunk(profileActions.addCustomer, async(data, thunkApi)=>{
-    const customerData = data;
+export const fetchCustomerById = createAsyncThunk(profileActions.fetchCutomerById, async (data, thunkApi) => {
+    const customerId = data;
     const globalState = thunkApi.getState();
     const userTypeId = globalState.profile.currentUser.userTypeId;
     const entry = convertUserTypeToEntry(userTypeId);
     const endpoint = `${combineHost}/${entry}/${resources.customers}`;
-    const userToken = await client.post(endpoint, null, customerData);
-     //PARSE TOKEN AND SET CURR USER
-    thunkApi.dispatch(profileSlice.actions.tokenAccepted(userToken));
-    return true;
+    const params = { id: customerId };
+    const customer = await client.get(endpoint, params, null);
+    return customer;
+
 });
 
-export const editCustomer =createAsyncThunk(profileActions.editCustomer, async(data, thunkApi)=>{
-    const {customerId, customerData} = data;
-    const globalState = thunkApi.getState();
-    const userTypeId =globalState.profile.currentUser.userTypeId;
-    const entry = convertUserTypeToEntry(userTypeId);
-    const endpoint = `${combineHost}/${entry}`;
-    const params = {customerId: customerId};
-    const userToken = await client.put(endpoint, params, customerData);
-     //PARSE TOKEN AND SET CURR USER
-     thunkApi.dispatch(profileSlice.tokenAccepted(userToken));
-     return true;
-});
 //IN THIS SLICE ===>BY SIGN UP ONLY!
-export const addAirline =createAsyncThunk(profileActions.addAirline, async(data, thunkApi)=>{
-    const airlineData = data;
+export const addCusotmer = createAsyncThunk(profileActions.addCustomer, async (data, thunkApi) => {
+    const customerData = data;
+    const entry = entries.anonym;
+    const endpoint = `${combineHost}/${entry}/${resources.customers}`;
+    const userToken = await client.post(endpoint, null, customerData);
+    //PARSE TOKEN AND SET CURR USER
+    thunkApi.dispatch(tokenAccepted(userToken));
+    return true;
+});
+//EDIT BY CUSTOMER SELF ONLY
+export const editCustomer = createAsyncThunk(profileActions.editCustomer, async (data, thunkApi) => {
+    const { customerId, customerData } = data;
     const globalState = thunkApi.getState();
     const userTypeId = globalState.profile.currentUser.userTypeId;
     const entry = convertUserTypeToEntry(userTypeId);
+    const endpoint = `${combineHost}/${entry}/${resources.customers}`;
+    const params = { customerId: customerId };
+    //ATER UPDATE ON SERVER ====> NEW LOGIN  PROCEDURE (TOKEN...)
+    //===> BECAUSE USER DETAILS (USER, PASSWORD) MIGHT BE EDITED BY CUSTOMER USER ITSELF IN THE FORM
+    const userToken = await client.put(endpoint, params, customerData);
+    //PARSE TOKEN AND SET CURR USER
+    thunkApi.dispatch(tokenAccepted(userToken));
+    return true;
+});
+//IN THIS SLICE ===>BY 'SIGN UP' COMPONENT ONLY! (ON 'MANAGE SLICE' ==> DONE BY ADMIN)
+export const addAirline = createAsyncThunk(profileActions.addAirline, async (data, thunkApi) => {
+    const airlineData = data;
+    const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
     const userToken = await client.post(endpoint, null, airlineData);
-     //PARSE TOKEN AND SET CURR USER
-    thunkApi.dispatch(profileSlice.actions.tokenAccepted(userToken));
+    //PARSE TOKEN AND SET CURR USER
+    thunkApi.dispatch(tokenAccepted(userToken));
+    const globalState = thunkApi.getState();
     const airlineId = globalState.profile.currentUser.identityId;
     await thunkApi.dispatch(fetchAirline(airlineId));
     return true;
 });
-
-export const editAirline =createAsyncThunk(profileActions.editAirline, async(data, thunkApi)=>{
-    const {airlineId, airlineData }= data;
+//IN 'PROFILE SLICE' ===> BY AIRLINE
+export const editAirline = createAsyncThunk(profileActions.editAirline, async (data, thunkApi) => {
+    const { airlineId, airlineData } = data;
     const globalState = thunkApi.getState();
-    const userTypeId =globalState.profile.currentUser.userTypeId;
+    const userTypeId = globalState.profile.currentUser.userTypeId;
     const entry = convertUserTypeToEntry(userTypeId);
-    const endpoint = `${combineHost}/${entry}`;
-    const params = {airlineId: airlineId};
+    const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
+    const params = { airlineId: airlineId };
     const userToken = await client.put(endpoint, params, airlineData);
-     //PARSE TOKEN AND SET CURR USER
-     thunkApi.dispatch(profileSlice.tokenAccepted(userToken));
-     return true;
+    //ATER UPDATE ON SERVER ====> NEW LOGIN  PROCEDURE (TOKEN...)
+    //===> BECAUSE USER DETAILS (USER, PASSWORD) MIGHT BE EDITED BY AIRLINE USER ITSELF IN THE FORM
+    thunkApi.dispatch(tokenAccepted(userToken));
+    return true;
+});
+//BY CURENT USER PROFILE
+export const editAdministrator = createAsyncThunk(profileActions.editAdministrator, async (data, thunkApi) => {
+    const { administratorId, adminData } = data;
+    const entry = entries.admin;
+    const endpoint = `${combineHost}/${entry}/${resources.administrators}`;
+    const params = { administratorId: administratorId };
+    const userToken = await client.put(endpoint, params, adminData);
+    thunkApi.dispatch(tokenAccepted(userToken));
+    return true;
 });
 
-const handleAppErrors=(error)=>{
+export const { tokenAccepted, logout } = profileSlice.actions;
 
+export const SelectUserTypeId = (state) => state.profile.currentUser.userTypeId;
+export const SelectIdentityId = (state) => state.profile.currentUser.identityId;
+export const SelectFirstName = (state) => {
+    const user = state.profile.currentUser;
+    if (user.userTypeId != userType.customer) {
+        return '';
+    }
+    const firstName = user.username.split(' ')[0];
+    return firstName;
 }
-
-export const {tokenAccepted} =profileSlice.actions; 
-
-export const SelectUserTypeId= (state)=>state.profile.currentUser.userTypeId;
-export const SelectIdentityId= (state)=>state.profile.currentUser.identityId;
 
 export default profileSlice.reducer;

@@ -18,7 +18,7 @@ TabPanel.propTypes = {
     value: PropTypes.number.isRequired,
 };
 
-const MyUsers = () => {
+const MyUsers = ({countries}) => {
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -88,7 +88,7 @@ const MyUsers = () => {
                 </TabPanel>
                 <TabPanel id='TabAirlines' value={value} index={1}>
                     {/* AIRLINES */}  
-                    <Airlines/>            
+                    <Airlines countries={countries}/>            
                 </TabPanel>
                 <TabPanel id='TabAdmins' value={value} index={2}>
                     {/* ADMINISTRATORS */}  

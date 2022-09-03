@@ -5,7 +5,7 @@ const FlightResultHeader = (props) => {
     const { date, height } = props;
     return (
         <Box 
-            sapcing={0}
+            spacing={0}
             height={height}
             display={'flex'}
             justifyContent={'space-around'}

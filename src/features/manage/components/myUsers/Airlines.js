@@ -12,14 +12,12 @@ import {List} from '@mui/material';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import { AutoCompleteBox } from '../../../../app/components/FormStyles';
-import {getAlCountries} from '../../../../api/cache';
-import { CompareByAirlineName } from '../../../../utilities/compare';
 import FlagIcon from '@mui/icons-material/Flag'; 
-import { useQuery } from 'react-query';
 import { useEffect } from 'react';
 import { GetAirlinesBussiness, SortAirlinesBusinnes } from '../../../../models/AirlinesBussines';
 import { CompareByCountryName } from '../../../../utilities/compare';
 import AirlineListItem from '../AirlineListItem';
+import { useNavigate } from 'react-router-dom';
 
 const inputHeights = '24px';
 
@@ -29,8 +27,8 @@ const initFilters = {
     country_id: numbers.noSelectedValue,
 }
 
-const AirlinesSearch = ({fetchAirlines}) => {
-    const countries = useQuery('countries', getAlCountries).data;
+const AirlinesSearch = ({fetchAirlines, countries}) => {
+    const navigate = useNavigate();
     const [filters, setFilters] = useState(initFilters);
     const handleChange = (e) => {
         setFilters({
@@ -58,6 +56,10 @@ const AirlinesSearch = ({fetchAirlines}) => {
             ['country_id']: newCountryId
         };
         setFilters(newFilters);
+    }
+    
+    const handleAddNew=()=>{
+        navigate('/Profile/Airline/Insert/999')
     }
 
     const handleSearch =()=> {
@@ -144,7 +146,7 @@ const AirlinesSearch = ({fetchAirlines}) => {
         /> ,  
         <Box>
             <FormButton variant="contained"
-                onClick={() => handleSearch()}
+                onClick={() => handleAddNew()}
                 sx={{
                     height: 26,
                     width: 26,
@@ -164,7 +166,7 @@ const AirlinesSearch = ({fetchAirlines}) => {
     
 }
 
-const Airlines = () => {
+const Airlines = ({countries}) => {
     console.count('render airlines');
     const [airlines, setAirlines] = useState([]);
     
@@ -175,7 +177,7 @@ const Airlines = () => {
     }
     const searchPanel = {
         panelItmes: [
-            <AirlinesSearch fetchAirlines={fetchAirlines}/>
+            <AirlinesSearch fetchAirlines={fetchAirlines} countries={countries}/>
         ],
         height : '40px'
     }

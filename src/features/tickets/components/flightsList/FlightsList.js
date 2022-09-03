@@ -5,29 +5,38 @@ import { Box, Stack, TextField, InputAdornment } from '@mui/material';
 import { AutoCompleteBox } from '../../../../app/components/FormStyles';
 import { DatePicker } from '@mui/x-date-pickers';
 import FlagIcon from '@mui/icons-material/Flag';
-import { getAlCountries } from '../../../../api/cache';
 import { CompareByCountryName } from '../../../../utilities/compare';
-import { useQuery } from 'react-query';
 import { FormButton, FormFrameBox } from '../../../../app/components/FormStyles'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SearchLine from '../../../../app/components/searchLine/SearchLine';
-import { flitersChanged } from '../../ticketsSlice'
+import { fetchFligths, SelectFlightsSearch } from '../../ticketsSlice'
+import { catchAppError } from '../../../../app/appSlice';
 import FlightSearchResults from '../flightsSearchResults/FlightSearchResults';
+import { FlightSearchErrorTemplate } from '../../../../constants/enums';
+import moment from 'moment';
 import Banners from '../banners';
+
 const bannerPannelHeight = 45;
 const searchInputsHeight = 24;
 
-const FlightsSearch = () => {
-  const countries = useQuery('countries', getAlCountries).data;
-  const [filters, setFilters] = useState({});
+const FORMAT = 'DD/MM/YYYY';
+
+const FlightsSearch = ({ handleSearch, countries}) => {
+
   const dispatch = useDispatch();
-  const navigate = useNavigate();
+  const initFilters = {
+    origin_country_name: '',
+    destination_country_name: '',
+    start_date: moment().add(-3, 'days'),
+    end_date: moment().add(-3, 'days').add(3, 'months')
+  }
+  const [filters, setFilters] = useState(initFilters);
 
   const handleCountryChange = (type, value) => {
     const newFilters = {
       ...filters,
-      [`${type}Country`]: value
+      [`${type}_country_name`]: value
     }
     setFilters(newFilters);
   }
@@ -35,17 +44,73 @@ const FlightsSearch = () => {
   const handleDateChange = (type, value) => {
     setFilters({
       ...filters,
-      [`${type}Date`]: value
+      [`${type}_date`]: value
     });
   }
 
-  const handleSearch = () => {
-    dispatch(flitersChanged(filters));
+  const validateInputs = () => {
+    let originCountry, destCountry, errorMessage;
+    if (filters.origin_country_name) {
+      originCountry = countries.find(cou => cou.name == filters.origin_country_name);
+      if (!originCountry) {
+        errorMessage = 'Select a valid country';
+        throw Error(errorMessage);
+      }
+    }
+    if (filters.destination_country_name) {
+      destCountry = countries.find(cou => cou.name == filters.destination_country_name);
+      if (!destCountry) {
+        errorMessage = 'Select a valid country';
+        throw Error(errorMessage);
+      }
+    }
+    if (filters.start_date) {
+      if (moment(filters.start_date).format(FORMAT) == 'Invalid date') {
+        errorMessage = 'Select a valid date';
+        throw Error(errorMessage);
+      }
+    }
+    if (filters.end_date) {
+      if (moment(filters.end_date).format(FORMAT) == 'Invalid date') {
+        errorMessage = 'Select a valid date';
+        throw Error(errorMessage);
+      }
+    }
+
   }
 
+  const handleSearchFromParams = () => {
+    try {
+      validateInputs();
+      //COLLECT COUNTRIES IDS
+      let originCountry, destCountry;
+      if (filters.origin_country_name) {
+        originCountry = countries.find(cou => cou.name == filters.origin_country_name);
+      }
+      if (filters.destination_country_name) {
+        destCountry = countries.find(cou => cou.name == filters.destination_country_name);
+      }
+      const origin_country_id = originCountry && originCountry.id;
+      const destination_country_id = destCountry && destCountry.id;
+      //SET SEARCH FILTERS
+      const dataFilters = {
+        ...filters,
+        origin_country_id: origin_country_id || '',
+        dest_country_id: destination_country_id || ''
+      };
+      handleSearch(dataFilters);
+    }
+    catch (err) {
+      dispatch(catchAppError(FlightSearchErrorTemplate(err.message)))
+    }
+  }
+
+  const handleDateChangeRaw = (e) => {
+    e.preventDefault();
+  }
 
   useEffect(() => {
-    dispatch(flitersChanged({}));
+    handleSearchFromParams();
   }, []);
 
   return ([
@@ -56,12 +121,12 @@ const FlightsSearch = () => {
         id="fromCountry"
         name="fromCountry"
         height={24}
-        value={filters.fromCountry || ''}
+        value={filters.origin_country_name || ''}
         onChange={(event, name) => {
-          handleCountryChange('from', name)
+          handleCountryChange('origin', name)
 
         }}
-        disableClearable
+        clearable
         options={countries.map((option) => option.name).sort(CompareByCountryName)}
         renderInput={(params) => (
           <TextField
@@ -98,7 +163,7 @@ const FlightsSearch = () => {
               </InputAdornment>
             }}
             onChange={
-              (e) => handleCountryChange('from', e.target.value)
+              (e) => handleCountryChange('origin', e.target.value)
             }
           />
         )}
@@ -106,17 +171,21 @@ const FlightsSearch = () => {
     </Box>,
     <Box sx={{ flex: 1 }}>
       <DatePicker
-        value={filters.fromDate || ''}
+        clearable
+        onChangeRaw={handleDateChangeRaw}
+        value={filters.start_date || ''}
         inputFormat="DD/MM/YYYY"
+        placeholder='Departure'
         width={'90%'}
         sx={{ backgroundColor: 'white', border: '1px soiid black' }}
         onChange={(newValue) => {
-          handleDateChange('from', newValue);
+          handleDateChange('start', newValue);
         }}
         InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
         renderInput={(params) =>
           <TextField fontSize={'0.9rem'}
-            placeholder={"DD/MM/YYYY"}
+            placeholder='Departure'
+
             sx={{
               backgroundColor: 'white',
               margin: 'auto',
@@ -140,9 +209,9 @@ const FlightsSearch = () => {
         freeSolo
         id="toCountry"
         name="toCountry"
-        value={filters.toCountry || ''}
+        value={filters.destination_country_name || ''}
         onChange={(event, name) => {
-          handleCountryChange('to', name)
+          handleCountryChange('destination', name)
         }}
         width={'90%'}
         disableClearable
@@ -182,7 +251,7 @@ const FlightsSearch = () => {
               </InputAdornment>
             }}
             onChange={
-              (e) => handleCountryChange('to', e.target.value)
+              (e) => handleCountryChange('destination', e.target.value)
             }
           />
         )}
@@ -190,10 +259,13 @@ const FlightsSearch = () => {
     </Box>,
     <Box sx={{ flex: 1 }}>
       <DatePicker
-        value={filters.toDate || ''}
+        clearable
+        onChangeRaw={handleDateChangeRaw}
+        value={filters.end_date || ''}
         inputFormat="DD/MM/YYYY"
+        placeholder='Landing'
         onChange={(newValue) => {
-          handleDateChange('to', newValue);
+          handleDateChange('end', newValue);
         }}
         InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
         renderInput={(params) =>
@@ -201,7 +273,8 @@ const FlightsSearch = () => {
             {...params}
             inputProps={{
               ...params.inputProps,
-              placeholder: "DD/MM/YYYY",
+              readOnly: true,
+              placeholder: "Landing",
               style: { textAlign: "center" }
             }}
             sx={{
@@ -223,7 +296,7 @@ const FlightsSearch = () => {
     </Box>,
     <Box sx={{ flex: 0.5 }}>
       <FormButton variant="contained"
-        onClick={() => handleSearch()}
+        onClick={() => handleSearchFromParams()}
         sx={{
           height: searchInputsHeight + 2,
           width: '120px'
@@ -233,14 +306,25 @@ const FlightsSearch = () => {
   ])
 }
 
-const FlightsList = () => {
+const FlightsList = ({countries}) => {
+  const flightResults = useSelector(SelectFlightsSearch);
+  const dispatch = useDispatch();
+
+  const handleSearch = async (filters) => {
+    try {
+      await dispatch(fetchFligths(filters)).unwrap();
+    }
+    catch (err) {
+      dispatch(catchAppError(FlightSearchErrorTemplate(err)))
+    }
+  }
+
   const searchPanel = {
     panelItmes: [
-      <FlightsSearch />
+      <FlightsSearch handleSearch={handleSearch} countries={countries}/>
     ],
     height: '40px'
   }
-
   return (
     <FormFrameBox sx={{
       width: '100%',
@@ -269,7 +353,7 @@ const FlightsList = () => {
           }}
           marginBottom={'10px'}
         >
-          <Banners/>
+          <Banners />
         </Box>
         {/* SEARCH PANEL */}
         <SearchLine searchPanel={searchPanel} height={'40px'} />
@@ -277,10 +361,10 @@ const FlightsList = () => {
         <Box
           width={'100%'}
           marginTop={'10px'}
-          sx={{padding :'0px'}}
-         
+          sx={{ padding: '0px' }}
+
         >
-          <FlightSearchResults/>
+          <FlightSearchResults flightResults={flightResults} />
         </Box>
       </Stack>
     </FormFrameBox>

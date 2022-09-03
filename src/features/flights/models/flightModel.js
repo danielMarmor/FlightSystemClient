@@ -12,6 +12,8 @@ export class FlightModel {
         this.updated = null;
     }
 
+    static NO_DISTANCE = -999;
+
     setParams = (countries) => {
         this.countries = countries
     }
@@ -20,7 +22,8 @@ export class FlightModel {
             ...data
         }
     }
-    retval = () => { return this.updated }
+    retval =() => { return this.updated }
+    distance=()=>{return this.updated.distance}
 
     originCountryUpdated = async (originCountryName) => {
         if (!originCountryName) {
@@ -136,6 +139,7 @@ export class FlightModel {
         const capModel = CapacityModels.find(cap => cap.id === capcityModelId);
         this.updated.capacityModelId = capcityModelId;
         this.updated.num_seats = capModel.numSeats;
+        this.updated.remaining_tickets = this.updated.num_seats;
         this.updated.capacityModelUrl = capModel.url;
 
         if (this.updated.cost != null) {
@@ -259,6 +263,8 @@ export class FlightModel {
             landing_time: moment(entity.landing_time, 'DD/MM/YYYY HH:mm:SS'),
             capacityModelId: capacityMode.id,
             num_seats : entity.num_seats,
+            remaining_tickets : entity.remaining_tickets,
+            disable_changes : entity.remaining_tickets < entity.num_seats,
             distance: entity.distance,
             price: entity.price
         }

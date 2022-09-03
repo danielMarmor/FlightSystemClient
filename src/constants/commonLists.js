@@ -7,26 +7,46 @@ export const CapacityModels=[
     {   id : 1,
         name : '120 Seats',
         numSeats : 120,
-        url :`url(${Airbus220})`
+        airplane :'Airbus220-I',
+        url :`url(${Airbus220})`,
+        rowGroups : [12],
+        columnGroups : [3, 4, 3],
+        width : 350
     },
     {   id : 2,
         name : '180 Seats',
         numSeats : 180,
-        url :`url(${Boeing747})`
+        airplane :'Boeing-747',
+        url :`url(${Boeing747})`,
+        rowGroups : [8, 10],
+        columnGroups : [3, 4, 3],
+        width : 300
     },
     {   id : 3,
         name : '200 Seats',
         numSeats : 200,
-        url :`url(${Dreamlines787})`
+        airplane :'Dreamliner-787',
+        url :`url(${Dreamlines787})`,
+        rowGroups : [10, 10],
+        columnGroups : [3, 4, 3],
+        width : 300
     },
     {   id : 4,
         name : '240 Seats',
         numSeats : 240,
-        url :`url(${Dreamlines787})`
+        airplane :'Dreamliner-787',
+        url :`url(${Dreamlines787})`,
+        rowGroups : [8, 8, 8],
+        columnGroups : [3, 4, 3],
+        width : 300
     },
     {   id : 5,
         name : '300 Seats',
         numSeats : 300,
-        url :`url(${Airbus380})`
+        airplane :'Airbus380-A',
+        url :`url(${Airbus380})`,
+        rowGroups : [8, 17],
+        columnGroups : [4, 4, 4],
+        width : 300
     }
 ]

@@ -5,81 +5,81 @@ import axios from 'axios';
 
 export const getDistance = async (origin, destination) => {
     //GOOGEL GEOCODE API
-    let kilometers = await fetchDistance(origin, destination);
-    if (kilometers == null) {
-        //EMPTY DATA ===> CALCULATE MANULY BY FORMULA
-        const originLocation = await getLocation(origin);
-        const destLocation = await getLocation(destination);
-        kilometers = calcDistance(originLocation, destLocation);
+    try {
+        let kilometers = await fetchDistance(origin, destination);
+        if (kilometers == null) {
+            //EMPTY DATA ===> CALCULATE MANULY BY FORMULA
+            const originLocation = await getLocation(origin);
+            if (!originLocation) {
+                //SERVICE CANNOT FIND LOCATON
+                return null;
+            }
+            const destLocation = await getLocation(destination);
+            if (!destLocation) {//SERVICE CANNOT FIND LOCATON
+                return null;
+            }
+            kilometers = calcDistance(originLocation, destLocation);
+        }
+        const roundedKilometers = Math.round(kilometers);
+        return roundedKilometers;
     }
-    const roundedKilometers = Math.round(kilometers);
-    return roundedKilometers;
+    catch (err) {
+        console.log(err);
+        return null;
+    }
 }
 
 const fetchDistance = async (origin, destination) => {
-    const promise = new Promise((resolve) => {
-        const service = new window.google.maps.DistanceMatrixService();
-        service.getDistanceMatrix({
-            origins: [origin],
-            destinations: [destination],
-            travelMode: window.google.maps.TravelMode.DRIVING
-        }, (response, status) => {
-            if(status != 'OK'){
-                resolve(null);
-                return;
-            }
-            const rows = response.rows;
-            if (!rows){
-                resolve(null);
-                return;
-            }
-            const elements =rows[0].elements;
-            if (!elements){
-                resolve(null);
-                return;
-            }
-            const elem =  elements[0];
-            if (elem.status == 'ZERO_RESULTS'){
-                resolve(null);
-                return;
-            }
-            const distance =  elem.distance;
-            if (!distance || !distance.value){
-                resolve(null);
-                return;
-            }
-            const disatnceValue =distance.value; 
-            const kilometers = Math.round(parseFloat(disatnceValue/1000));
-            resolve(kilometers);
-            return;
-        });
+    const promise = new Promise((resolve, reject) => {
+        try {
+            const service = new window.google.maps.DistanceMatrixService();
+            throw Error('Cannot Find DNS Address Compatible');
+            service.getDistanceMatrix({
+                origins: [origin],
+                destinations: [destination],
+                travelMode: window.google.maps.TravelMode.DRIVING
+            }, (response, status) => {
+                try {
+                    if (status != 'OK') {
+                        resolve(null);
+                        return;
+                    }
+                    const rows = response.rows;
+                    if (!rows) {
+                        resolve(null);
+                        return;
+                    }
+                    const elements = rows[0].elements;
+                    if (!elements) {
+                        resolve(null);
+                        return;
+                    }
+                    const elem = elements[0];
+                    if (elem.status == 'ZERO_RESULTS') {
+                        resolve(null);
+                        return;
+                    }
+                    const distance = elem.distance;
+                    if (!distance || !distance.value) {
+                        resolve(null);
+                        return;
+                    }
+                    const disatnceValue = distance.value;
+                    const kilometers = Math.round(parseFloat(disatnceValue / 1000));
+                    resolve(kilometers);
+                    return;
+                }
+                catch (err) {
+                    reject(err);
+                }
+            });
+        }
+        catch (err) {
+            reject(err);
+        }
     });
     return promise;
-
-
 }
-
-// const fetchDistance = async (origin, destination) => {
-//     const promise = new Promise((resolve, reject) => {
-//         distance.get({
-//             origin: origin,
-//             destination: destination
-//         },
-//             (err, data) => {
-//                 if (err) {
-//                     resolve(null);
-//                     return;
-//                 }
-//                 //console.log(data);
-//                 const distanceValue = data.distanceValue;
-//                 const kilometers = Math.round(distanceValue / 1000);
-//                 resolve(kilometers);
-//                 return;
-//             }
-//         )
-//     });
-//     return promise;
-// }
 
 const calcDistance = (origin, destination) => {
     const latitudeFrom = origin.lat;

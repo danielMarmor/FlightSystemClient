@@ -7,23 +7,33 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Slide from '@mui/material/Slide';
 import { Button } from '@mui/material';
 import { FormButton } from '../FormStyles';
+import { SelectSuccessMessgae, resetSuccessMessage } from '../../appSlice';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const Transition = React.forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const SuccessDialogSlide=(props)=>{
-  const {success} =props;
+const SuccessDialogSlide=()=>{
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const success = useSelector(SelectSuccessMessgae);
+
   const isOpen = success != null;
   const [open, setOpen] = React.useState(isOpen);
+  
  
   const feature = success && success.feature;
   const message= success && success.message;
   const details= success && success.details;
+  const calbackUrl= success && success.url;
  
-
   const handleClose = () => {
-    dispatch(resetAppError('reset'));
+    dispatch(resetSuccessMessage({}));
+    if (calbackUrl){
+      navigate(calbackUrl);
+    }
   };
 
   return (
@@ -47,7 +57,7 @@ const SuccessDialogSlide=(props)=>{
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <FormButton sx={{width:100,  backgroundColor: '#15291b', color:'white'}} onClick={handleClose}>Close</FormButton>
+          <FormButton sx={{width:100,  backgroundColor: '#15291b !important', color:'white'}} onClick={handleClose}>Close</FormButton>
         </DialogActions>
       </Dialog>
     </div>

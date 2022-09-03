@@ -22,7 +22,17 @@ const theme = createTheme({
 
 });
 
-const queryClient = new QueryClient();
+console.log('index start');
+
+
+const queryClient = new QueryClient({
+  defaultOptions:{
+    queries:{
+      refetchOnWindowFocus : false,
+      staleTime : Infinity
+    }
+  }
+});
 
 
 const root = ReactDOM.createRoot(document.getElementById('root'));

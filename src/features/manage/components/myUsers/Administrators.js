@@ -19,6 +19,7 @@ const initFilters = {
     search: ''
 }
 const AdministratorsSearch = ({ fetchAdministrators }) => {
+    const navigate = useNavigate();
     const [filters, setFilters] = useState(initFilters);
 
     const handleChange = (e) => {
@@ -30,6 +31,10 @@ const AdministratorsSearch = ({ fetchAdministrators }) => {
 
     const handleSearch = () => {
         fetchAdministrators(filters);
+    }
+
+    const handelAddNew=()=>{
+        navigate('/Profile/Admin/Insert/999');
     }
 
     return ([
@@ -58,7 +63,7 @@ const AdministratorsSearch = ({ fetchAdministrators }) => {
         </Box>,
         <Box sx={{ flex: 1 }}>
             <FormButton variant="contained"
-                onClick={() => handleSearch()}
+                onClick={() => handelAddNew()}
                 sx={{
                     height: searchInputsHeight + 2,
                     width: searchInputsHeight + 2,

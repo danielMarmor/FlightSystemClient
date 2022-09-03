@@ -1,13 +1,15 @@
 import React from 'react'
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography, ListItemButton } from '@mui/material';
 import { endpoints } from '../../../../constants/configuration';
 import moment from 'moment';
 import momentDurationFormatSetup from 'moment-duration-format';
 import airplane1 from '../../../../assets/airplane1.png';
 import { FlightModel } from '../../../flights/models/flightModel'
 import { cusotmerFlightStatus } from '../../../../constants/enums'
-import { BoldTextTypography } from '../../../../app/components/FormStyles'
 import DoneIcon from '@mui/icons-material/Done';
+import {useNavigate} from 'react-router-dom'
+import { useDispatch } from 'react-redux';
+import {resetOrderDetails} from '../../ticketsSlice';
 
 momentDurationFormatSetup(moment);
 
@@ -146,6 +148,17 @@ const FlightStatus = ({ statusId, flight }) => {
 
 const FlightResultItem = (props) => {
   const { flight, height } = props;
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleFlightSelceted=(e)=>{
+    if (flight.status != cusotmerFlightStatus.availiable){
+      return;
+    }
+    dispatch(resetOrderDetails({}));
+    const flightDate = moment(flight.departure_time).format('DD/MM/YYYY');
+     navigate(`/Ticket/Order/${flight.flight_id}`);
+  } 
 
   const airConfig = endpoints.airlineCompanies;
   const logoWidth = 100;
@@ -156,11 +169,26 @@ const FlightResultItem = (props) => {
 
   const flightDuration = FlightModel.getDurationFormat(flight.departure_time, flight.landing_time);
   return (
+    <ListItemButton
+    onClick={()=>handleFlightSelceted()}
+    spacing={0}
+  sx={{
+      width: '100%',
+      height: height,
+      margin: '5px 0px 0px 0px',
+      padding : '0px',
+      '&:hover' :{
+        backgroundColor:flight.status == cusotmerFlightStatus.availiable ? 
+         '#79fc9c' : 'inherit',
+        cursor:flight.status == cusotmerFlightStatus.availiable ? 
+         'pointer' : 'default',
+      }
+    }}
+    >
     <Box spacing={0}
       sx={{
         width: '100%',
-        height: height,
-        margin: '5px 0px 0px 0px',
+        height : '100%',
         padding: '0px',
         boxSizing: 'border-box',
         border: '2px solid #15291b'
@@ -211,7 +239,8 @@ const FlightResultItem = (props) => {
                     borderColor: 'ligthGrey',
                     backgroundImage: origCountryFlag,
                     backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition : 'center'
 
                   }}>
                 </div>
@@ -302,7 +331,8 @@ const FlightResultItem = (props) => {
                     borderColor: 'ligthGrey',
                     backgroundImage: destCountryFlag,
                     backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat'
+                    backgroundRepeat: 'no-repeat',
+                    backgroundPosition : 'center'
 
                   }}>
                 </div>
@@ -319,6 +349,7 @@ const FlightResultItem = (props) => {
         </Box>
       </Stack>
     </Box>
+    </ListItemButton>
   )
 }
 

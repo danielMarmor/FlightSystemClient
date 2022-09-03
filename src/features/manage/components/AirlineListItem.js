@@ -10,7 +10,7 @@ import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { Link } from 'react-router-dom';
+import { Link , NavLink} from 'react-router-dom';
 import { FormBoxGrid, RowFlexBox } from '../../../app/components/FormStyles';
 import moment from 'moment';
 
@@ -160,7 +160,7 @@ const AirlineListItem = (props) => {
                         //border: '1px solid black',
                         height: '22px'
                     }}>
-                        <Link to={`{/Airline/Profile}`}
+                        <NavLink to={`/Profile/Airline/Details/${airline.id}`}
                             style={{
                                 color: 'blue', textDecoration: 'none',
                                 marginRight: '20px'
@@ -172,7 +172,7 @@ const AirlineListItem = (props) => {
                                 color='blue'
                             >   View Profile
                             </Typography>
-                        </Link>
+                        </NavLink>
                     </RowFlexBox>
                 </FormBoxGrid>
 

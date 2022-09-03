@@ -1,21 +1,12 @@
 import React from "react";
-import { useState, useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { SelectFlightsSearch, fetchFligths } from "../../ticketsSlice";
 import { VariableSizeList as List } from "react-window";
-import { FormFrameBox } from "../../../../app/components/FormStyles";
-import { catchAppError } from "../../../../app/appSlice";
-import { FlightSearchErrorTemplate } from "../../../../constants/enums";
 import FlightResultDay from '../flightResultDay/FlightResultDay'
 
-const FlightSearchResults = () => {
-    const flightResults = useSelector(SelectFlightsSearch);
+const FlightSearchResults = ({flightResults}) => {
     const itemHeight = 60;
     const headerHeight = 24;
     const itemMarginTop = 5;
     const dayMarginBotton = 5;
-
-
 
     const Row = ({ index, style }) => (
         <div style={style}>
@@ -46,21 +37,7 @@ const FlightSearchResults = () => {
         >
             {Row}
         </List>
-    );
-
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-        const loadFlights = async () => {
-            try {
-                await dispatch(fetchFligths({})).unwrap();
-            }
-            catch (err) {
-                dispatch(catchAppError(FlightSearchErrorTemplate(err)))
-            }
-        };
-        loadFlights();
-    }, []);
+    );  
     return (
         <ListComponent />       
     )

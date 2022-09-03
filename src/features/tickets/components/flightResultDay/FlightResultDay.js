@@ -15,7 +15,8 @@ const FlightResultDay = (props) => {
       sx={{
         width: '100%',
         margin: '0px',
-        padding: '0px'
+        padding: '0px',
+        boxSizing:'border-box'
 
       }}
     >

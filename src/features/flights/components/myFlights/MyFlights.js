@@ -4,9 +4,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { AutoCompleteBox } from '../../../../app/components/FormStyles'
 import FlagIcon from '@mui/icons-material/Flag';
 import InputAdornment from '@mui/material/InputAdornment';
-import { getAlCountries } from '../../../../api/cache'
 import { CompareByCountryName } from '../../../../utilities/compare'
-import { useQuery } from 'react-query';
 import { Box, TextField, Stack } from '@mui/material';
 import { FormButton, FormFrameBox } from '../../../../app/components/FormStyles';
 import { numbers } from '../../../../constants/configuration';
@@ -26,8 +24,7 @@ import { textAlign } from '@mui/system';
 
 const searchInputsHeight = 24;
 
-const FlightsSearch = () => {
-    const countries = useQuery('countries', getAlCountries).data;
+const FlightsSearch = ({countries}) => {
     const [filters, setFilters] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -257,9 +254,8 @@ const FlightsSearch = () => {
 }
 
 
-const MyFlights = () => {
+const MyFlights = ({countries}) => {
     console.count('render MyFlights');
-    const countries = useQuery('countries', getAlCountries).data;
     const myFlights = useSelector(SelectFlightsToShow);
     const dispatch = useDispatch();
 
@@ -274,7 +270,7 @@ const MyFlights = () => {
 
     const searchPanel = {
         panelItmes: [
-            <FlightsSearch />
+            <FlightsSearch countries={countries}/>
         ],
         height: '40px'
     }
