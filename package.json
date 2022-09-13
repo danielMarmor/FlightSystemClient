@@ -19,6 +19,7 @@
     "assert": "^2.0.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
+    "chart.js": "^3.9.1",
     "date-fns": "^2.28.0",
     "dateformat": "^5.0.3",
     "google-distance-updated": "^2.0.2",
@@ -27,7 +28,9 @@
     "moment-duration-format": "^2.3.2",
     "prop-types": "^15.8.1",
     "react": ">=16.8.0",
+    "react-chartjs-2": "^4.3.1",
     "react-dom": ">=16.8.0",
+    "react-error-boundary": "^3.1.4",
     "react-google-maps": "^9.4.5",
     "react-hook-form": "^7.34.2",
     "react-jwt": "^1.1.6",
@@ -45,7 +48,7 @@
     "react-dom": ">=16.8.0"
   },
   "scripts": {
-    "start": "set HTTPS=true&&react-scripts start",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -67,5 +70,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@faker-js/faker": "^7.5.0"
   }
 }

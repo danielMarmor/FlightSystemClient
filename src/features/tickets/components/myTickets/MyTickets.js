@@ -1,12 +1,13 @@
 import React from 'react'
 import { useSelector, useDispatch } from 'react-redux';
-import { SelectMyTickets , removeTicket} from '../../ticketsSlice';
+import { SelectMyTickets, removeTicket } from '../../ticketsSlice';
 import {
     FormFrameBox,
     VerticalStack,
     HorizonStack,
     SubHeaderTypography,
-    FormButton
+    FormButton,
+    CenterBox
 } from '../../../../app/components/FormStyles'
 import { DataGrid } from '@mui/x-data-grid';
 import { Typography } from '@mui/material';
@@ -14,9 +15,10 @@ import { endpoints } from '../../../../constants/configuration';
 import IconButton from '@mui/material/IconButton';
 import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
-import { catchAppError , showSuccessMessage} from '../../../../app/appSlice';
+import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
 import { TicketsErrorTemplate, TicketsSuccesTemplate } from '../../../../constants/enums';
 import { numberWithCommas } from '../../../../utilities/strings';
+import NoResults from '../../../../app/components/NoResults';
 import moment from 'moment';
 
 const primaryColor = '#15291b';
@@ -26,6 +28,7 @@ const MyTickets = () => {
     const dispatch = useDispatch();
     const tickets = useSelector(SelectMyTickets);
     const countTickets = tickets.length;
+
     const sumAmountTickets = tickets.reduce((a, b) => { return a + parseFloat(b.price) }, 0).toFixed(2);
 
     const getCountryImageUrl = (name) => {
@@ -33,16 +36,21 @@ const MyTickets = () => {
         return countryFlagUrl;
     }
 
-    const handleAddNew =()=>{
-        navigate('/Flights');
+    const handleAddNew = () => {
+        try {
+            navigate('/Flights');
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
-    const handleCancelTicket = async(ticketId) => {
-        try{
+    const handleCancelTicket = async (ticketId) => {
+        try {
             const response = await dispatch(removeTicket(ticketId)).unwrap();
             const susccesMessage = 'Order succesfuly canceled. You will not be charged';
             dispatch(showSuccessMessage(TicketsSuccesTemplate(susccesMessage)));
         }
-        catch(err){
+        catch (err) {
             handleError(err);
         }
     }
@@ -60,7 +68,7 @@ const MyTickets = () => {
             headerClassName: 'dataGridHeader',
             cellClassName: 'dg-alignCenter',
             valueGetter: (params) => {
-                return `${params.row.airline_iata}-${params.row.ticket_id}`
+                return `${params.row.airline_iata}-${params.row.flight_id}`
             }
         },
         {
@@ -164,6 +172,43 @@ const MyTickets = () => {
             }
         }
     ];
+    let renderTickets;
+    if (countTickets === 0) {
+        renderTickets = <CenterBox
+            width={'100%'}
+            sx={{ padding: '0px'}}>
+            <NoResults message={'Your tickets list is empty. Purchase tickets!'} />
+        </CenterBox >;
+    }
+    else {
+        renderTickets = (
+            <div style={{ height: 475, width: '100%', overflow: 'auto', marginTop: 10 }}>
+                <DataGrid
+                    rows={tickets}
+                    columns={columns}
+                    pageSize={12}
+                    rowHeight={36}
+                    hideFooter
+                    sx={{
+                        padding: '0px !important',
+                        margin: '0px !important',
+                        borderTop: '0px solid #15291b',
+                        borderRadius: 0,
+                        '& .MuiDataGrid-columnHeaders': {
+                            height: '36px !important',
+                            minHeight: '36px !important',
+                            maxHeight: '36px !important',
+                            lineHeight: '36px !important'
+                        },
+                        '& .MuiDataGrid-columnHeaderTitle': {
+                            fontWeight: 'bold'
+                        }
+                    }}
+
+                />
+            </div>
+        )
+    }
     return (
         <FormFrameBox sx={{
             width: '100%',
@@ -174,7 +219,7 @@ const MyTickets = () => {
         }}>
             <VerticalStack>
                 {/* HEADER */}
-                <HorizonStack height={'45px'}
+                <HorizonStack height={'40px'}
                     sx={{
                         borderRadius: '4px',
                         backgroundColor: primaryColor,
@@ -185,50 +230,26 @@ const MyTickets = () => {
                         Purchases
                     </SubHeaderTypography>
                     <SubHeaderTypography flex={0.6} sx={{ textAlign: 'left' }}>
-                        <IconButton onClick={()=>handleAddNew()}>                                
+                        <IconButton onClick={() => handleAddNew()}>
                             <AddIcon sx={{ color: 'white' }} />
-                    </IconButton>
-                </SubHeaderTypography>
-                <SubHeaderTypography flex={1} sx={{ textAlign: 'left' }}>
-                    {`Total Count : ${countTickets} tickets`}
-                </SubHeaderTypography>
-                <SubHeaderTypography flex={1} sx={{ textAlign: 'left' }}>
-                    {`Total Amount : ${numberWithCommas(sumAmountTickets)} $`}
-                </SubHeaderTypography>
-            </HorizonStack>
-            {/* CONTENT */}
-            <VerticalStack flex={1}
-                sx={{
-                    border: `4px solid ${primaryColor}`
-                }}
-            >
-                <div style={{ height: 470, width: '100%', overflow: 'auto', marginTop: 10 }}>
-                    <DataGrid
-                        rows={tickets}
-                        columns={columns}
-                        pageSize={12}
-                        rowHeight={36}
-                        hideFooter
-                        sx={{
-                            padding: '0px !important',
-                            margin: '0px !important',
-                            borderTop: '0px solid #15291b',
-                            borderRadius: 0,
-                            '& .MuiDataGrid-columnHeaders': {
-                                height: '36px !important',
-                                minHeight: '36px !important',
-                                maxHeight: '36px !important',
-                                lineHeight: '36px !important'
-                            },
-                            '& .MuiDataGrid-columnHeaderTitle': {
-                                fontWeight: 'bold'
-                            }
-                        }}
-
-                    />
-                </div>
+                        </IconButton>
+                    </SubHeaderTypography>
+                    <SubHeaderTypography flex={1} sx={{ textAlign: 'left' }}>
+                        {`Total Count : ${countTickets} tickets`}
+                    </SubHeaderTypography>
+                    <SubHeaderTypography flex={1} sx={{ textAlign: 'left' }}>
+                        {`Total Amount : ${numberWithCommas(sumAmountTickets)} $`}
+                    </SubHeaderTypography>
+                </HorizonStack>
+                {/* CONTENT */}
+                <VerticalStack flex={1}
+                    sx={{
+                        border: `4px solid ${primaryColor}`
+                    }}
+                >
+                    {renderTickets}
+                </VerticalStack>
             </VerticalStack>
-        </VerticalStack>
         </FormFrameBox >
     )
 }

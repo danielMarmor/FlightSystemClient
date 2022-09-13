@@ -18,9 +18,11 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { CapacityModels } from '../../../../constants/commonLists';
 import { endpoints } from '../../../../constants/configuration';
 import SeatPicker from './SeatPicker';
-import { SelectOrderDetails, orderDetailsChanged } from '../../ticketsSlice';
-import { catchAppError } from '../../../../app/appSlice';
-import { OrderErrorTemplate } from '../../../../constants/enums';
+import { SelectOrderDetails, orderDetailsChanged, checkTicket } from '../../ticketsSlice';
+import { catchAppError , showSuccessMessage} from '../../../../app/appSlice';
+import { OrderErrorTemplate , OrderSavedTemplate} from '../../../../constants/enums';
+import { SelectIdentityId } from '../../../profiles/profilesSlice';
+
 import moment from 'moment';
 
 const primaryColor = '#15291b';
@@ -47,6 +49,7 @@ const OrderTicket = () => {
     const numSeats = flight && flight.num_seats;
     const capModel = numSeats && CapacityModels.find(cap => cap.numSeats == numSeats);
 
+    const customerId = useSelector(SelectIdentityId);
     const orderDetails = useSelector(SelectOrderDetails);
     const canPurchse = orderDetails.accept && orderDetails.seat;
 
@@ -54,7 +57,7 @@ const OrderTicket = () => {
         const fetchedFlight = await dispatch(fetchFlightById(flightId)).unwrap();
         setFlight(fetchedFlight);
     }
-    const updatePaymentElements =()=>{
+    const updatePaymentElements = () => {
         const creditCardNumber = {
             name: 'credit_card_number',
             value: '0000-0000-0000-0000'
@@ -71,7 +74,7 @@ const OrderTicket = () => {
         }
         dispatch(orderDetailsChanged(securityCode));
     }
-    const updateOrderPrice =(value)=>{
+    const updateOrderPrice = (value) => {
         const priceData = {
             name: 'price',
             value: value
@@ -90,13 +93,29 @@ const OrderTicket = () => {
             handleError(err);
         }
     }
-    const handlePurchase = () => {
-        if (!canPurchse) {
-            return;
+    const handlePurchase = async () => {
+        try {
+            if (!canPurchse) {
+                return;
+            }
+            const ticketData = {
+                flight_id: flightId,
+                customer_id: customerId,
+                position: orderDetails.seat
+            };
+            const ticketConfirm = await dispatch(checkTicket(ticketData)).unwrap();
+            if (ticketConfirm) {
+                updateOrderPrice(flight.price);
+                updatePaymentElements();
+                
+                const purchaseTicketMessage = 'Your selection is confirmed and saved for you for the next 15 minutes'
+                const payTicketUrl = `/Ticket/Pay/${flightId}`;
+                dispatch(showSuccessMessage(OrderSavedTemplate(purchaseTicketMessage, payTicketUrl)))
+            }
         }
-        updateOrderPrice(flight.price);
-        updatePaymentElements();
-        navigate(`/Ticket/Pay/${flightId}`);
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleCancel = () => {

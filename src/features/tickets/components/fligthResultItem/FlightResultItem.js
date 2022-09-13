@@ -7,9 +7,12 @@ import airplane1 from '../../../../assets/airplane1.png';
 import { FlightModel } from '../../../flights/models/flightModel'
 import { cusotmerFlightStatus } from '../../../../constants/enums'
 import DoneIcon from '@mui/icons-material/Done';
-import {useNavigate} from 'react-router-dom'
-import { useDispatch } from 'react-redux';
-import {resetOrderDetails} from '../../ticketsSlice';
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux';
+import { resetOrderDetails } from '../../ticketsSlice';
+import { SelectUserTypeId } from '../../../profiles/profilesSlice';
+import { userType, TicketsLoginTemplate } from '../../../../constants/enums';
+import { showSuccessMessage } from '../../../../app/appSlice';
 
 momentDurationFormatSetup(moment);
 
@@ -151,14 +154,22 @@ const FlightResultItem = (props) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const handleFlightSelceted=(e)=>{
-    if (flight.status != cusotmerFlightStatus.availiable){
+  const userTypeId = useSelector(SelectUserTypeId);
+
+  const handleFlightSelceted = (e) => {
+    if (flight.status != cusotmerFlightStatus.availiable) {
+      return;
+    }
+    if (userTypeId == userType.anonym) {
+      const loginMessage = 'Purchase Ticket ? first login or register';
+      const loginUrl = '/Login';
+      dispatch(showSuccessMessage(TicketsLoginTemplate(loginMessage, loginUrl)));
       return;
     }
     dispatch(resetOrderDetails({}));
     const flightDate = moment(flight.departure_time).format('DD/MM/YYYY');
-     navigate(`/Ticket/Order/${flight.flight_id}`);
-  } 
+    navigate(`/Ticket/Order/${flight.flight_id}`);
+  }
 
   const airConfig = endpoints.airlineCompanies;
   const logoWidth = 100;
@@ -170,185 +181,185 @@ const FlightResultItem = (props) => {
   const flightDuration = FlightModel.getDurationFormat(flight.departure_time, flight.landing_time);
   return (
     <ListItemButton
-    onClick={()=>handleFlightSelceted()}
-    spacing={0}
-  sx={{
-      width: '100%',
-      height: height,
-      margin: '5px 0px 0px 0px',
-      padding : '0px',
-      '&:hover' :{
-        backgroundColor:flight.status == cusotmerFlightStatus.availiable ? 
-         '#79fc9c' : 'inherit',
-        cursor:flight.status == cusotmerFlightStatus.availiable ? 
-         'pointer' : 'default',
-      }
-    }}
-    >
-    <Box spacing={0}
+      onClick={() => handleFlightSelceted()}
+      spacing={0}
       sx={{
         width: '100%',
-        height : '100%',
+        height: height,
+        margin: '5px 0px 0px 0px',
         padding: '0px',
-        boxSizing: 'border-box',
-        border: '2px solid #15291b'
-      }}>
-      <Stack
-        direction={'row'}
-        justifyContent={'space-between'}
-        alignItems={'center'}
-        spacing={0}
+        '&:hover': {
+          backgroundColor: flight.status == cusotmerFlightStatus.availiable ?
+            '#79fc9c' : 'inherit',
+          cursor: flight.status == cusotmerFlightStatus.availiable ?
+            'pointer' : 'default',
+        }
+      }}
+    >
+      <Box spacing={0}
         sx={{
           width: '100%',
           height: '100%',
-          margin: '0px',
           padding: '0px',
-          flexDirection: 'row'
-        }}
-      >
-        <Box flex={1.5} sx={{ borderRight: '2px solid #15291b' }}
-          height={'100%'}
-          m={0} p={0}
-          display={'flex'}
-          justifyContent={'center'}
-          alignItems='flex-start'
-        >
-          <Box sx={{
-            width: '100px',
-            height: '40px',
-            borderStyle: 'none',
-            borderWidth: '1px',
-            borderColor: 'ligthGrey',
-            backgroundImage: airlineLogoUrl,
-            backgroundSize: 'cover',
-            backgroundRepeat: 'no-repeat'
-          }}>
-          </Box>
-        </Box>
-        <Box flex={1.25} height={'100%'} m={0} p={0} >
-          <Stack direction={'column'} sx={{ width: '100%', height: '100%', paddingLeft: '5px' }}>
-            <Stack direction={'row'} justifyContent={'flex-end'} flex={1}>
-              <Box color={'black'} flex={0.8} sx={{ fontSize: '0.8rem', color: 'black', textAlign: 'right' }}>{flight.origin_country_name}</Box>
-              <Box flex={0.8}>
-                <div name="origlogo"
-                  style={{
-                    width: '80%',
-                    height: '90%',
-                    borderStyle: 'none',
-                    borderWidth: '1px',
-                    borderColor: 'ligthGrey',
-                    backgroundImage: origCountryFlag,
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition : 'center'
-
-                  }}>
-                </div>
-              </Box>
-            </Stack>
-            <Box flex={1}
-              sx={{ width: '100%', textAlign: 'center' }}>
-              {flight.origin_country_airport_abbr}
-            </Box>
-          </Stack>
-        </Box>
-        <Box flex={1}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-around'}
+          boxSizing: 'border-box',
+          border: '2px solid #15291b'
+        }}>
+        <Stack
+          direction={'row'}
+          justifyContent={'space-between'}
           alignItems={'center'}
-          fontWeight={'bold'}
-          height={'100%'}
-          m={0}
-          p={0}
+          spacing={0}
+          sx={{
+            width: '100%',
+            height: '100%',
+            margin: '0px',
+            padding: '0px',
+            flexDirection: 'row'
+          }}
         >
-          {moment(flight.departure_time).format('HH:mm')}
-        </Box>
-        <Box flex={1} height={'100%'} m={0} p={0}>
-
-        </Box>
-        <Box flex={0.5}
-          height={'100%'}
-          display={'flex'}
-          flexDirection={'row'}
-          justifyContent={'center'}
-          alignItems={'center'}
-          m={0}
-          p={0}
-        >
-          <div name="flightIcon"
-            style={{
-              width: '20px',
-              height: '20px',
+          <Box flex={1.5} sx={{ borderRight: '2px solid #15291b' }}
+            height={'100%'}
+            m={0} p={0}
+            display={'flex'}
+            justifyContent={'center'}
+            alignItems='flex-start'
+          >
+            <Box sx={{
+              width: '100px',
+              height: '40px',
               borderStyle: 'none',
               borderWidth: '1px',
               borderColor: 'ligthGrey',
-              backgroundImage: `url(${airplane1}`,
+              backgroundImage: airlineLogoUrl,
               backgroundSize: 'cover',
               backgroundRepeat: 'no-repeat'
-
             }}>
-          </div>
-        </Box>
-        <Box flex={1}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-around'}
-          alignItems={'flex-end'}
-          fontWeight={'bold'}
-          height={'100%'}
-          fontSize={'0.75rem'}
-          m={0}
-          p={0}
-        >
-          {`..........${flightDuration}`}
-        </Box>
-        <Box flex={1}
-          display={'flex'}
-          flexDirection={'column'}
-          justifyContent={'space-around'}
-          alignItems={'center'}
-          fontWeight={'bold'}
-          height={'100%'}
-          m={0}
-          p={0}
-        >
-          {moment(flight.landing_time).format('HH:mm')}
-        </Box>
+            </Box>
+          </Box>
+          <Box flex={1.25} height={'100%'} m={0} p={0} >
+            <Stack direction={'column'} sx={{ width: '100%', height: '100%', paddingLeft: '5px' }}>
+              <Stack direction={'row'} justifyContent={'flex-end'} flex={1}>
+                <Box color={'black'} flex={0.8} sx={{ fontSize: '0.8rem', color: 'black', textAlign: 'right' }}>{flight.origin_country_name}</Box>
+                <Box flex={0.8}>
+                  <div name="origlogo"
+                    style={{
+                      width: '80%',
+                      height: '90%',
+                      borderStyle: 'none',
+                      borderWidth: '1px',
+                      borderColor: 'ligthGrey',
+                      backgroundImage: origCountryFlag,
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center'
 
-
-        <Box flex={1.25} height={'100%'} m={0} p={0}>
-          <Stack direction={'column'} sx={{ width: '100%', height: '100%', paddingLeft: '5px' }}>
-            <Stack direction={'row'} justifyContent={'flex-end'} flex={1}>
-              <Box color={'black'} flex={0.8} sx={{ fontSize: '0.8rem', color: 'black', textAlign: 'right' }}>{flight.dest_country_name}</Box>
-              <Box flex={0.8}>
-                <div name="destlogo"
-                  style={{
-                    width: '80%',
-                    height: '90%',
-                    borderStyle: 'none',
-                    borderWidth: '1px',
-                    borderColor: 'ligthGrey',
-                    backgroundImage: destCountryFlag,
-                    backgroundSize: 'cover',
-                    backgroundRepeat: 'no-repeat',
-                    backgroundPosition : 'center'
-
-                  }}>
-                </div>
+                    }}>
+                  </div>
+                </Box>
+              </Stack>
+              <Box flex={1}
+                sx={{ width: '100%', textAlign: 'center' }}>
+                {flight.origin_country_airport_abbr}
               </Box>
             </Stack>
-            <Box flex={1}
-              sx={{ width: '100%', textAlign: 'center' }}>
-              {flight.dest_country_airport_abbr}
-            </Box>
-          </Stack>
-        </Box>
-        <Box flex={1.5} height={'100%'} m={0} p={0} sx={{ borderLeft: '2px solid #15291b' }}>
-          <FlightStatus statusId={flight.status} flight={flight} />
-        </Box>
-      </Stack>
-    </Box>
+          </Box>
+          <Box flex={1}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'space-around'}
+            alignItems={'center'}
+            fontWeight={'bold'}
+            height={'100%'}
+            m={0}
+            p={0}
+          >
+            {moment(flight.departure_time).format('HH:mm')}
+          </Box>
+          <Box flex={1} height={'100%'} m={0} p={0}>
+
+          </Box>
+          <Box flex={0.5}
+            height={'100%'}
+            display={'flex'}
+            flexDirection={'row'}
+            justifyContent={'center'}
+            alignItems={'center'}
+            m={0}
+            p={0}
+          >
+            <div name="flightIcon"
+              style={{
+                width: '20px',
+                height: '20px',
+                borderStyle: 'none',
+                borderWidth: '1px',
+                borderColor: 'ligthGrey',
+                backgroundImage: `url(${airplane1}`,
+                backgroundSize: 'cover',
+                backgroundRepeat: 'no-repeat'
+
+              }}>
+            </div>
+          </Box>
+          <Box flex={1}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'space-around'}
+            alignItems={'flex-end'}
+            fontWeight={'bold'}
+            height={'100%'}
+            fontSize={'0.75rem'}
+            m={0}
+            p={0}
+          >
+            {`..........${flightDuration}`}
+          </Box>
+          <Box flex={1}
+            display={'flex'}
+            flexDirection={'column'}
+            justifyContent={'space-around'}
+            alignItems={'center'}
+            fontWeight={'bold'}
+            height={'100%'}
+            m={0}
+            p={0}
+          >
+            {moment(flight.landing_time).format('HH:mm')}
+          </Box>
+
+
+          <Box flex={1.25} height={'100%'} m={0} p={0}>
+            <Stack direction={'column'} sx={{ width: '100%', height: '100%', paddingLeft: '5px' }}>
+              <Stack direction={'row'} justifyContent={'flex-end'} flex={1}>
+                <Box color={'black'} flex={0.8} sx={{ fontSize: '0.8rem', color: 'black', textAlign: 'right' }}>{flight.dest_country_name}</Box>
+                <Box flex={0.8}>
+                  <div name="destlogo"
+                    style={{
+                      width: '80%',
+                      height: '90%',
+                      borderStyle: 'none',
+                      borderWidth: '1px',
+                      borderColor: 'ligthGrey',
+                      backgroundImage: destCountryFlag,
+                      backgroundSize: 'cover',
+                      backgroundRepeat: 'no-repeat',
+                      backgroundPosition: 'center'
+
+                    }}>
+                  </div>
+                </Box>
+              </Stack>
+              <Box flex={1}
+                sx={{ width: '100%', textAlign: 'center' }}>
+                {flight.dest_country_airport_abbr}
+              </Box>
+            </Stack>
+          </Box>
+          <Box flex={1.5} height={'100%'} m={0} p={0} sx={{ borderLeft: '2px solid #15291b' }}>
+            <FlightStatus statusId={flight.status} flight={flight} />
+          </Box>
+        </Stack>
+      </Box>
     </ListItemButton>
   )
 }

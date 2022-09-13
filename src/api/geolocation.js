@@ -33,13 +33,14 @@ const fetchDistance = async (origin, destination) => {
     const promise = new Promise((resolve, reject) => {
         try {
             const service = new window.google.maps.DistanceMatrixService();
-            throw Error('Cannot Find DNS Address Compatible');
+            // throw Error('Cannot Find DNS Address Compatible');
             service.getDistanceMatrix({
                 origins: [origin],
                 destinations: [destination],
                 travelMode: window.google.maps.TravelMode.DRIVING
             }, (response, status) => {
                 try {
+                    //throw Error('WrongError');
                     if (status != 'OK') {
                         resolve(null);
                         return;

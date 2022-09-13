@@ -22,31 +22,36 @@ export const navbarsList = (userTypeId, identityId) => {
                 {
                     id: 1,
                     icon: <AllInclusiveIcon />,
-                    url: '/Order',
+                    url: '',
+                    urlList: [],
                     text: 'About',
                 },
                 {
                     id: 2,
                     icon: <HomeIcon />,
-                    text: 'Home',
-                    url: '/Flights'
+                    url: '/Flights',
+                    urlList: ['/Flights'],
+                    text: 'Home'
                 },
                 {
                     id: 3,
                     icon: <LoginIcon />,
                     text: 'Login',
+                    urlList: ['/Login'],
                     url: '/Login'
                 },
                 {
                     id: 4,
                     icon: <PersonAddIcon />,
                     text: 'Sign Up',
+                    urlList: ['/SignUp'],
                     url: '/SignUp'
                 },
                 {
                     id: 5,
                     icon: <ContactMailIcon />,
                     text: 'Contact Us',
+                    urlList: [],
                     url: ''
                 },
             ]
@@ -56,43 +61,51 @@ export const navbarsList = (userTypeId, identityId) => {
                     id: 1,
                     icon: <AllInclusiveIcon />,
                     text: 'About',
+                    urlList: [],
                     url: ''
                 },
                 {
                     id: 2,
                     icon: <HomeIcon />,
                     text: 'Home',
+                    urlList: ['/Flights', '/Ticket/Order', '/Ticket/Pay'],
                     url: '/Flights'
                 },
                 {
                     id: 3,
                     icon: <AirplaneTicketIcon />,
                     text: 'My Tickets',
+                    urlList: ['/MyTickets', '/Ticket/Details'],
                     url: '/MyTickets'
                 },
                 {
                     id: 4,
                     icon: <AccountCircleIcon />,
                     text: 'Profile',
+                    urlList: ['/Profile'],    
                     url: `/Profile/Customer/Details/${identityId}`
                 },
                 {
                     id: 5,
                     icon: <LogoutIcon />,
                     text: 'Logout',
+                    urlList: [],   
                     url: ''
                 },
                 {
                     id: 6,
                     icon: <PersonAddIcon />,
                     text: 'Sign Up',
+                    urlList: ['/SignUp'],  
                     url: '/SignUp'
                 },
                 {
                     id: 7,
                     icon: <ContactMailIcon />,
+                    urlList: [],  
+                    url: '',
                     text: 'Contact Us',
-                    url: ''
+                   
                 },
             ]
         case userType.airline:
@@ -101,48 +114,56 @@ export const navbarsList = (userTypeId, identityId) => {
                     id: 1,
                     icon: <AllInclusiveIcon />,
                     text: 'About',
+                    urlList: [],  
                     url: ''
                 },
                 {
                     id: 2,
                     icon: <HomeIcon />,
                     text: 'Home',
+                    urlList: ['/Flights'],  
                     url: '/Flights'
                 },
                 {
                     id: 3,
                     icon: <FlightTakeoffIcon />,
                     text: 'My Fligths',
+                    urlList: ['/MyFlights', '/NewFlight?mode=edit'],  
                     url: '/MyFlights'
                 },
                 {
                     id: 4,
                     icon: <AddCircleIcon />,
                     text: 'New Flight',
+                    urlList: ['/NewFlight?mode=insert'],  
                     url: `/NewFlight?mode=insert`
                 },
                 {
                     id: 5,
                     icon: <AccountCircleIcon />,
                     text: 'Profile',
+                    urlList: ['/Profile'],  
                     url: `/Profile/Airline/Details/${identityId}`
                 },
                 {
                     id: 6,
                     icon: <LogoutIcon />,
                     text: 'Logout',
+                    urlList: [],  
                     url: ''
                 },
                 {
                     id: 7,
                     icon: <PersonAddIcon />,
                     text: 'Sign Up',
+                    urlList: ['/SignUp'],  
                     url: '/SignUp'
                 },
                 {
                     id: 8,
                     icon: <ContactMailIcon />,
                     text: 'Contact Us',
+                    urlList: [],  
                     url: ''
                 },
             ]
@@ -152,42 +173,56 @@ export const navbarsList = (userTypeId, identityId) => {
                     id: 1,
                     icon: <AllInclusiveIcon />,
                     text: 'About',
+                    urlList: [],  
                     url: ''
                 },
                 {
                     id: 2,
                     icon: <HomeIcon />,
                     text: 'Home',
+                    urlList: ['/Flights'],  
                     url: '/Flights'
                 },
                 {
                     id: 3,
                     icon: <PeopleAltIcon />,
                     text: 'My Users',
+                    urlList: ['/MyUsers'],  
                     url: '/MyUsers'
                 },
                 {
                     id: 4,
                     icon: <AccountCircleIcon />,
                     text: 'Profile',
+                    urlList: ['/Profile'],  
                     url: `/Profile/Admin/Details/${identityId}`
                 },
                 {
                     id: 5,
-                    icon: <LogoutIcon />,
-                    text: 'Logout',
-                    url: ''
+                    icon: <DashboardCustomizeIcon />,
+                    text: 'Dashboard',
+                    urlList: ['/Dashboard'],  
+                    url: `/Dashboard`
                 },
                 {
                     id: 6,
-                    icon: <PersonAddIcon />,
-                    text: 'Sign Up',
-                    url: '/SignUp'
+                    icon: <LogoutIcon />,
+                    text: 'Logout',
+                    urlList: [],  
+                    url: ''
                 },
                 {
                     id: 7,
+                    icon: <PersonAddIcon />,
+                    text: 'Sign Up',
+                    urlList: ['/SignUp'],  
+                    url: '/SignUp'
+                },
+                {
+                    id: 8,
                     icon: <ContactMailIcon />,
                     text: 'Contact Us',
+                    urlList: [],  
                     url: ''
                 },
             ]

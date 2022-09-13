@@ -1,11 +1,13 @@
 import * as React from 'react';
 import CircularProgress from '@mui/material/CircularProgress';
-import Box from '@mui/material/Box';
+import { CenterBox } from '../FormStyles';
 
-export const CircularIndeterminate=()=>{
+const CircularIndeterminate=()=>{
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CircularProgress />
-    </Box>
+    <CenterBox>
+      <CircularProgress size={175} />
+    </CenterBox>
   );
 }
+
+export default CircularIndeterminate;

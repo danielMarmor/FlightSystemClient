@@ -36,6 +36,8 @@ import { CustomerValidations as validations } from '../../../../models/validatio
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { FormControl, InputLabel, Select, OutlinedInput, MenuItem, IconButton, Typography } from '@mui/material';
 import { GenerateProfilePhoto } from '../../../../api/photoGenrator';
+import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
+import Error from '../../../../app/components/Error';
 
 const CustomerForm = () => {
     const navigate = useNavigate();
@@ -44,9 +46,12 @@ const CustomerForm = () => {
     const [details, setDetails] = useState({});
     const { mode, customerId } = useParams();
 
+    const [photoLoading, setPhotoLoading] = useState(false);
+    const [photoError, setPhotoError] = useState(false);
+
     const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            e.preventDefault();
             validate();
             switch (mode) {
                 case 'Insert':
@@ -90,28 +95,72 @@ const CustomerForm = () => {
     }
 
     const handleCancel = () => {
-        navigate(-1);
+        try {
+            navigate(-1);
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleChange = (e) => {
-        const newDetails = {
-            ...details,
-            [e.target.name]: e.target.value
+        try {
+            const newDetails = {
+                ...details,
+                [e.target.name]: e.target.value
+            }
+            setDetails(newDetails);
         }
-        setDetails(newDetails);
+        catch (err) {
+            handleError(err);
+        }
     }
-    const handleGeneratePhoto=async()=>{
-        if (!details.gender){
-            handleError({message :'Please select Male/Female'});
-            return;
-        }
-        const search = `${details.gender} face`
-        const profilePhotoUrl = await GenerateProfilePhoto(search);
-        const newDetails = {
-            ...details,
-            ['image_url']: profilePhotoUrl
-        }
-        setDetails(newDetails);
+    const handleGeneratePhoto = async () => {
+        try {
+            if (!details.gender) {
+                handleError({ message: 'Please select Man/Woman' });
+                return;
+            }        
+            setPhotoIndicators('init');
 
+            const search = `${details.gender} face`
+            const profilePhotoUrl = await GenerateProfilePhoto(search);
+
+            setPhotoIndicators('success');
+
+            const newDetails = {
+                ...details,
+                ['image_url']: profilePhotoUrl
+            }
+            setDetails(newDetails);
+        }
+        catch (err) {
+            setPhotoIndicators('failure');
+            handleError(err);
+        }
+    }
+
+    const setPhotoIndicators = (action) => {
+        switch (action) {
+            case 'init':
+                {
+                    if (!photoLoading) {
+                        setPhotoLoading(true);
+                    }
+                    if (photoError) {
+                        setPhotoError(false);
+                    }
+                    break;
+                }
+            case 'success': {
+                setPhotoLoading(false);
+                break;
+            }
+            case 'failure': {
+                setPhotoLoading(false);
+                setPhotoError(true);
+                break;
+            }
+        }
     }
     const handleError = (err) => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)))
@@ -138,14 +187,19 @@ const CustomerForm = () => {
     }
 
     useEffect(() => {
-        if (mode == 'Edit') {
-            if (!customerId) {
-                const notFoundError = { message: 'Customer Not Found !' };
-                handleError(notFoundError);
-                return;
+        try {
+            if (mode == 'Edit') {
+                if (!customerId) {
+                    const notFoundError = { message: 'Customer Not Found !' };
+                    handleError(notFoundError);
+                    return;
+                }
+                const custId = parseInt(customerId);
+                loadCustomer(custId);
             }
-            const custId = parseInt(customerId);
-            loadCustomer(custId);
+        }
+        catch (err) {
+            handleError(err);
         }
 
     }, []);
@@ -197,22 +251,23 @@ const CustomerForm = () => {
                         }}
                     />
                 }>
-                <MenuItem key={1} value={'man'}>Male</MenuItem>
-                <MenuItem key={2} value={'woman'}>Female</MenuItem>
+                <MenuItem key={1} value={'man'}>Man</MenuItem>
+                <MenuItem key={2} value={'woman'}>Woman</MenuItem>
             </Select>
         </FormControl>,
-        <IconButton sx={{display:'flex',
-         flexDirection: 'row',
-          justifyContent: 'flex-start',
-           alignItems: 'center',
-           padding : '0px 0px 0px 5px'
-           }}>
-            <AddAPhotoIcon 
-            onClick={handleGeneratePhoto}
-            sx={{color:'#15291b', fontSize :'40px'}}/>
+        <IconButton sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            padding: '0px 0px 0px 5px'
+        }}>
+            <AddAPhotoIcon
+                onClick={handleGeneratePhoto}
+                sx={{ color: '#15291b', fontSize: '40px' }} />
             <Typography variant='body2' component='div'
-            sx={{color:'#15291b', marginLeft: '5px'}}>
-                 Your Best Photo
+                sx={{ color: '#15291b', marginLeft: '5px' }}>
+                Your Best Photo
             </Typography>
         </IconButton>
     ]
@@ -248,6 +303,28 @@ const CustomerForm = () => {
             colGap: 20
         }
     };
+
+    let renderPhoto;
+    if (photoLoading){
+        renderPhoto =  (<CircularIndeterminate />);
+    }
+    else if (photoError){
+        renderPhoto = (<Error />);
+    }
+    else{
+        renderPhoto = (<CenterBox id='centerBox' sx={{
+            width: '100%',
+            height: '100%',
+            borderStyle: 'none',
+            borderWidth: '1px',
+            borderColor: 'ligthGrey',
+            backgroundImage: `url(${details.image_url || images.personImageDeafultURL})`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+        }}>
+        </CenterBox>)
+    }
     return (
         <DoubleForm
             header={
@@ -288,18 +365,7 @@ const CustomerForm = () => {
                 </form>
 
             }
-            rightFrom={<CenterBox id='centerBox' sx={{
-                width: '100%',
-                height: '100%',
-                borderStyle: 'none',
-                borderWidth: '1px',
-                borderColor: 'ligthGrey',
-                backgroundImage: `url(${details.image_url || images.personImageDeafultURL})`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center'
-            }}>
-            </CenterBox>}
+            rightFrom={renderPhoto}
         >
         </DoubleForm>
     )

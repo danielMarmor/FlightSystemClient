@@ -9,10 +9,12 @@ const initialState = {
    tickets: [],
    flights: [],
    fligtsFilters: {
-      fromCountry: null,
-      toCountry: null,
-      start_date: null,
-      end_date: null
+      origin_country_name: '',
+      destination_country_name: '',
+      origin_country_id : null,
+      dest_country_id : null,
+      start_date: moment().add(-7, 'days'),
+      end_date: moment().add(-7, 'days').add(3, 'months')
    },
    orderDetails: {},
    //STATUSES
@@ -39,8 +41,13 @@ const ticketsSlice = createSlice({
       },
       resetOrderDetails(state, action) {
          state.orderDetails = {};
+      },
+      clearTickets(state, action) {
+         state.tickets = [];
+      },
+      clearTicketsFilters(state, action) {
+         state.fligtsFilters = initialState.fligtsFilters;
       }
-
    },
    extraReducers: builder => {
       builder
@@ -138,6 +145,14 @@ export const fetchFlightById = createAsyncThunk(ticketsActions.fetchFlightById, 
 
 });
 
+export const checkTicket = createAsyncThunk(ticketsActions.checkTicket, async (data, thunkApi) => {
+   const ticket = data;
+   const entry = entries.customer;
+   const endpoint = `${combineHost}/${entry}/${resources.checkTicket}`;
+   const ticketConfirm = await client.post(endpoint, null, ticket);
+   return true;
+});
+
 export const addTicket = createAsyncThunk(ticketsActions.addTicket, async (data, thunkApi) => {
    const ticket = data;
    const entry = entries.customer;
@@ -153,7 +168,7 @@ export const removeTicket = createAsyncThunk(ticketsActions.removeTicket, async 
    const endpoint = `${combineHost}/${entry}/${resources.tickets}`;
    const params = { ticketId: ticketId };
    const responseStatus = await client.remove(endpoint, params);
-   const state =thunkApi.getState();
+   const state = thunkApi.getState();
    const customerId = state.profile.currentUser.identityId;
    await thunkApi.dispatch(fetchTickets(customerId)).unwrap();
    return responseStatus;
@@ -198,7 +213,9 @@ const prepareFetchFlightParams = (filters) => {
    return searchData;
 }
 
-
+export const SelectSearchParams = (state) => {
+   return state.tickets.fligtsFilters;
+}
 //SELECTORS
 export const SelectFlightsSearch = (state) => {
    const results = state.tickets.flights;
@@ -262,15 +279,15 @@ export const SelectMyTickets = (state) => {
       return {
          ...tick,
          id: tick.ticket_id,
-         departure : moment(tick.departure_time, 'DD/MM/YYYY HH:mm:SS'),
-         price : parseFloat(tick.price).toFixed(2)
+         departure: moment(tick.departure_time, 'DD/MM/YYYY HH:mm:SS'),
+         price: parseFloat(tick.price).toFixed(2)
       }
-   }).sort((first, second)=>{
-       return second.departure - first.departure;
+   }).sort((first, second) => {
+      return second.departure - first.departure;
    });
    return mapTickets;
 }
 
-export const { flitersChanged, orderDetailsChanged, resetOrderDetails } = ticketsSlice.actions;
+export const { flitersChanged, orderDetailsChanged, resetOrderDetails, clearTickets , clearTicketsFilters} = ticketsSlice.actions;
 
 export default ticketsSlice.reducer;

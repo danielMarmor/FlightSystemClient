@@ -11,25 +11,34 @@ import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Link, NavLink } from 'react-router-dom';
-import { FormBoxGrid, RowFlexBox } from '../../../app/components/FormStyles';
+import { FormBoxGrid, RowFlexBox, CenterBox } from '../../../app/components/FormStyles';
 import { IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { removeCustomer } from '../manageSlice';
-import { catchAppError } from '../../../app/appSlice';
-import { ProfileErrorTemplate } from '../../../constants/enums';
+import { catchAppError, showSuccessMessage } from '../../../app/appSlice';
+import { ProfileErrorTemplate, ProfileSuccessTemplate } from '../../../constants/enums';
 import moment from 'moment';
 
 
 const CustomerListItem = (props) => {
-    const { customer ,fetchCustomers , filters } = props;
+    const { customer, fetchCustomers, filters, columnIndex } = props;
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const handleEdit=()=>{
-        const customerId = parseInt(customer.id)
-        navigate(`/Profile/Customer/Edit/${customerId}`)
+
+    const paddingLeft = columnIndex % 2 === 0 ? 0 : 10;
+    const paddingRight = columnIndex % 2 === 0 ? 0 : 10;
+
+    const handleEdit = () => {
+        try {
+            const customerId = parseInt(customer.id)
+            navigate(`/Profile/Customer/Edit/${customerId}`)
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
-    const handleDelete=async()=>{
+    const handleDelete = async () => {
         try {
             if (!customer.id) {
                 handleError({ message: 'Customer Not Found !' });
@@ -37,6 +46,9 @@ const CustomerListItem = (props) => {
             }
             const customerId = parseInt(customer.id)
             await dispatch(removeCustomer(customerId)).unwrap();
+            const deleteMessage = 'Commited successfuly! Customer removed';
+            dispatch(showSuccessMessage
+                (ProfileSuccessTemplate(deleteMessage, null)));
             fetchCustomers(filters);
         }
         catch (err) {
@@ -46,28 +58,30 @@ const CustomerListItem = (props) => {
     const handleError = (err) => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)))
     }
-    const showProfile=()=>{
-        const customerId=customer.id; 
-        navigate(`/Profile/Customer/Details/${customer.id}`)
+    const showProfile = () => {
+        try {
+            const customerId = customer.id;
+            navigate(`/Profile/Customer/Details/${customerId}`)
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     return (
-        <ListItem alignItems="flex-start"
+        <CenterBox
             sx={{
                 minHeight: '100px',
-                marginBottom: '10px',
                 maxHeight: '100px',
+                marginBottom: '10px',
                 width: '100%',
-                border: '2px solid #15291b',
-                pageBreakInside: 'avoid',
-                breakInside: 'avoid',
-                padding: '0',
-                margim: '0',
-                backgroudColor: "#e9f0eb"
-
+                paddingLeft: `${paddingLeft}px`,
+                paddingRight: `${0}px`,
             }}>
             <Stack direction='row'
                 sx={{
-                    height: '100%',
+                    backgroudColor: "#e9f0eb",
+                    border: '2px solid #15291b',
+                    height: '100px',
                     width: '100%',
                     padding: '0',
                     margim: '0'
@@ -137,15 +151,15 @@ const CustomerListItem = (props) => {
                             height: '22px',
                             justifyContent: 'flex-start'
                         }}>
-                        <ListItemIcon sx={{margin: '0px !important' }}>
+                        <ListItemIcon sx={{ margin: '0px !important' }}>
                             <IconButton onClick={() => handleEdit()} sx={{ padding: '0px', margin: '0px' }}>
-                                <EditIcon fontSize='small' sx={{ color: '#15291b'}}/>
+                                <EditIcon fontSize='small' sx={{ color: '#15291b' }} />
                             </IconButton>
                         </ListItemIcon>
 
                         <ListItemIcon sx={{ margin: '0px !important' }}>
                             <IconButton onClick={() => handleDelete()} sx={{ padding: '0px', margin: '0px' }}>
-                                <DeleteIcon fontSize='small'  sx={{ color: '#15291b'}}/>
+                                <DeleteIcon fontSize='small' sx={{ color: '#15291b' }} />
                             </IconButton>
                         </ListItemIcon>
                     </RowFlexBox>
@@ -220,7 +234,7 @@ const CustomerListItem = (props) => {
                     </RowFlexBox>
                 </FormBoxGrid>
             </Stack>
-        </ListItem >
+        </CenterBox>
     )
 }
 

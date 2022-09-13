@@ -7,7 +7,7 @@ const axisoConfig ={
         'Content-Type': 'application/json;charset=UTF-8'      
     },
     withCredentials: true,
-    timeout : 800000    
+    timeout : 15000    
 }
 
 const get =async(endpoint ,params, queryParams)=>{

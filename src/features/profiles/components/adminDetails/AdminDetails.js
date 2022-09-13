@@ -10,7 +10,7 @@ import {
   PrimaryTextTypography, SecTextTypography, SubHeaderTypography,
   primaryColor, HorizonStack, LeftCenterBox
 } from '../../../../app/components/FormStyles';
-import { SelectUserTypeId } from '../../profilesSlice';
+import { SelectUserTypeId, SelectIdentityId } from '../../profilesSlice';
 import DoubleForm from '../../../../app/components/layout/DoubleForm';
 import ActionGrid from '../../../../app/components/ActionGrid';
 import { IconStack } from '../../../../app/components/FormStyles';
@@ -22,6 +22,7 @@ import { IconButton } from '@mui/material';
 import Avatar from '@mui/material/Avatar';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import { images } from '../../../../constants/configuration';
 
 const iconStackProportions = [1, 3, 5];
@@ -29,6 +30,7 @@ const iconStackProportions = [1, 3, 5];
 const AdminDetails = () => {
   const navigate = useNavigate();
   const { id } = useParams();
+  const identityId = useSelector(SelectIdentityId);
   const dispatch = useDispatch();
   const [details, setDetails] = useState({});
   const userTypeId = useSelector(SelectUserTypeId);
@@ -57,7 +59,8 @@ const AdminDetails = () => {
         handleError({ message: 'Administrator Not Found !' });
         return;
       }
-      const administratorId = parseInt(administratorId)
+      const administratorId = parseInt(id)
+      checkSelf(administratorId);
       await dispatch(removeAdministrator(administratorId)).unwrap();
       const deleteSuccesUrl = '/MyUsers';
       dispatch(showSuccessMessage
@@ -65,6 +68,17 @@ const AdminDetails = () => {
     }
     catch (err) {
       handleError(err);
+    }
+  }
+
+  const handleBack = () => {
+    navigate(-1);
+  }
+
+  const checkSelf = (administratorId) => {
+    const deleteSelf = administratorId === identityId;
+    if (deleteSelf) {
+      throw Error('You cannot delete yourself');
     }
   }
 
@@ -109,7 +123,7 @@ const AdminDetails = () => {
       value={<SecTextTypography sx={{ width: '100px' }}>{details.email || ''}</SecTextTypography>}
       proportions={iconStackProportions}
     />
-   
+
   ]
 
   const formActions = [
@@ -159,6 +173,10 @@ const AdminDetails = () => {
           </HorizonStack>
           <HorizonStack width={'50%'}
             justifyContent={'flex-end'}>
+            <IconButton onClick={() => handleBack()} sx={{ padding: '0px', margin: '0px' }}>
+              <ArrowBackIosNewIcon sx={{ color: 'white', marginRight: '20px', fontSize: '26px' }}
+              />
+            </IconButton>
             <IconButton onClick={() => handleEdit()} sx={{ padding: '0px', margin: '0px' }}>
               <EditIcon sx={{ color: 'white', marginRight: '20px', fontSize: '26px' }}
               />

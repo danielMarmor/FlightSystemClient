@@ -28,6 +28,10 @@ import AirlineDetails from './features/profiles/components/airlineDetails/Airlin
 import AdminDetails from './features/profiles/components/adminDetails/AdminDetails';
 import PayTicket from './features/tickets/components/payTicket/PayTicket';
 import MyTickets from './features/tickets/components/myTickets/MyTickets';
+import Dashboard from './features/manage/components/dashboard/Dashboard';
+import FlightFormNew from './features/flights/components/flight/flightForm/FlightFormNew';
+import Facade from './app/components/Facade';
+import { withErrorBoundary } from "react-error-boundary";
 
 
 function App() { 
@@ -53,11 +57,12 @@ function App() {
                     }}> 
                     {/* ROUTER         */}
                     <Routes>
+                      <Route path="/" element={<Facade countries={countries}/>} />
                       <Route path="/Flights" element={<FlightsList countries={countries}/>} />
                       <Route path="/Ticket/Order/:flightId" element={<OrderTicket />} />
                       <Route path="/Ticket/Pay/:flightId" element={<PayTicket/>} />
                       <Route path="/MyTickets" element={<MyTickets />} />
-                      <Route path="/NewFlight" element={<FlightForm countries={countries}/>} />
+                      <Route path="/NewFlight" element={<FlightFormNew countries={countries}/>} />
                       <Route path="/Profile/Customer/Details/:id" element={<CustomerDetails />} />
                       <Route path="/Profile/Customer/:mode/:customerId" element={<CustomerForm />} />
                       <Route path="/Profile/Airline/Details/:id" element={<AirlineDetails />} />
@@ -67,7 +72,8 @@ function App() {
                       <Route path="/MyFlights" element={<MyFlights countries={countries}/>} />
                       <Route path="/Login" element={<Login />} />
                       <Route path="/SignUp" element={<SignUp countries={countries}/>} />
-                      <Route path="/MyUsers" element={<MyUsers countries={countries}/>} />                      
+                      <Route path="/MyUsers" element={<MyUsers countries={countries}/>} />
+                      <Route path="/Dashboard" element={<Dashboard countries={countries}/>} />                      
                     </Routes>
                 </Box>
             </Grid>

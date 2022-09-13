@@ -6,54 +6,84 @@ import FlagIcon from '@mui/icons-material/Flag';
 import InputAdornment from '@mui/material/InputAdornment';
 import { CompareByCountryName } from '../../../../utilities/compare'
 import { Box, TextField, Stack } from '@mui/material';
-import { FormButton, FormFrameBox } from '../../../../app/components/FormStyles';
+import { FormButton, FormFrameBox, CenterBox, SubHeaderTypography, HorizonStack, LeftCenterBox } from '../../../../app/components/FormStyles';
 import { numbers } from '../../../../constants/configuration';
 import SearchLine from '../../../../app/components/searchLine/SearchLine';
 import { useDispatch, useSelector } from 'react-redux';
-import { SelectFlights, SelectFlightsToShow, flitersChanged } from '../../fligthSlice';
+import { SelectFlights, SelectFlightsToShow, SelectAirline, flitersChanged } from '../../fligthSlice';
 import { DataGrid } from '@mui/x-data-grid';
 import { FlightModel } from '../../models/flightModel';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import IconButton from '@mui/material/IconButton';
-import PageviewIcon from '@mui/icons-material/Pageview';
 import { endpoints } from '../../../../constants/configuration';
 import { useNavigate, NavLink } from 'react-router-dom';
 import { removeFlight } from '../../fligthSlice';
-import { textAlign } from '@mui/system';
+import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
+import { FlightErrorTemplate, FlightSuccessTemplate } from '../../../../constants/enums';
 
 const searchInputsHeight = 24;
 
-const FlightsSearch = ({countries}) => {
+const FlightsSearch = ({ countries }) => {
     const [filters, setFilters] = useState({});
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
     const handleCountryChange = (type, value) => {
-        const newFilters = {
-            ...filters,
-            [`${type}Country`]: value
+        try {
+            const newFilters = {
+                ...filters,
+                [`${type}Country`]: value
+            }
+            setFilters(newFilters);
         }
-        setFilters(newFilters);
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleDateChange = (type, value) => {
-        setFilters({
-            ...filters,
-            [`${type}Date`]: value
-        });
+        try {
+            setFilters({
+                ...filters,
+                [`${type}Date`]: value
+            });
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleSearch = () => {
-        dispatch(flitersChanged(filters));
+        try {
+            dispatch(flitersChanged(filters));
+
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleAddNew = () => {
-        navigate('/NewFlight?mode=insert')
+        try {
+            navigate('/NewFlight?mode=insert')
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
 
-    useEffect(()=>{
-        dispatch(flitersChanged({}));
+    const handleError = (err) => {
+        dispatch(catchAppError(FlightErrorTemplate(err.message)))
+    }
+
+    useEffect(() => {
+        try {
+            dispatch(flitersChanged({}));
+        }
+        catch (err) {
+            handleError(err);
+        }
     }, []);
 
     return ([
@@ -67,7 +97,7 @@ const FlightsSearch = ({countries}) => {
                 value={filters.fromCountry || ''}
                 onChange={(event, name) => {
                     handleCountryChange('from', name)
-                    
+
                 }}
                 disableClearable
                 options={countries.map((option) => option.name).sort(CompareByCountryName)}
@@ -252,25 +282,43 @@ const FlightsSearch = ({countries}) => {
         </Box>
     ]);
 }
-
-
-const MyFlights = ({countries}) => {
+const MyFlights = ({ countries }) => {
     console.count('render MyFlights');
+    const airline = useSelector(SelectAirline);
     const myFlights = useSelector(SelectFlightsToShow);
     const dispatch = useDispatch();
+
+    const airConfig = endpoints.airlineCompanies;
+    const logoWidth = 100;
+    const logoHeight = 40;
+    const airlineLogoUrl = airline && (!airline.iata || airline.iata.length < 2 ? null : `url(${airConfig.logoPrefix}${logoWidth}/${logoHeight}/${airline.iata}${airConfig.logoPostfix})`);
 
     const getCountryImageUrl = (name) => {
         const countryFlagUrl = `url(${endpoints.countriesFlags}${name})`;
         return countryFlagUrl;
     }
 
-    const handleDelete = async (flightId) => {
-        await dispatch(removeFlight(flightId));
+    const handleDelete = async (flightId, flightNumber, soldTickets) => {
+        try {
+            if (soldTickets > 0){
+                throw Error(`Flight No. ${flightNumber} has ${soldTickets} sold tickets. cannot cancel!`);
+            }
+            const response = await dispatch(removeFlight(flightId)).unwrap();
+            const message = `Commited Successfuly! Flight ${flightNumber} cancelled`
+            dispatch(showSuccessMessage(FlightSuccessTemplate(message, null)))
+        }
+        catch (err) {
+            handleError(err);
+        }
+    }
+
+    const handleError = (err) => {
+        dispatch(catchAppError(FlightErrorTemplate(err.message)))
     }
 
     const searchPanel = {
         panelItmes: [
-            <FlightsSearch countries={countries}/>
+            <FlightsSearch countries={countries} />
         ],
         height: '40px'
     }
@@ -416,7 +464,7 @@ const MyFlights = ({countries}) => {
                 cellClassName: 'dg-alignCenter',
                 renderCell: (params) => (
                     <IconButton
-                        onClick={() => handleDelete(params.row.id)}
+                        onClick={() => handleDelete(params.row.id, params.row.flightNumber, params.row.soldTickets)}
                         sx={{ color: '#15291b' }}>
                         <DeleteIcon />
                     </IconButton>
@@ -425,17 +473,17 @@ const MyFlights = ({countries}) => {
         ]
 
         renderMyFlights = (
-            <div style={{ height: 485, width: '100%', overflow: 'auto', marginTop: 10 }}>
+            <div style={{ height: 435, width: '100%', overflow: 'auto', marginTop: 10 }}>
                 <DataGrid
                     rows={rows}
                     columns={columns}
                     pageSize={12}
                     rowHeight={36}
-                    hideFooter 
+                    hideFooter
                     sx={{
                         padding: '0px !important',
                         margin: '0px !important',
-                        border: '2px solid #15291b',
+                        border: '4px solid #15291b',
                         borderRadius: 0,
                         '& .MuiDataGrid-columnHeaders': {
                             height: '36px !important',
@@ -464,10 +512,51 @@ const MyFlights = ({countries}) => {
                 alignItems={'center'}
                 width={'100%'}
             >
+                <HorizonStack
+                    sx={{
+                        width: 1,
+                        height: '40px',
+                        borderRadius: '4px',
+                        backgroundColor: '#15291b',
+                        marginBottom: '10px',
+                        justifyContent: 'flex-start',
+                        paddingLeft: '10px'
+                    }}>
+                    <LeftCenterBox
+                        sx={{
+                            width: 0.25,
+                            textOverflow: 'elipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap'
+                        }}
+                    >
+                        <SubHeaderTypography>{`${airline.name}(${airline.iata})`}</SubHeaderTypography>
+                    </LeftCenterBox>
+
+                    <Box sx={{ width: 0.25 }}
+                        height={'100%'}
+                        m={0} p={0}
+                        display={'flex'}
+                        justifyContent={'center'}
+                        alignItems='flex-start'
+                    >
+                        <Box sx={{
+                            width: '100px',
+                            height: '40px',
+                            borderStyle: 'none',
+                            borderWidth: '1px',
+                            borderColor: 'ligthGrey',
+                            backgroundImage: airlineLogoUrl,
+                            backgroundSize: 'cover',
+                            backgroundRepeat: 'no-repeat'
+                        }}>
+                        </Box>
+                    </Box>
+                </HorizonStack>
                 <SearchLine searchPanel={searchPanel} height={'40px'} />
                 {renderMyFlights}
             </Stack>
-        </FormFrameBox>
+        </FormFrameBox >
     )
 }
 

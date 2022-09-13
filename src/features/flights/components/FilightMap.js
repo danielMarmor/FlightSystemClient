@@ -3,16 +3,16 @@ import InfoBox from 'react-google-maps/lib/components/addons/InfoBox';
 import React from 'react'
 
 const FilightMap = withScriptjs(withGoogleMap((props) => {
-    const { center, markers, polygons } = props;
+    const { center, markers, polygons} = props;
     const focusMarker = markers && markers.find(mark => mark.focus == true);
     const focusCenter = !focusMarker ? center : focusMarker.markerLocation;
     const arrPolyline = markers && markers.map(marker => { return marker.markerLocation });
-
     return (
         <GoogleMap
             defaultZoom={1}
             center={focusCenter}
             defaultCenter={center}
+            mapTypeId={'satellite'}
         >
             {markers && markers.map(marker =>
                 <Marker

@@ -11,7 +11,6 @@ import HomeIcon from '@mui/icons-material/Home';
 import FlagIcon from '@mui/icons-material/Flag';
 import { outlinedInputClasses } from '@mui/material/OutlinedInput';
 import { FormTextField, FormButton, FormCancelButton, FormBoxGrid, FormBox } from '../../../../app/components/FormStyles';
-import { FormBlock, } from '../../../../models/validation';
 import { Stack } from '@mui/material';
 import { addCusotmer } from '../../profilesSlice';
 import { useDispatch } from 'react-redux/es/exports';
@@ -22,29 +21,35 @@ import { CustomerValidations as validations } from '../../../../models/validatio
 
 const CustomerSignUp = () => {
     const [details, setDetails] = useState({});
-    const [blocks, setBlocks] = useState({});
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const handleChange = (e) => {
-        const newDetails = {
-            ...details,
-            [e.target.name]: e.target.value
-        };
-        const value = e.target.value;
-        const checkValue = { value }
-        const blocked = FormBlock(e.target.name, checkValue);
-        const newBlocks = {
-            ...blocks,
-            [e.target.name]: blocked
+    const validate = () => {
+        if (details.password != details.confirmPassword) {
+            throw Error('Passwords dont match!');
         }
-        setDetails(newDetails);
-        setBlocks(newBlocks);
     }
+
+    const handleChange = (e) => {
+        try {
+            const newDetails = {
+                ...details,
+                [e.target.name]: e.target.value
+            };
+            const value = e.target.value;
+            const checkValue = { value }
+            setDetails(newDetails);
+        }
+        catch (err) {
+            handleError(err);
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            validate();
             const customerDetails = {
                 ...details,
                 address: `${details.addressBase} ${details.addressCountry || ''}`
@@ -59,7 +64,12 @@ const CustomerSignUp = () => {
         }
     }
     const handleCancel = () => {
-        navigate('/Flights');
+        try {
+            navigate('/Flights');
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleError = (err) => {
@@ -86,10 +96,10 @@ const CustomerSignUp = () => {
                 value={details.username || ''}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['username'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['username'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.username).maxLength }}
@@ -111,10 +121,10 @@ const CustomerSignUp = () => {
                 type={validations(fields.password).type}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['password'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['password'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.password).maxLength }}
@@ -135,10 +145,10 @@ const CustomerSignUp = () => {
                 value={details.email || ''}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['email'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['email'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.email).maxLength }}
@@ -160,10 +170,10 @@ const CustomerSignUp = () => {
                 //value={details.confirmPassword}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['confirmPassword'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['confirmPassword'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.confirmPassword).maxLength }}
@@ -215,10 +225,10 @@ const CustomerSignUp = () => {
                 value={details.phone_number || ''}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['phone_number'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['phone_number'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.phone_number).maxLength }}
@@ -238,10 +248,10 @@ const CustomerSignUp = () => {
                 type={validations(fields.credit_card_number).type}
                 onChange={handleChange}
                 sx={`& .${outlinedInputClasses.notchedOutline} {
-                    border: ${blocks['credit_card_number'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 & .${outlinedInputClasses.notchedOutline}:focus {
-                    border: ${blocks['credit_card_number'] ? '2px solid red' : '2px solid #15291b'};
+                    border:  '2px solid #15291b'
                 }
                 `}
                 inputProps={{ maxLength: validations(fields.credit_card_number).maxLength }}

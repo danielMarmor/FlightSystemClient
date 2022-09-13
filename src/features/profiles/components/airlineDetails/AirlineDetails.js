@@ -26,6 +26,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import { endpoints } from '../../../../constants/configuration'
 import Dreamlines787 from '../../../../assets/Dreamlines787.jpg';
 import { SelectUserTypeId } from '../../profilesSlice';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 
 const iconStackProportions = [1, 3, 5];
 
@@ -73,6 +74,9 @@ const AirlineDetails = () => {
         catch (err) {
             handleError(err);
         }
+    }
+    const handleBack = () => {
+        navigate(-1);
     }
 
     const handleError = (err) => {
@@ -177,6 +181,10 @@ const AirlineDetails = () => {
                     </HorizonStack>
                     <HorizonStack width={'50%'}
                         justifyContent={'flex-end'}>
+                        <IconButton onClick={() => handleBack()} sx={{ padding: '0px', margin: '0px' }}>
+                            <ArrowBackIosNewIcon sx={{ color: 'white', marginRight: '20px', fontSize: '26px' }}
+                            />
+                        </IconButton>
                         <IconButton onClick={() => handleEdit()} sx={{ padding: '0px', margin: '0px' }}>
                             <EditIcon sx={{ color: 'white', marginRight: '20px', fontSize: '26px' }}
                             />

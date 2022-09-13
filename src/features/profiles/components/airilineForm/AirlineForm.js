@@ -33,13 +33,13 @@ import Dreamlines787 from '../../../../assets/Dreamlines787.jpg';
 import { fetchAirline } from '../../../flights/fligthSlice';
 import { catchAppError, showSuccessMessage } from '../../../../app/appSlice'
 import { addAirline as addAirlineByAdmin, editAirline as editAirlineByAdmin } from '../../../manage/manageSlice'
-import { useDispatch , useSelector} from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import Avatar from '@mui/material/Avatar';
-import { SelectUserTypeId , editAirline as editAirlineBySelf} from '../../profilesSlice'
+import { SelectUserTypeId, editAirline as editAirlineBySelf } from '../../profilesSlice'
 
-const AirlineForm = ({countries}) => {
+const AirlineForm = ({ countries }) => {
     const { mode, airlineId } = useParams();
-    const userTypeId= useSelector(SelectUserTypeId);
+    const userTypeId = useSelector(SelectUserTypeId);
 
     const dispatch = useDispatch();
     const [details, setDetails] = useState({});
@@ -67,9 +67,9 @@ const AirlineForm = ({countries}) => {
         }
     }
 
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
+        e.preventDefault();
         try {
-            e.preventDefault();
             validate();
             switch (mode) {
                 case 'Insert':
@@ -111,40 +111,55 @@ const AirlineForm = ({countries}) => {
             (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
     }
 
-    const validate=()=>{
+    const validate = () => {
         if (details.password != details.confirmPassword) {
             throw Error('Passwords dont match!');
         }
     }
     const handleCancel = () => {
-        navigate(-1);
+        try {
+            navigate(-1);
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleChange = (e) => {
-        const newDetails = {
-            ...details,
-            [e.target.name]: e.target.value
+        try {
+            const newDetails = {
+                ...details,
+                [e.target.name]: e.target.value
+            }
+            setDetails(newDetails);
         }
-        setDetails(newDetails);
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleCountryChange = (name) => {
-        let country_name, country_id;
-        const country = countries.find(cou => cou.name == name);
-        if (!country) {
-            country_id = null;
-            country_name = null;
-            //COUNTRY NAME REMIAN THE SAME SO DONT DISAPPER FROM COMPONENT
-            //country_name = ?
+        try {
+            let country_name, country_id;
+            const country = countries.find(cou => cou.name == name);
+            if (!country) {
+                country_id = null;
+                country_name = null;
+                //COUNTRY NAME REMIAN THE SAME SO DONT DISAPPER FROM COMPONENT
+                //country_name = ?
+            }
+            else {
+                country_id = country.id;
+                country_name = country.name;
+            }
+            const newDetails = {
+                ...details,
+                ['country_name']: country_name,
+                ['country_id']: country_id
+            };
+            setDetails(newDetails);
         }
-        else {
-            country_id = country.id;
-            country_name = country.name;
+        catch (err) {
+            handleError(err);
         }
-        const newDetails = {
-            ...details,
-            ['country_name']: country_name,
-            ['country_id']: country_id
-        };
-        setDetails(newDetails);
 
     }
     const handleError = (err) => {
@@ -152,13 +167,18 @@ const AirlineForm = ({countries}) => {
     }
 
     useEffect(() => {
-        if (mode == 'Edit') {
-            if (!airlineId) {
-                const notFoundError = { message: 'Airline Not Found !' };
-                handleError(notFoundError);
-                return;
+        try {
+            if (mode == 'Edit') {
+                if (!airlineId) {
+                    const notFoundError = { message: 'Airline Not Found !' };
+                    handleError(notFoundError);
+                    return;
+                }
+                loadAirline(airlineId);
             }
-            loadAirline(airlineId);
+        }
+        catch (err) {
+            handleError(err);
         }
 
     }, []);
@@ -176,7 +196,7 @@ const AirlineForm = ({countries}) => {
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
         <IconTextBox name={'email'} label={'Email'} details={details} validation={validations(fields.email)}
             icon={<EmailIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'confrimPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
+        <IconTextBox name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
         <IconTextBox name={'name'} label={'Airline Company Name'} details={details} validation={validations(fields.name)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
@@ -211,7 +231,7 @@ const AirlineForm = ({countries}) => {
                                 backgroundSize: 'cover',
                                 width: '3rem',
                                 height: '2rem',
-                                backgroudPosition :'center',
+                                backgroudPosition: 'center',
                                 backgroundRepeat: 'no-repeat'
                             }}>
                             </div>

@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, createSelector } from "@reduxjs/toolkit/dist";
-import { fetchTickets } from "../tickets/ticketsSlice";
-import { fetchAirline, fetchFlights } from "../flights/fligthSlice";
-import { catchAppError } from "../../app/appSlice";
+import ticketsSlice, { fetchTickets,clearTickets, clearTicketsFilters} from "../tickets/ticketsSlice";
+import fligthSlice, { fetchAirline, fetchFlights, clearFlights } from "../flights/fligthSlice";
+import manageSlice, { clearStatistics , resetMyUsersType} from "../manage/manageSlice";
 import { userType, profileActions, entries, resources, status, result, loginErrorTemplate } from "../../constants/enums";
 import { convertUserTypeToEntry } from "../../constants/converters";
 import { combineHost, authentication } from "../../constants/configuration";
@@ -131,6 +131,7 @@ export const login = createAsyncThunk(profileActions.login, async (data, thunkAp
     const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.login}`;
     //LOGIN
+    await thunkApi.dispatch(clearProfile({})).unwrap();
     const userToken = await client.post(endpoint, null, loginData);
     //PARSE TOKEN AND SET CURR USER
     thunkApi.dispatch(tokenAccepted(userToken));
@@ -171,6 +172,7 @@ export const addCusotmer = createAsyncThunk(profileActions.addCustomer, async (d
     const customerData = data;
     const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.customers}`;
+    await thunkApi.dispatch(clearProfile({})).unwrap();
     const userToken = await client.post(endpoint, null, customerData);
     //PARSE TOKEN AND SET CURR USER
     thunkApi.dispatch(tokenAccepted(userToken));
@@ -196,6 +198,7 @@ export const addAirline = createAsyncThunk(profileActions.addAirline, async (dat
     const airlineData = data;
     const entry = entries.anonym;
     const endpoint = `${combineHost}/${entry}/${resources.airlines}`;
+    await thunkApi.dispatch(clearProfile({})).unwrap();
     const userToken = await client.post(endpoint, null, airlineData);
     //PARSE TOKEN AND SET CURR USER
     thunkApi.dispatch(tokenAccepted(userToken));
@@ -226,6 +229,15 @@ export const editAdministrator = createAsyncThunk(profileActions.editAdministrat
     const params = { administratorId: administratorId };
     const userToken = await client.put(endpoint, params, adminData);
     thunkApi.dispatch(tokenAccepted(userToken));
+    return true;
+});
+
+export const clearProfile = createAsyncThunk(profileActions.ClearProfile, async (data, thunkApi) => {
+    thunkApi.dispatch(clearTickets({}));
+    thunkApi.dispatch(clearFlights({}));
+    thunkApi.dispatch(clearStatistics({}));
+    thunkApi.dispatch(clearTicketsFilters({}))
+    thunkApi.dispatch(resetMyUsersType({}))
     return true;
 });
 

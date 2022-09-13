@@ -1,3 +1,4 @@
+import { height } from "@mui/system";
 import {
     FormFrameBox,
     VerticalStack,
@@ -42,7 +43,9 @@ const DoubleForm = ({header, leftForm, rightFrom}) => {
                     <VerticalStack marginLeft={'10px'} flex={1}
                         sx={{
                             border: `4px solid ${primaryColor}`,
-                            padding: '5px 5px 5px 5px'
+                            padding: '5px 5px 5px 5px',
+                            height :'100%',
+                            width: '100%'
                         }}
                     >
                         {rightFrom}

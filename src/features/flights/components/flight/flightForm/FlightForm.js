@@ -77,9 +77,14 @@ const FlightForm = ({ countries }) => {
     useEffect(() => {
         try {
             const loadMarkers = async () => {
-                await model.addMarkers(flightData.origin_country_name, flightData.destination_country_name);
-                const updatedMarkersData = model.retval;
-                setFlightData(updatedMarkersData);
+                try {
+                    await model.addMarkers(flightData.origin_country_name, flightData.destination_country_name);
+                    const updatedMarkersData = model.retval;
+                    setFlightData(updatedMarkersData);
+                }
+                catch (err) {
+                    handleError(err);
+                }
             }
             model.setParams(countries);
             model.copyData(flightData);
@@ -102,7 +107,7 @@ const FlightForm = ({ countries }) => {
         }
 
     }
-    const checkDistance =(data)=>{
+    const checkDistance = (data) => {
         if ((data.origin_country_id && data.destination_country_id) && (!data.distance && data.distance !== 0)) {
             const distanceMessage = 'Geolocation Service unavailiable. Type distance manualy'
             handleError({ message: distanceMessage });
@@ -229,9 +234,7 @@ const FlightForm = ({ countries }) => {
     const handleError = (err) => {
         dispatch(catchAppError(FlightErrorTemplate(err.message)))
     }
-
-
-
+    
     const formCtrls = [
         //ORIGIN COUNTRY
         <AutoCompleteBox
@@ -489,7 +492,7 @@ const FlightForm = ({ countries }) => {
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
                 </InputAdornment>
             }}
-        />, ,
+        />, 
         <TextField size='small'
             name='margin'
             label="Margin (%)"

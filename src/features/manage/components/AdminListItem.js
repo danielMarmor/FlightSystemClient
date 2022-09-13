@@ -3,32 +3,39 @@ import ListItemText from '@mui/material/ListItemText';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
 import { Stack } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Link, NavLink } from 'react-router-dom';
 import { FormBoxGrid, RowFlexBox, CenterBox } from '../../../app/components/FormStyles';
-import { useDispatch } from 'react-redux';
+import { IconButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { removeAdministrator } from '../manageSlice';
 import { catchAppError, showSuccessMessage } from '../../../app/appSlice';
 import { ProfileErrorTemplate, ProfileSuccessTemplate } from '../../../constants/enums';
-import { removeAirline } from '../manageSlice';
-import { useNavigate } from 'react-router-dom';
-import { IconButton } from '@mui/material';
+import { SelectIdentityId } from '../../profiles/profilesSlice';
 import moment from 'moment';
 
-const AirlineListItem = (props) => {
-    const { airline, columnIndex, fetchAirlines, filters } = props;
-    const paddingLeft = columnIndex % 2 === 0 ? 0 : 10;
-    const paddingRight = columnIndex % 2 === 0 ? 0 : 10;
 
+const AdminListItem = (props) => {
+    const { administrator, fetchAdministrators, filters, columnIndex } = props;
     const navigate = useNavigate();
     const dispatch = useDispatch();
 
+    //CURRENT LOGGED IN ADMINISTRATOR 
+    const selfAdministratorId = useSelector(SelectIdentityId);
+
+    const paddingLeft = columnIndex % 2 === 0 ? 0 : 10;
+    const paddingRight = columnIndex % 2 === 0 ? 0 : 10;
+
     const handleEdit = () => {
         try {
-            const airlineId = parseInt(airline.id)
-            navigate(`/Profile/Airline/Edit/${airlineId}`)
+            const administratorId = parseInt(administrator.id)
+            //checkUpdateSelf(administratorId);
+            navigate(`/Profile/Admin/Edit/${administratorId}`)
         }
         catch (err) {
             handleError(err);
@@ -36,23 +43,43 @@ const AirlineListItem = (props) => {
     }
     const handleDelete = async () => {
         try {
-            if (!airline.id) {
-                handleError({ message: 'Airline Company Not Found !' });
+            if (!administrator.id) {
+                handleError({ message: 'Administrator Not Found !' });
                 return;
             }
-            const airlineId = parseInt(airline.id)
-            await dispatch(removeAirline(airlineId)).unwrap();
-            const deleteMessage = 'Commited successfuly! Airline removed';
+            const administratorId = parseInt(administrator.id)
+            checkDeleteSelf(administratorId);
+            await dispatch(removeAdministrator(administratorId)).unwrap();
+            const deleteMessage = 'Commited successfuly! Administrator removed';
             dispatch(showSuccessMessage
                 (ProfileSuccessTemplate(deleteMessage, null)));
-            fetchAirlines(filters);
+            fetchAdministrators(filters);
         }
         catch (err) {
             handleError(err);
         }
     }
+    const checkUpdateSelf = (administratorId) => {
+        if (administratorId == selfAdministratorId) {
+            throw Error('You cannot update youself from this panel. In order to do that - Go to Profile Page');
+        }
+    }
+    const checkDeleteSelf = (administratorId) => {
+        if (administratorId == selfAdministratorId) {
+            throw Error('You cannot delete yourself');
+        }
+    }
     const handleError = (err) => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)))
+    }
+    const showProfile = () => {
+        try {
+            const administratorId = administrator.id;
+            navigate(`/Profile/Admin/Details/${administratorId}`)
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     return (
         <CenterBox
@@ -62,13 +89,13 @@ const AirlineListItem = (props) => {
                 marginBottom: '10px',
                 width: '100%',
                 paddingLeft: `${paddingLeft}px`,
-                paddingRight: `${0}px`
+                paddingRight: `${0}px`,
             }}>
             <Stack direction='row'
                 sx={{
                     backgroudColor: "#e9f0eb",
                     border: '2px solid #15291b',
-                    height: '100%',
+                    height: '100px',
                     width: '100%',
                     padding: '0',
                     margim: '0'
@@ -85,14 +112,18 @@ const AirlineListItem = (props) => {
                         alignItems: 'center'
                     }} spacing={0}>
                     <ListItemAvatar>
-                        <Avatar sx={{
-                            margin: 'auto',
-                            backgroundColor: '#15291b',
-                            color: 'white',
-                        }}
-                            alt={airline.name}
+                        <Avatar
+                            sx={{
+                                margin: 'auto'
+                                // backgroundColor: '#15291b',
+                                // color: 'white',
+                            }}
+                            alt={`${administrator.first_name} ${administrator.last_name}`}
+                            src={administrator.image_url}
+                            imgProp={{
+                                loading: 'lazy'
+                            }}
                         >
-                            {airline.name.charAt(0)}
                         </Avatar>
                     </ListItemAvatar>
                 </RowFlexBox>
@@ -102,7 +133,7 @@ const AirlineListItem = (props) => {
                     padding: '0',
                     margin: '0',
                     boxSizing: 'border-box',
-                    gridTemplateColumns: '4fr 3fr',
+                    gridTemplateColumns: 'repeat(2,  1fr)',
                     gridTemplateRows: 'repeat(3,  1fr)',
                     gridRowGap: '5px',
                     gridColumnGap: '5px',
@@ -111,20 +142,21 @@ const AirlineListItem = (props) => {
                     <RowFlexBox spacing={0}
                         sx={{
                             //border: '1px solid black',
-                            height: '22px',
-                            width: '100%'
+                            height: '22px'
                         }}>
-                        <ListItemText>
-                            <Typography
-                                component="span"
-                                variant="body2"
-                                color="text.primary"
-                                fontWeight="bold"
-                                noWrap
-                            >  {`${airline.name}(${airline.iata})`}
-                            </Typography>
 
-                        </ListItemText>
+                        <ListItemText
+                            primary={
+                                <React.Fragment>
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="text.primary"
+                                        fontWeight="bold"
+                                    >  {`${administrator.first_name} ${administrator.last_name}`}
+                                    </Typography>
+                                </React.Fragment>
+                            } />
                     </RowFlexBox>
                     <RowFlexBox spacing={0}
                         sx={{
@@ -140,7 +172,7 @@ const AirlineListItem = (props) => {
 
                         <ListItemIcon sx={{ margin: '0px !important' }}>
                             <IconButton onClick={() => handleDelete()} sx={{ padding: '0px', margin: '0px' }}>
-                                <DeleteIcon fontSize='small' sx={{ color: '#15291b' }}/>
+                                <DeleteIcon fontSize='small' sx={{ color: '#15291b' }} />
                             </IconButton>
                         </ListItemIcon>
                     </RowFlexBox>
@@ -156,7 +188,7 @@ const AirlineListItem = (props) => {
                             component="span"
                             variant="body2"
                             color="text.primary"
-                        >  {`Last Ticket: ${moment.utc(airline.last_activity_date).format('DD/MM/YYYY')}`}
+                        >  {'Last Activity: 01/01/2022'}
                         </Typography>
 
                     </RowFlexBox>
@@ -172,7 +204,7 @@ const AirlineListItem = (props) => {
                             component="span"
                             variant="body2"
                             color="text.primary"
-                        >  {`Total Sales: ${airline.sum_sales} $`}
+                        >
                         </Typography>
 
                     </RowFlexBox>
@@ -183,14 +215,14 @@ const AirlineListItem = (props) => {
                         overflow: 'hidden'
 
                     }}>
-                        <Link to={`{/airline/Profile}`}
+                        <Link to={`/Profile/Admin/Details/${administrator.id}`}
                             style={{ color: 'blue', textDecoration: 'none' }}
                         >
                             <Typography
                                 component="span"
                                 variant="body2"
                                 color='black'
-                            >   {airline.email}
+                            >   {administrator.email}
                             </Typography>
 
                         </Link>
@@ -199,7 +231,7 @@ const AirlineListItem = (props) => {
                         //border: '1px solid black',
                         height: '22px'
                     }}>
-                        <NavLink to={`/Profile/Airline/Details/${airline.id}`}
+                        <NavLink to={`/Profile/Admin/Details/${administrator.id}`}
                             style={{
                                 color: 'blue', textDecoration: 'none',
                                 marginRight: '20px'
@@ -214,10 +246,9 @@ const AirlineListItem = (props) => {
                         </NavLink>
                     </RowFlexBox>
                 </FormBoxGrid>
-
             </Stack>
-        </CenterBox >
+        </CenterBox>
     )
 }
 
-export default AirlineListItem;
+export default AdminListItem;

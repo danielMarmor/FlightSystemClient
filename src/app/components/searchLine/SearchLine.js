@@ -20,6 +20,7 @@ const SearchLine = (props) => {
         }}
         >
             <Stack spacing={0} padding={'5px'}
+                sx={{height : 1}}
                 direction='row'
                 alignItems='center'
                 justifyContent='space-between'

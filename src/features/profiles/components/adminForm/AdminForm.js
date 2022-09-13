@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import DoubleForm from '../../../../app/components/layout/DoubleForm'
 import ActionGrid from '../../../../app/components/ActionGrid'
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
@@ -8,8 +8,8 @@ import LockIcon from '@mui/icons-material/Lock';
 import EmailIcon from '@mui/icons-material/Email';
 import { FormButton, IconTextBox, primaryColor } from '../../../../app/components/FormStyles';
 import { useNavigate, useParams } from 'react-router-dom'
-import { fetchAdminById, addAdministrator, editAdministrator  as editAdminByPeerAdmin} from '../../../manage/manageSlice';
-import { editAdministrator as editAdminBySelf } from '../../../manage/manageSlice';
+import { fetchAdminById, addAdministrator, editAdministrator as editAdminByPeerAdmin } from '../../../manage/manageSlice';
+import { editAdministrator  as editAdminBySelf, SelectIdentityId} from '../../profilesSlice';
 import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
 import { ProfileErrorTemplate, ProfileSuccessTemplate, fields, messages } from '../../../../constants/enums';
 import { AdminValidations as validators } from '../../../../models/validation';
@@ -17,12 +17,23 @@ import { CenterBox } from '../../../../app/components/FormStyles';
 import { HorizonStack, LeftCenterBox, SubHeaderTypography } from '../../../../app/components/FormStyles';
 import Avatar from '@mui/material/Avatar';
 import { images } from '../../../../constants/configuration';
+import { FormControl, InputLabel, Select, Typography, IconButton, OutlinedInput, MenuItem } from '@mui/material';
+import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
+import { GenerateProfilePhoto } from '../../../../api/photoGenrator';
+import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
+import Error from '../../../../app/components/Error';
 
 const AdminForm = () => {
     const navigate = useNavigate();
     const { mode, administratorId } = useParams();
+
     const dispatch = useDispatch();
+    const identityId= useSelector(SelectIdentityId);
+
     const [details, setDetails] = useState({});
+
+    const [photoLoading, setPhotoLoading] = useState(false);
+    const [photoError, setPhotoError] = useState(false);
 
     const loadAdmin = async (adminId) => {
         try {
@@ -51,10 +62,23 @@ const AdminForm = () => {
             administratorId: administratorId,
             adminData: details
         }
-        const reponse = await dispatch(editAdminBySelf(updateAdminData)).unwrap();
-        const successUrl = `/Profile/Admin/Details/${administratorId}`;
-        dispatch(showSuccessMessage
-            (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
+        if (isUpdatingSelf){ //ADMIN UPDATING HIMSELF ====PROFILE SLICE
+            const response = await dispatch(editAdminBySelf(updateAdminData)).unwrap();
+            const successUrl = `/Profile/Admin/Details/${administratorId}`;
+            dispatch(showSuccessMessage
+                (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
+        }
+        //ADMIN UPDATING HIS COLLEAGE === MANAGE SLICE
+        else{
+            const response = await dispatch(editAdminByPeerAdmin(updateAdminData)).unwrap();
+            const successUrl = `/Profile/Admin/Details/${administratorId}`;
+            dispatch(showSuccessMessage
+                (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
+        }
+       
+    }
+    const isUpdatingSelf =(administratorId)=>{
+        return administratorId === identityId;
     }
     const handleSubmit = async (e) => {
         try {
@@ -70,21 +94,54 @@ const AdminForm = () => {
                     break;
             }
             //BOTH USER TYPES (ADMIN/CUST) ==> REDIRECT AFTER SUSCCESS DIALOG TO CUSTOMER DETAILLS PROFILE PAGE
-
         }
         catch (err) {
             handleError(err);
         }
     }
+    const setPhotoIndicators = (action) => {
+        switch (action) {
+            case 'init':
+                {
+                    if (!photoLoading) {
+                        setPhotoLoading(true);
+                    }
+                    if (photoError) {
+                        setPhotoError(false);
+                    }
+                    break;
+                }
+            case 'success': {
+                setPhotoLoading(false);
+                break;
+            }
+            case 'failure': {
+                setPhotoLoading(false);
+                setPhotoError(true);
+                break;
+            }
+        }
+    }
+
     const handleCancel = () => {
-        navigate(-1);
+        try {
+            navigate(-1);
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleChange = (e) => {
-        const newDetails = {
-            ...details,
-            [e.target.name]: e.target.value
+        try {
+            const newDetails = {
+                ...details,
+                [e.target.name]: e.target.value
+            }
+            setDetails(newDetails);
         }
-        setDetails(newDetails);
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleError = (err) => {
@@ -95,17 +152,42 @@ const AdminForm = () => {
             throw Error('Passwords dont match!');
         }
     }
-
-    useEffect(() => {
-        if (mode == 'Edit') {
-            if (!administratorId) {
-                const notFoundError = { message: 'Administrator Not Found !' };
-                handleError(notFoundError);
+    const handleGeneratePhoto = async () => {
+        try {
+            if (!details.gender) {
+                handleError({ message: 'Please select Man/Woman' });
                 return;
             }
-            loadAdmin(administratorId);
+            setPhotoIndicators('init');
+            const search = `${details.gender} face`
+            const profilePhotoUrl = await GenerateProfilePhoto(search);
+            setPhotoIndicators('success');
+            const newDetails = {
+                ...details,
+                ['image_url']: profilePhotoUrl
+            }
+            setDetails(newDetails);
         }
+        catch (err) {
+            setPhotoIndicators('failure');
+            handleError(err);
+        }
+    }
 
+    useEffect(() => {
+        try {
+            if (mode == 'Edit') {
+                if (!administratorId) {
+                    const notFoundError = { message: 'Administrator Not Found !' };
+                    handleError(notFoundError);
+                    return;
+                }
+                loadAdmin(administratorId);
+            }
+        }
+        catch (err) {
+            handleError(err);
+        }
     }, []);
 
     const formCtrls = [
@@ -122,7 +204,42 @@ const AdminForm = () => {
         <IconTextBox name={'first_name'} label={'First Name'} details={details} validation={validators(fields.first_name)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
         <IconTextBox name={'last_name'} label={'Last Name'} details={details} validation={validators(fields.last_name)}
-            icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />
+            icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
+        <FormControl fullWidth>
+            <InputLabel shrink={true}>Gender For Photo</InputLabel>
+            <Select
+                size="small"
+                name='gender'
+                value={details.gender || ''}
+                onChange={handleChange}
+                input={
+                    <OutlinedInput
+                        style={{
+                            height: 40,
+                            boxSizing: 'border-box',
+                            color: 'black',
+                        }}
+                    />
+                }>
+                <MenuItem key={1} value={'man'}>Man</MenuItem>
+                <MenuItem key={2} value={'woman'}>Woman</MenuItem>
+            </Select>
+        </FormControl>,
+        <IconButton sx={{
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+            padding: '0px 0px 0px 5px'
+        }}>
+            <AddAPhotoIcon
+                onClick={handleGeneratePhoto}
+                sx={{ color: '#15291b', fontSize: '40px' }} />
+            <Typography variant='body2' component='div'
+                sx={{ color: '#15291b', marginLeft: '5px' }}>
+                Your Best Photo
+            </Typography>
+        </IconButton>
     ]
 
     const formActions = [
@@ -154,6 +271,28 @@ const AdminForm = () => {
             colGap: 20
         }
     };
+
+    let renderPhoto;
+    if (photoLoading){
+        renderPhoto =  (<CircularIndeterminate />);
+    }
+    else if (photoError){
+        renderPhoto = (<Error />);
+    }
+    else{
+        renderPhoto = (<CenterBox id='centerBox' sx={{
+            width: '100%',
+            height: '100%',
+            borderStyle: 'none',
+            borderWidth: '1px',
+            borderColor: 'ligthGrey',
+            backgroundImage: `url(${details.image_url || images.personImageDeafultURL})`,
+            backgroundSize: 'cover',
+            backgroundRepeat: 'no-repeat',
+            backgroundPosition: 'center'
+        }}>
+        </CenterBox>)
+    }
     return (
         <DoubleForm
             header={
@@ -195,18 +334,7 @@ const AdminForm = () => {
                 </form>
 
             }
-            rightFrom={<CenterBox id='centerBox' sx={{
-                width: '100%',
-                height: '100%',
-                borderStyle: 'none',
-                borderWidth: '1px',
-                borderColor: 'ligthGrey',
-                backgroundImage: `url(${details.image_url || images.personImageDeafultURL})`,
-                backgroundSize: 'cover',
-                backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'center'
-            }}>
-            </CenterBox>}
+            rightFrom={renderPhoto}
         >
         </DoubleForm>
     )

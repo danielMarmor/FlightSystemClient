@@ -26,6 +26,10 @@ const flightsSlice = createSlice({
    reducers: {
       flitersChanged(state, action){
          state.filters =action.payload;
+      },
+      clearFlights(state ,action){
+         state.airline = {};
+         state.myFlights = [];
       }
    },
    extraReducers: builder => {
@@ -225,7 +229,7 @@ export const SelectFlightsToShow = (state) =>{
    return flights;
 }
 
-export const {flitersChanged} =flightsSlice.actions;
+export const {flitersChanged, clearFlights} =flightsSlice.actions;
 
 // export const SelectFlightsByParams= (state)={
 

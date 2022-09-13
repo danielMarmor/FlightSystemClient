@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { primaryColor } from '../../../../app/components/FormStyles';
+import { CenterBox, primaryColor } from '../../../../app/components/FormStyles';
 import { Box, Stack, TextField, InputAdornment } from '@mui/material';
 import { AutoCompleteBox } from '../../../../app/components/FormStyles';
 import { DatePicker } from '@mui/x-date-pickers';
@@ -14,6 +14,8 @@ import { fetchFligths, SelectFlightsSearch } from '../../ticketsSlice'
 import { catchAppError } from '../../../../app/appSlice';
 import FlightSearchResults from '../flightsSearchResults/FlightSearchResults';
 import { FlightSearchErrorTemplate } from '../../../../constants/enums';
+import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
+import { SelectSearchParams, flitersChanged } from '../../ticketsSlice';
 import moment from 'moment';
 import Banners from '../banners';
 
@@ -22,30 +24,36 @@ const searchInputsHeight = 24;
 
 const FORMAT = 'DD/MM/YYYY';
 
-const FlightsSearch = ({ handleSearch, countries}) => {
-
-  const dispatch = useDispatch();
-  const initFilters = {
-    origin_country_name: '',
-    destination_country_name: '',
-    start_date: moment().add(-3, 'days'),
-    end_date: moment().add(-3, 'days').add(3, 'months')
-  }
+const FlightsSearch = ({ handleSearch, countries }) => {
+  const initFilters = useSelector(SelectSearchParams);
   const [filters, setFilters] = useState(initFilters);
 
+  const dispatch = useDispatch();
+
   const handleCountryChange = (type, value) => {
-    const newFilters = {
-      ...filters,
-      [`${type}_country_name`]: value
+    try {
+      const newFilters = {
+        ...filters,
+        [`${type}_country_name`]: value
+      }
+      setFilters(newFilters);
     }
-    setFilters(newFilters);
+    catch (err) {
+      handleError(err);
+    }
   }
 
   const handleDateChange = (type, value) => {
-    setFilters({
-      ...filters,
-      [`${type}_date`]: value
-    });
+    try {
+      setFilters({
+        ...filters,
+        [`${type}_date`]: value
+      });
+    }
+    catch (err) {
+      handleError(err);
+    }
+
   }
 
   const validateInputs = () => {
@@ -98,15 +106,20 @@ const FlightsSearch = ({ handleSearch, countries}) => {
         origin_country_id: origin_country_id || '',
         dest_country_id: destination_country_id || ''
       };
+      dispatch(flitersChanged(dataFilters));
       handleSearch(dataFilters);
     }
     catch (err) {
-      dispatch(catchAppError(FlightSearchErrorTemplate(err.message)))
+      handleError(err);
     }
   }
 
   const handleDateChangeRaw = (e) => {
     e.preventDefault();
+  }
+
+  const handleError = (err) => {
+    dispatch(catchAppError(FlightSearchErrorTemplate(err.message)));
   }
 
   useEffect(() => {
@@ -306,24 +319,63 @@ const FlightsSearch = ({ handleSearch, countries}) => {
   ])
 }
 
-const FlightsList = ({countries}) => {
+const FlightsList = ({ countries }) => {
   const flightResults = useSelector(SelectFlightsSearch);
   const dispatch = useDispatch();
 
+  const [isLoading, setIsLoading] = useState(true);
+  const [isError, setIsError] = useState(true);
+
   const handleSearch = async (filters) => {
     try {
+      setIndicators('init');
       await dispatch(fetchFligths(filters)).unwrap();
+      setIndicators('sucess');
     }
     catch (err) {
-      dispatch(catchAppError(FlightSearchErrorTemplate(err)))
+      setIndicators('failure');
+      handleError(err);
+    }
+  }
+  const handleError = (err) => {
+    dispatch(catchAppError(FlightSearchErrorTemplate(err.message)));
+  }
+
+  const setIndicators = (action) => {
+    switch (action) {
+      case 'init':
+        {
+          if (!isLoading) {
+            setIsLoading(true);
+          }
+          if (isError) {
+            setIsError(false);
+          }
+          break;
+        }
+      case 'success': {
+        setIsLoading(false);
+        break;
+      }
+      case 'failure': {
+        setIsLoading(false);
+        setIsError(true);
+        break;
+      }
     }
   }
 
+
   const searchPanel = {
     panelItmes: [
-      <FlightsSearch handleSearch={handleSearch} countries={countries}/>
+      <FlightsSearch handleSearch={handleSearch} countries={countries} />
     ],
     height: '40px'
+  }
+
+  let renderFlights;
+  if (isLoading){
+
   }
   return (
     <FormFrameBox sx={{
@@ -337,7 +389,7 @@ const FlightsList = ({countries}) => {
         width={'100%'}
         height={'100%'}
         direction={'column'}
-        justifyContent={'space-between'}
+        justifyContent={'flex-start'}
         alignItems={'center'}
       >
         {/* BANNER */}
@@ -358,14 +410,13 @@ const FlightsList = ({countries}) => {
         {/* SEARCH PANEL */}
         <SearchLine searchPanel={searchPanel} height={'40px'} />
         {/* DATA LIST RESULTS */}
-        <Box
+        <CenterBox
           width={'100%'}
           marginTop={'10px'}
           sx={{ padding: '0px' }}
-
         >
           <FlightSearchResults flightResults={flightResults} />
-        </Box>
+        </CenterBox>
       </Stack>
     </FormFrameBox>
   )

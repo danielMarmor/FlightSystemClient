@@ -15,11 +15,18 @@ import SearchIcon from '@mui/icons-material/Search';
 import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import InputAdornment from '@mui/material/InputAdornment';
 import CustomerListItem from '../CustomerListItem';
-import List from '@mui/material/List';
-import { GetCustomersBussiness, SortCustomerBusinnes } from '../../../../models/customersBusiness';
-import { sortByField, directions } from '../../../../constants/enums';
+import { fetchCustomersBussiness } from '../../manageSlice';
+import { SortCustomerBusinnes } from '../../../../models/customersBusiness';
+import {sortByField, directions, ProfileErrorTemplate} from '../../../../constants/enums';
 import { IconButton } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import { VariableSizeGrid as Grid } from 'react-window'
+import { useDispatch, useSelector } from 'react-redux';
+import { catchAppError } from '../../../../app/appSlice';
+import NoResults from '../../../../app/components/NoResults';
+import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
+import Error from '../../../../app/components/Error';
+
 
 const inputHeights = '24px';
 
@@ -32,41 +39,71 @@ const initFilters = {
 
 const CustomerSearch = ({ fetchCustomers }) => {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
     const [filters, setFilters] = useState(initFilters);
     const handleChange = (e) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.value
-        })
+        try {
+            setFilters({
+                ...filters,
+                [e.target.name]: e.target.value
+            })
+        }
+        catch (err) {
+            handleError(err);
+        }
     };
     const handleCheckedChanged = (e) => {
-        setFilters({
-            ...filters,
-            [e.target.name]: e.target.checked
-        })
+        try {
+            setFilters({
+                ...filters,
+                [e.target.name]: e.target.checked
+            })
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleValueToggled = (name) => {
-        const newDirection = filters[name] == directions.ascending ? directions.descending : directions.ascending;
-        const newFilters = {
-            ...filters,
-            [name]: newDirection
+        try {
+            const newDirection = filters[name] == directions.ascending ? directions.descending : directions.ascending;
+            const newFilters = {
+                ...filters,
+                [name]: newDirection
+            }
+            fetchCustomers(newFilters);
+            setFilters(newFilters);
         }
-        fetchCustomers(newFilters);
-        setFilters(newFilters);
+        catch (err) {
+            handleError(err);
+        }
     }
 
     const handleSearch = () => {
-        fetchCustomers(filters);
+        try {
+            fetchCustomers(filters);
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
-    
+
     const handleAddNew = () => {
-        navigate(`/Profile/Customer/Insert/999`)
+        try {
+            navigate(`/Profile/Customer/Insert/999`)
+        }
+        catch (err) {
+            handleError(err);
+        }
+    }
+    const handleError = (err) => {
+        dispatch(catchAppError(ProfileErrorTemplate(err.message)))
     }
     //SEARCH LINE
     return [<Box sx={{ minWidth: 200 }}>
         <TextField size='small'
             name='search'
-            value={filters.search}
+            value={filters.search || ''}
             onChange={handleChange}
             sx={{
                 borderRadius: '0px !important'
@@ -114,7 +151,7 @@ const CustomerSearch = ({ fetchCustomers }) => {
             <Select
                 size="small"
                 name='sortBy'
-                value={filters.sortBy}
+                value={filters.sortBy || ''}
                 onChange={handleChange}
                 input={
                     <OutlinedInput
@@ -140,16 +177,16 @@ const CustomerSearch = ({ fetchCustomers }) => {
         </IconButton>
     </Box>,
     <Box>
-    <FormButton variant="contained"
-        onClick={() => handleAddNew()}
-        sx={{
-            height: 26,
-            width: 26,
-            fontSize: '2rem'
-        }}
+        <FormButton variant="contained"
+            onClick={() => handleAddNew()}
+            sx={{
+                height: 26,
+                width: 26,
+                fontSize: '2rem'
+            }}
 
-    >+
-    </FormButton>
+        >+
+        </FormButton>
     </Box>,
     <FormButton variant="contained"
         onClick={() => handleSearch()}
@@ -161,13 +198,59 @@ const CustomerSearch = ({ fetchCustomers }) => {
 }
 
 const Customers = () => {
-    console.count('render customers');
+    //console.count('render customers');   
+    const dispatch = useDispatch();
+    const [isLoading, setIsLoading] = useState(true);
+    const [isError, setIsError] = useState(false);
     const [customers, setCustomers] = useState([]);
+
     const fetchCustomers = async (filters) => {
-        const cutomers = await GetCustomersBussiness(filters.search);
-        const orderCustomers = SortCustomerBusinnes(cutomers, filters);
-        setCustomers(orderCustomers);
+        try {
+            setIndicators('init');
+            const customers = await dispatch(fetchCustomersBussiness(filters.search)).unwrap();
+            const orderCustomers = SortCustomerBusinnes(customers, filters);
+            setIndicators('success');
+            setCustomers(orderCustomers);
+        }
+        catch (err) {
+            setIndicators('failure');
+            handleError(err);
+        }
     }
+
+    const setIndicators = (action) => {
+        switch (action) {
+            case 'init':
+                {
+                    if (!isLoading) {
+                        setIsLoading(true);
+                    }
+                    if (isError) {
+                        setIsError(false);
+                    }
+                    break;
+                }
+            case 'success': {
+                setIsLoading(false);
+                break;
+            }
+            case 'failure': {
+                setIsLoading(false);
+                setIsError(true);
+                break;
+            }
+        }
+    }
+
+
+    const handleError = (err) => {
+        dispatch(catchAppError(ProfileErrorTemplate(err.message)));
+    }
+
+    useEffect(() => {
+        fetchCustomers(initFilters);
+    }, []);
+
     const searchPanel = {
         panelItmes: [
             <CustomerSearch fetchCustomers={fetchCustomers} />
@@ -175,36 +258,73 @@ const Customers = () => {
         height: '40px'
     }
 
-    useEffect(() => {
-        fetchCustomers(initFilters);
-    }, []);
-
     let renderCustomers;
-    if (!customers || customers.length == 0) {
-        renderCustomers = <div></div>;
+    if (isLoading) {
+        renderCustomers = (<CircularIndeterminate />);
+    }
+    else if (isError) {
+        renderCustomers = (<Error />);
+    }
+    //status.idle
+    else if (!customers || customers.length == 0) {
+        renderCustomers = (<NoResults message={'Oops.. No Results. Extend your Search!'} />);
     }
     else {
-        renderCustomers = (<ColumnFlexBox
-            sx={{
-                overflow: 'auto',
-                justifyContent: 'flex-start',
-                alignItems: 'center',
-                maxHeight: '435px'
-            }}>
-            <List sx={{
-                width: '100%',
-                columnCount: 2,
-                columnGap: '10px'
-            }}>
-                {customers.map((cust) =>
-                    <CustomerListItem key={cust.id} customer={cust} fetchCustomers={fetchCustomers} filters={initFilters}/>
-                )}
-            </List>
-        </ColumnFlexBox>)
+        const columnsNumber = 2;
+        const rowsNumber = Math.ceil(customers.length / 2);
+        const totalWidth = 884;
+        const totalHeight = 435;
+        const colWidth = 442;
+        const rowHeight = 110;
+
+        const Cell = ({ columnIndex, rowIndex, style }) => {
+            const index = (rowIndex * 2) + columnIndex;
+            const cust = customers[index];
+            if (!cust) {
+                return <div></div>;
+            }
+            return (<div style={style}>
+                <CustomerListItem key={cust.id}
+                    customer={cust}
+                    fetchCustomers={fetchCustomers}
+                    filters={initFilters}
+                    columnIndex={columnIndex}
+                />
+            </div>)
+        }
+        renderCustomers = (
+            <Grid
+                columnCount={columnsNumber}
+                columnWidth={index => colWidth}
+                height={totalHeight}
+                rowCount={rowsNumber}
+                rowHeight={index => rowHeight}
+                width={totalWidth}
+            >
+                {Cell}
+            </Grid>)
+        // <ColumnFlexBox
+        //     sx={{
+        //         overflow: 'auto',
+        //         justifyContent: 'flex-start',
+        //         alignItems: 'center',
+        //         maxHeight: '435px'
+        //     }}>
+        //     <List sx={{
+        //         width: '100%',
+        //         columnCount: 2,
+        //         columnGap: '10px'
+        //     }}>
+        //         {customers.map((cust) =>
+        //             <CustomerListItem key={cust.id} customer={cust} fetchCustomers={fetchCustomers} filters={initFilters}/>
+        //         )}
+        //     </List>
+        // </ColumnFlexBox>)
     }
     return (
         <>
             <SearchLine searchPanel={searchPanel} height={'40px'} />
+            <Box sx={{ height: '10px', width: '100%' }}></Box>
             {renderCustomers}
         </>
     )

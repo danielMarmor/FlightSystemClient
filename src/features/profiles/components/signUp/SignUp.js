@@ -47,7 +47,8 @@ const SignUp = ({countries}) => {
                             paddingLeft: '1rem',
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            textDecoration: value === 0 ? 'underline' : 'none'
                         }}><PeopleAltIcon /> CUSTOMERS </div>}
                     />
                     <Tab sx={{
@@ -62,7 +63,8 @@ const SignUp = ({countries}) => {
                             paddingLeft: '1.4rem',
                             display: 'flex',
                             flexDirection: 'row',
-                            alignItems: 'center'
+                            alignItems: 'center',
+                            textDecoration: value === 1 ? 'underline' : 'none'
                         }}><AirlinesIcon /> AIRLINES </div>}
                     />
                 </Tabs>

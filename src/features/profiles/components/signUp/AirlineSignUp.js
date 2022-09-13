@@ -33,6 +33,11 @@ const AirlineSignUp = ({ countries }) => {
     const airConfig = endpoints.airlineCompanies;
     const airlineLogoUrl = !details.iata || details.iata.length < 2 ? null : `url(${airConfig.logoPrefix}${airConfig.reqWidth}/${airConfig.reqHeight}/${details.iata}${airConfig.logoPostfix})`
 
+    const validate = () => {
+        if (details.password != details.confirmPassword) {
+            throw Error('Passwords dont match!');
+        }
+    }
 
     const handleChange = (e) => {
         try {
@@ -65,6 +70,7 @@ const AirlineSignUp = ({ countries }) => {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+            validate();
             const response = await dispatch(addAirline(details)).unwrap();
             const signupMessage = `${details.name}, Welcome to FlightServix community!`
             const homePageUrl = '/Flights';
@@ -75,14 +81,19 @@ const AirlineSignUp = ({ countries }) => {
         }
     }
     const handleCancel = () => {
-        navigate('/Flights');
+        try {
+            navigate('/Flights');
+        }
+        catch (err) {
+            handleError(err);
+        }
     }
     const handleError = (err) => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)))
     }
 
     return (<FormBox
-        component='form'
+        component='form' p
         autoComplete="off"
         onSubmit={handleSubmit}
         height={'100%'}

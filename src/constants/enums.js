@@ -41,11 +41,18 @@ export const resources = {
     administrators: 'administrators',
     adminSearch: 'admin-search',
     tickets: 'tickets',
+    checkTicket : 'ticket-check',
     flights: 'flights',
     flightsSearch: 'flights-search',
     users: 'users', 
     customer_bussines: 'customer_bussines',
-    airline_bussines: 'airline_bussines'
+    airline_bussines: 'airline_bussines',
+    revenues : 'revenues',
+    purchases :'purchases',
+    sales :'sales',
+    flights_count :'flights_count',
+    capacities :'capacities'
+
 }
 
 export const appActions = {
@@ -56,6 +63,7 @@ export const ticketsActions = {
     fetchTickets: 'tickets/fetchTickets',
     fetchFlightById: 'tickets/fetchFlightById',
     fetchFlights: 'tickets/fetchFligths',
+    checkTicket: 'tickets/checkTicket',
     addTicket: 'tickets/addTicket',
     removeTicket: 'tickets/removeTicket'
 }
@@ -75,7 +83,8 @@ export const profileActions = {
     editCustomer: 'profile/editCustomer',
     addAirline: 'profile/addAirline',
     editAirline: 'profile/editAirline',
-    editAdministrator :  'profile/editAdministrator'
+    editAdministrator :  'profile/editAdministrator',
+    ClearProfile : 'profile/ClearProfile'
 }
 
 export const manageActions = {
@@ -91,7 +100,12 @@ export const manageActions = {
     removeAirline: 'manage/removeAirline',
     addAdministrator: 'manage/addAdministrator',
     editAdministrator: 'manage/editAdministrator',
-    removeAdministrator: 'manage/removeAdministrator'
+    removeAdministrator: 'manage/removeAdministrator',
+    fetchRevenuesByDates: 'manage/fetchRevenuesByDates',
+    fetchPurchasesByCustomers: 'manage/fetchPurchasesByCustomers',
+    fetchSalesByAirlines: 'manage/fetchSalesByAirlines',
+    fetchFlightsCountByCountries: 'manage/fetchFlightsCountByCountries',
+    fetchCapacityUtilization: 'manage/fetchCapacityUtilization'
 
 }
 
@@ -198,6 +212,16 @@ export const OrderSuccessTemplate = (message, url) => {
 
 }
 
+export const OrderSavedTemplate = (message, url) => {
+    return {
+        feature: 'Order',
+        message: message,
+        details: 'Pay Now',
+        url: url
+    }
+
+}
+
 export const ProfileSuccessTemplate = (message, url) => {
     return {
         feature: 'Profile',
@@ -241,6 +265,25 @@ export const TicketsSuccesTemplate = (message) => {
         feature: 'Tickets',
         message: message,
         details: 'Purchases list updated'
+    }
+
+}
+
+export const TicketsLoginTemplate = (message, url) => {
+    return {
+        feature: 'Tickets',
+        message: message,
+        details: 'Ridirect To Login',
+        url :url
+    }
+
+}
+
+export const DashboardErrorTemplate = (message) => {
+    return {
+        feature: 'Dashboard',
+        message: message,
+        details: 'Wait a bit and try again..'
     }
 
 }
