@@ -159,7 +159,7 @@ const AdminDetails = () => {
                   // backgroundColor: '#15291b',
                   // color: 'white',
                 }}
-                alt={`${details.first_name} ${details.last_name}`}
+                alt={`${details.first_name || ''} ${details.last_name || ''}`}
                 src={details.image_url || ''}
               >
                 {/* {`${customer.first_name.charAt(0)} ${customer.last_name.charAt(0)}`} */}
@@ -167,7 +167,7 @@ const AdminDetails = () => {
             </CenterBox>
             <LeftCenterBox sx={{ paddingLeft: '5px' }}>
               <SubHeaderTypography fontSize={'1.5rem'}>
-                {`(${details.id}) ${details.first_name} ${details.last_name}`}
+                {`(${details.id || ''}) ${details.first_name || ''} ${details.last_name || ''}`}
               </SubHeaderTypography>
             </LeftCenterBox>
           </HorizonStack>

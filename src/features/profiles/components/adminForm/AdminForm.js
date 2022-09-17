@@ -316,7 +316,7 @@ const AdminForm = () => {
                         </CenterBox>
                         <LeftCenterBox sx={{ paddingLeft: '5px' }}>
                             <SubHeaderTypography fontSize={'1.5rem'}>
-                                {!details.id ? 'New Profile' : `(${details.id}) ${details.first_name} ${details.last_name}`}
+                                {!details.id ? 'New Profile' : `(${details.id || ''}) ${details.first_name || ''} ${details.last_name || ''}`}
                             </SubHeaderTypography>
                         </LeftCenterBox>
                     </HorizonStack>
