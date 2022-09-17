@@ -17,12 +17,13 @@ import { endpoints } from '../../../../constants/configuration';
 import SwapVerticalCircleIcon from '@mui/icons-material/SwapVerticalCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import Divider from '@mui/material/Divider';
+import FlagIcon from '@mui/icons-material/Flag';
 import moment from 'moment';
 
 const initFilters = {
     origin_country_id: null,
     origin_country_name: '',
-    dest_country_id: null,
+    destination_country_id: null,
     destination_country_name: '',
     start_date: moment(),
     end_date: moment()
@@ -33,6 +34,9 @@ const FlightsSearchDialog = (props) => {
     const { open, handleSearch, handleClose, countries } = props;
     const [filters, setFilters] = useState(initFilters);
     const [error, setError] = useState('');
+
+    const origCountryFlagUrl = filters.origin_country_name ? (`url(${endpoints.countriesFlags}${filters.origin_country_name})`).replace(' ', '%20'): null;
+    const destCountryFlagUrl = filters.destination_country_name ? (`url(${endpoints.countriesFlags}${filters.destination_country_name})`).replace(' ', '%20') : null;
 
     const dispatch = useDispatch();
 
@@ -83,6 +87,25 @@ const FlightsSearchDialog = (props) => {
             const newFilters = {
                 ...filters,
                 [`${type}_date`]: value
+            }
+            setFilters(newFilters);
+        }
+        catch (err) {
+            handleError(err);
+        }
+    }
+    const handleSwitchDestinations = () => {
+        try {
+            const origin_id_temp = filters.origin_country_id;
+            const origin_name_temp = filters.origin_country_name;
+            const destination_id_temp = filters.destination_country_id;
+            const destination_name_temp = filters.destination_country_name;
+            const newFilters = {
+                ...filters,
+                destination_country_id: origin_id_temp,
+                destination_country_name: origin_name_temp,
+                origin_country_id: destination_id_temp,
+                origin_country_name: destination_name_temp
             }
             setFilters(newFilters);
         }
@@ -149,59 +172,43 @@ const FlightsSearchDialog = (props) => {
                     </HorizonStack>
                     <HorizonStack height={40} sx={{ marginBottom: '25px' }}>
                         <Autocomplete
+                            freeSolo
                             id="country-select-origin"
+                            disableClearable
+                            value={filters.origin_country_name}
+                            options={countries.map((option) => option.name)}
+                            onChange={(event, name) => {
+                                handleCountryChanged('origin', name)
+                            }}
                             sx={{
-                                width: 240,
-                                marginRight: '5px',
-                                //border: '1px solid #15291b',
-                                borderRadius: '0px'
+                                width: 0.5, marginRight: '5px'
                             }}
-                            onChange={(event, country) => {
-                                handleCountryChanged('origin', (country && country.name) || '')
-                            }}
-                            size='small'
-                            options={countries}
-                            autoHighlight
-                            getOptionLabel={(option) => option.name}
-                            renderOption={(props, option) => (
-                                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                    <img
-                                        loading="lazy"
-                                        width="20"
-                                        height="15"
-                                        src={`${endpoints.countriesFlags}${option.name}`}
-                                        srcSet={`${endpoints.countriesFlags}${option.name}`}
-                                        alt=""
-                                    />
-                                    {option.name}
-                                </Box>
-                            )}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
-                                    value={filters.origin_country_name || ''}
+                                    size="small"
                                     label="From Country"
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        autoComplete: 'new-password'// disable autocomplete and autofill
-                                        // startAdornment: <InputAdornment position="start">
-                                        //     <FlagIcon sx={{ color: '#15291b' }} />
-                                        // </InputAdornment>,
-                                        // endAdornment: <InputAdornment position="end">
-                                        //     <div style={{
-                                        //         backgroundImage: '',
-                                        //         backgroundSize: 'cover',
-                                        //         width: '3rem',
-                                        //         height: '2rem',
-                                        //         backgroundRepeat: 'no-repeat'
-                                        //     }}>
-                                        //     </div>
-                                        // </InputAdornment>
-                                    }}
                                     onChange={
                                         (e) => handleCountryChanged('origin', e.target.value)
                                     }
-                                    size='small'
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        type: 'search',
+                                        startAdornment: <InputAdornment position="start">
+                                            <FlagIcon sx={{ color: '#15291b' }} />
+                                        </InputAdornment>,
+                                        endAdornment: <InputAdornment position="end">
+                                            <div style={{
+                                                backgroundImage: origCountryFlagUrl,
+                                                backgroundSize: 'cover',
+                                                width: '3rem',
+                                                height: '2rem',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundPosition : 'center'
+                                            }}>
+                                            </div>
+                                        </InputAdornment>
+                                    }}
 
                                 />
                             )}
@@ -214,12 +221,19 @@ const FlightsSearchDialog = (props) => {
                             onChange={(newValue) => {
                                 handleDateChanged('start', newValue);
                             }}
+                            InputAdornmentProps={{ position: 'start' }}
                             renderInput={(params) =>
                                 <TextField size='small'
                                     sx={{
-                                        width: 240, marginLeft: '5px',
+                                        width: 0.5, marginLeft: '5px',
                                         //border: '1px solid #15291b',
-                                        borderRadius: '0px'
+                                        borderRadius: '0px',
+                                        '& .MuiSvgIcon-root': {
+                                            color: '#15291b'
+                                        },
+                                        '& .MuiInputBase-input': {
+                                            paddingLeft: '20px'
+                                        }
                                     }} {...params}
                                     onChange={
                                         (e) => handleDateChanged('start', e.target.value)
@@ -232,45 +246,42 @@ const FlightsSearchDialog = (props) => {
                     <Divider light />
                     <HorizonStack height={40}>
                         <Autocomplete
+                            freeSolo
                             id="country-select-destination"
-                            sx={{
-                                width: 240,
-                                marginRight: '5px',
-                                //border: '1px solid #15291b',
-                                borderRadius: '0px'
+                            disableClearable
+                            value={filters.destination_country_name}
+                            options={countries.map((option) => option.name)}
+                            onChange={(event, name) => {
+                                handleCountryChanged('destination', name)
                             }}
-                            onChange={(event, country) => {
-                                handleCountryChanged('destination', (country && country.name) || '')
-                            }}
-                            size='small'
-                            options={countries}
-                            autoHighlight
-                            getOptionLabel={(option) => option.name}
-                            renderOption={(props, option) => (
-                                <Box component="li" sx={{ '& > img': { mr: 2, flexShrink: 0 } }} {...props}>
-                                    <img
-                                        loading="lazy"
-                                        width="20"
-                                        height="15"
-                                        src={`${endpoints.countriesFlags}${option.name}`}
-                                        srcSet={`${endpoints.countriesFlags}${option.name}`}
-                                        alt=""
-                                    />
-                                    {option.name}
-                                </Box>
-                            )}
+                            sx={{ width: 0.5, marginRight: '5px' }}
                             renderInput={(params) => (
                                 <TextField
                                     {...params}
+                                    size="small"
                                     label="To Country"
-                                    value={filters.destination_country_name || ''}
-                                    inputProps={{
-                                        ...params.inputProps,
-                                        autoComplete: 'new-password', // disable autocomplete and autofill
-                                    }}
                                     onChange={
                                         (e) => handleCountryChanged('destination', e.target.value)
                                     }
+                                    InputProps={{
+                                        ...params.InputProps,
+                                        type: 'search',
+                                        startAdornment: <InputAdornment position="start">
+                                            <FlagIcon sx={{ color: '#15291b' }} />
+                                        </InputAdornment>,
+                                        endAdornment: <InputAdornment position="end">
+                                            <div style={{
+                                                backgroundImage: destCountryFlagUrl,
+                                                backgroundSize: 'cover',
+                                                width: '3rem',
+                                                height: '2rem',
+                                                backgroundRepeat: 'no-repeat',
+                                                backgroundPosition : 'center'
+                                            }}>
+                                            </div>
+                                        </InputAdornment>
+                                    }}
+
                                 />
                             )}
                         />
@@ -282,15 +293,22 @@ const FlightsSearchDialog = (props) => {
                             onChange={(newValue) => {
                                 handleDateChanged('end', newValue);
                             }}
+                            InputAdornmentProps={{ position: 'start' }}
                             renderInput={(params) => <TextField size='small'
                                 sx={{
-                                    width: 240, marginLeft: '5px',
+                                    width: 0.5, marginLeft: '5px',
                                     //border: '1px solid #15291b',
-                                    borderRadius: '0px'
+                                    borderRadius: '0px',
+                                    '& .MuiSvgIcon-root': {
+                                        color: '#15291b'
+                                    },
+                                    '& .MuiInputBase-input': {
+                                        paddingLeft: '20px'
+                                    }
                                 }}
                                 {...params}
                                 onChange={
-                                    (e) => handleDateChanged('end', e.target.value)
+                                    (e) => handleDateChanged('start', e.target.value)
                                 }
                             />}
                         />
@@ -299,10 +317,11 @@ const FlightsSearchDialog = (props) => {
                 <VerticalStack justifyContent={'flex-end'}>
                     <HorizonStack height={50} alignItems={'flex-end'}>
                         <CenterBox width={0.5} alignItems={'flex-start'}
-                            sx={{ paddingLeft: '20px', paddingTop: '10px' }}
+                            sx={{ paddingLeft: '40px', paddingTop: '10px' }}
                         >
-                            <IconButton>
-                                <SwapVerticalCircleIcon sx={{ color: '#15291b', fontSize: '2.5rem' }} />
+                            <IconButton onClick={() => handleSwitchDestinations()} >
+                                <SwapVerticalCircleIcon sx={{ color: '#15291b', fontSize: '2.5rem' }}
+                                />
                             </IconButton>
                         </CenterBox>
                         <FormButton variant="contained"

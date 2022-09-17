@@ -2,8 +2,17 @@ import React from "react";
 import { VariableSizeList as List } from "react-window";
 import FlightResultDay from '../flightResultDay/FlightResultDay'
 import NoResults from "../../../../app/components/NoResults";
+import { getWindowSize, appBarHeight, layoutVerticalMarginVh } from "../../../../app/components/layout/layout";
+import { mainSurfaceTopPadding } from "../../../../App";
+import { FormFrameBoxPadding } from "../../../../app/components/FormStyles";
+import {
+    bannerPannelHeight, bannerMarginBottom,
+    searchPannelHeight, flightResultsMarginTop
+} from "../flightsList/FlightsList";
 
-const FlightSearchResults = ({flightResults}) => {
+const securitySize = 5;
+
+const FlightSearchResults = ({ flightResults }) => {
     const itemHeight = 60;
     const headerHeight = 24;
     const itemMarginTop = 5;
@@ -19,8 +28,8 @@ const FlightSearchResults = ({flightResults}) => {
         </div>
     );
 
-    if (flightResults.length === 0){
-        return <NoResults message={'Oops.. No Results. Extend your Search!'}/>
+    if (flightResults.length === 0) {
+        return <NoResults message={'Oops.. No Results. Extend your Search!'} />
     }
 
     const rowHeights = flightResults.map(row => {
@@ -32,19 +41,35 @@ const FlightSearchResults = ({flightResults}) => {
         const size = rowHeights[index];
         return size;
     }
-
+    
+    const getListHeight=()=>{
+        const windowHeight = getWindowSize().innerHeight;
+        const listCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - (2 * FormFrameBoxPadding)
+            - bannerPannelHeight
+            - bannerMarginBottom
+            - searchPannelHeight
+            - flightResultsMarginTop
+            // - securitySize;
+        
+        const listHeight = Math.round(listCalclatedHeight);
+        return listHeight
+    }
     const ListComponent = () => (
         <List
-            height={435}
+            height={getListHeight()}
             width={'100%'}
             itemCount={flightResults.length}
             itemSize={getItemSize}
         >
             {Row}
         </List>
-    );  
+    );
     return (
-        <ListComponent />       
+        <ListComponent />
     )
 }
 

@@ -4,7 +4,7 @@ import { useDispatch } from 'react-redux';
 import { unwrapResult } from '@reduxjs/toolkit'
 import Box from '@mui/material/Box';
 import InputAdornment from '@mui/material/InputAdornment';
-import { FormBox, FormFrameBox, FormButton, FormTextField, FormBoxGrid } from '../../../../app/components/FormStyles';
+import { FormBox, FormFrameBox, FormButton, FormTextField, FormBoxGrid, CenterBox } from '../../../../app/components/FormStyles';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import HttpsIcon from '@mui/icons-material/Https';
 import { useNavigate } from 'react-router-dom';
@@ -67,22 +67,25 @@ const Login = () => {
                 }}
             >
                 {/* TABS CONTAINER */}
-                <Box sx={{
+                <CenterBox sx={{
                     backgroundColor: '#15291b',
                     marginBottom: '0px !important',
                     height: '40px',
                     width: '100%',
                     boxSizing: 'border-box',
-                    borderRadius: '4px'
+                    borderRadius: '4px',
+                    color : 'white',
+                    fontSize :'0.9rem'
                 }}>
-                    <Tabs
+                    GET STARTED !
+                    {/* <Tabs
                         variant="scrollable"
                         scrollButtons="auto"
                         aria-label="scrollable auto tabs example"
                     >
                         <Tab label="Get Started !" sx={{ color: 'white', width: '100%' }} />
-                    </Tabs>
-                </Box>
+                    </Tabs> */}
+                </CenterBox>
                 {/* FORM CONTAINER 1*/}
                 <FormBox
                     sx={{

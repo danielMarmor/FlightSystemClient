@@ -10,7 +10,7 @@ import {
     PrimaryTextTypography,
     AutoCompleteBox,
     FormButton,
-    LeftCenterBox
+    FormFrameBoxPadding
 } from '../../../../app/components/FormStyles';
 import SearchLine from '../../../../app/components/searchLine/SearchLine';
 import {
@@ -34,10 +34,20 @@ import { CompareByCountryName } from '../../../../utilities/compare';
 import { catchAppError } from '../../../../app/appSlice';
 import { DashboardErrorTemplate } from '../../../../constants/enums';
 import { endpoints } from '../../../../constants/configuration';
+import { getWindowSize } from '../../../../app/components/layout/layout';
+import { layoutVerticalMarginVh, appBarHeight } from '../../../../app/components/layout/layout';
+import { mainSurfaceTopPadding } from '../../../../App';
 import moment from 'moment';
 import { maxWidth } from '@mui/system';
 
 const searchInputsHeight = 24;
+const formBoxFrameBorder = 8;
+const headerHeight= 40;
+const headerMargin = 10;
+const searchHeight = 40;
+const searchMargin = 10;
+const securitySize = 5;
+
 const primaryColor = '#15291b';
 const FORMAT = 'DD/MM/YYYY';
 const MIN_DATE = '01/07/2022';
@@ -95,7 +105,7 @@ const DashboardSearch = ({ countries }) => {
     }
 
     const getCountryImageUrl = (name) => {
-        const countryFlagUrl = `url(${endpoints.countriesFlags}${name})`;
+        const countryFlagUrl = (`url(${endpoints.countriesFlags}${name})`).replace(' ', '%20');
         return countryFlagUrl;
     }
 
@@ -182,100 +192,15 @@ const DashboardSearch = ({ countries }) => {
         }
         loadDashBoards(initParams);
     }, [])
-    // return [
-    //     <Box>
-    //         <FormGroup row fullWidth sx={{display:'flex', justifyContent: 'space-between'}}>
-    //             <FormControlLabel sx={{marginRight : 5}}
-    //                 labelPlacement='start' control={<DatePicker
-    //                     value={'04/05/2022'}
-    //                     inputFormat="DD/MM/YYYY"
-    //                     onChange={(newValue) => {
-    //                         handleDateChange('from', newValue);
-    //                     }}
-    //                     errorMessage={''}
-    //                     renderInput={(params) =>
-    //                         <TextField label="xxxxx"
-    //                         InputProps={{disableUnderline: true}}
-    //                              required={false}
-    //                             variant='standard'
-    //                             size={'small'}
-    //                             sx={{
-    //                                 input :{
-    //                                     padding : 0,
-    //                                     width:'fit-content'
-
-    //                                 },
-    //                                 borderWidth : 1,
-    //                                 borderColor : 'black',
-    //                                 borderStyle : 'solid',
-    //                                 borderRadius: 0,                   
-    //                                 backgroundColor : 'white',
-
-
-    //                             }}
-    //                             {...params} fullWidth={false}/>
-
-    //                     }
-    //                 />} label="From Date: " />
-    //                             <FormControlLabel
-    //                                 labelPlacement='start' control={<DatePicker
-    //                                     value={filters.fromDate || ''}
-    //                                     inputFormat="DD/MM/YYYY"
-    //                                     onChange={(newValue) => {
-    //                                         handleDateChange('from', newValue);
-    //                                     }}
-    //                                     renderInput={(params) =>
-    //                                         <TextField
-    //                                             variant='standard'
-    //                                             size={'small'}
-    //                                             sx={{
-    //                                                 borderRadius: 0,
-    //                                                 backgroundColor: 'white',
-    //                                                 borderColor: 'black',
-    //                                                 borderStyle: 'solid',
-    //                                                 borderWidth: 1,
-    //                                                 maxWidth: 100
-    //                                             }}
-    //                                             {...params} />
-
-    //                                     }
-    //                                 />} label="From Date: " />
-    //                             <FormControlLabel
-    //                                 labelPlacement='start' control={<DatePicker
-    //                                     value={filters.fromDate || ''}
-    //                                     inputFormat="DD/MM/YYYY"
-    //                                     onChange={(newValue) => {
-    //                                         handleDateChange('from', newValue);
-    //                                     }}
-    //                                     renderInput={(params) =>
-    //                                         <TextField
-    //                                             variant='standard'
-    //                                             size={'small'}
-    //                                             sx={{
-    //                                                 borderRadius: 0,
-    //                                                 backgroundColor: 'white',
-    //                                                 borderColor: 'black',
-    //                                                 borderStyle: 'solid',
-    //                                                 borderWidth: 1,
-    //                                                 maxWidth: 100
-    //                                             }}
-    //                                             {...params} />
-
-    //                                     }
-    //                                 />} label="From Date: " />
-    //                         </FormGroup>
-    //     </Box>
-
-    // ];
     return [
-        <Box sx={{ width: 0.25, padding: '0' }}
+        <Box sx={{ width: 0.3, padding: '0' }}
             display={'flex'}
             flexDirection={'row'}
             justifyContent={'flex-start'}
             alignItems={'center'}
         >
             <PrimaryTextTypography sx={{
-                width: 'auto',
+                width:  0.4,
                 fontSize: '1rem',
                 margin: '0',
                 padding: '0'
@@ -302,13 +227,25 @@ const DashboardSearch = ({ countries }) => {
                         sx={{
                             backgroundColor: 'white',
                             margin: '3px 0px',
-                            width: '125px',
+                            width:  0.6,
                             height: searchInputsHeight,
                             border: '1px solid black',
                             textAlign: 'center',
+                            '& .MuiInputBase-root': {
+                                height: 22
+                            },
+                            '& .MuiInputBase-input': {
+                                padding: '0px'
+                            },
+                            '& .MuiInputAdornment-root': {
+                                paddingLeft: '5px'
+                            },
                             '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                                 borderBottom: 'none'
 
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#15291b'
                             }
                         }}
                         {...params} />
@@ -316,7 +253,7 @@ const DashboardSearch = ({ countries }) => {
             />
         </Box>,
 
-        <Box sx={{ width: 0.25, padding: '0', margin: '0' }}
+        <Box sx={{ width: 0.3, padding: '0', marginLeft :'10px' }}
             display={'flex'}
             flexDirection={'row'}
             justifyContent={'flex-start'}
@@ -324,7 +261,7 @@ const DashboardSearch = ({ countries }) => {
         >
             <PrimaryTextTypography
                 sx={{
-                    width: 'auto',
+                    width: 0.3,
                     fontSize: '1rem'
                 }}
             >To Date:
@@ -348,13 +285,25 @@ const DashboardSearch = ({ countries }) => {
                         sx={{
                             backgroundColor: 'white',
                             margin: 'auto',
-                            width: '125px',
+                            width: 0.6,
                             height: searchInputsHeight,
                             border: '1px solid black',
                             textAlign: 'center',
+                            '& .MuiInputBase-root': {
+                                height: 22
+                            },
+                            '& .MuiInputBase-input': {
+                                padding: '0px'
+                            },
+                            '& .MuiInputAdornment-root': {
+                                paddingLeft: '5px'
+                            },
                             '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                                 borderBottom: 'none'
 
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#15291b'
                             }
                         }}
                         {...params} />
@@ -385,7 +334,7 @@ const DashboardSearch = ({ countries }) => {
                 renderInput={(params) => (
                     <TextField
                         size="small"
-                        sx={{ input: { textAlign: "center" }, width: '150px' }}
+                        sx={{ input: { textAlign: "center" }, width: '135px' }}
                         {...params}
                         placeholder={'All'}
                         variant="standard"
@@ -452,6 +401,23 @@ const Dashboard = ({ countries }) => {
         <ChartAirlineSales />,
         <ChartCapcityUtils />
     ];
+
+    const getCanvasHeight = () => {
+        const windowHeight = getWindowSize().innerHeight;
+        const gridCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - formBoxFrameBorder
+            - (2 * FormFrameBoxPadding)
+            - headerHeight
+            - headerMargin
+            - searchHeight
+            - searchMargin      
+            - securitySize;
+        const gridHeight = Math.round(gridCalclatedHeight);
+        return gridHeight;
+    }
 
     return <FormFrameBox sx={{
         width: '100%',

@@ -93,42 +93,42 @@ const AirlineDetails = () => {
     }, []);
     const formCtrls = [
         //(1) NAME
-        <IconStack
+        <IconStack key={1}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Airline Name:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{`${details.name || ''}`}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(2) USER NAME
-        <IconStack
+        <IconStack key={2}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>User Name:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.username || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(3) PASSWORD
-        <IconStack
+        <IconStack key={3}
             icon={<LockIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Password:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.password || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(4)EMAIL
-        <IconStack
+        <IconStack key={4}
             icon={<EmailIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Email:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.email || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(5)COUNTRY  NAME
-        <IconStack
+        <IconStack key={5}
             icon={<FlagIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Country Name:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.country_name || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(6)AVIATION SYMBOL
-        <IconStack
+        <IconStack key={6}
             icon={<FlightTakeoffIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Symbol:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.iata || ''}</SecTextTypography>}
@@ -152,6 +152,12 @@ const AirlineDetails = () => {
         gaps: {
             rowGap: 30,
             colGap: 20
+        },
+        padding :{
+          top : 10,
+          bottom : 10,
+          right : 5,
+          left : 5
         }
     }
     return (

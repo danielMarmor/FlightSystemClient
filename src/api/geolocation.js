@@ -100,15 +100,21 @@ const calcDistance = (origin, destination) => {
 }
 
 export const getLocation = async (countryName) => {
-    const requestedUrl = `${geolocation.googlApiBaseUrl}address=${countryName}&key=${geolocation.geocoderApiKey}`;
-    const response = await axios.get(requestedUrl);
-    const data = response.data;
-    const results = data.results;
-    if (results.length == 0) {
+    try {
+        const requestedUrl = `${geolocation.googlApiBaseUrl}address=${countryName}&key=${geolocation.geocoderApiKey}`;
+        const response = await axios.get(requestedUrl);
+        const data = response.data;
+        const results = data.results;
+        if (results.length == 0) {
+            return null;
+        }
+        const location = results[0].geometry.location;
+        return location;
+    }
+    catch (err) {
+        console.log(err.message);
         return null;
     }
-    const location = results[0].geometry.location;
-    return location;
 }
 
 const deg2rad = (degrees) => {

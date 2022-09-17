@@ -1,8 +1,8 @@
 import React from 'react'
 import { Box, Stack } from '@mui/material'
 
-const ActionGrid = ({ formCtrls, formActions, config , startFlex}) => {
-    const { proportions, grdDimentions, gaps } = config;
+const ActionGrid = ({ formCtrls, formActions, config }) => {
+    const { proportions, grdDimentions, gaps, padding } = config;
     const { relGrid, relActions } = proportions;
     const { horiz, vert } = grdDimentions;
     const { rowGap, colGap } = gaps;
@@ -14,7 +14,11 @@ const ActionGrid = ({ formCtrls, formActions, config , startFlex}) => {
             alignItems={'center'}
             width={'100%'}
             height={'100%'}
-            p={'5px'} m={0}
+            sx={{
+                paddingLeft: `${padding.left}px`,
+                paddingRight: `${padding.right}px`
+            }}
+            m={0}
         >
             <Box flex={relGrid}
                 width={'100%'}
@@ -22,8 +26,13 @@ const ActionGrid = ({ formCtrls, formActions, config , startFlex}) => {
                 gridTemplateColumns={`repeat(${horiz}, 1fr)`}
                 gridTemplateRows={`repeat(${vert}, 1fr)`}
                 alignContent={'space-between'}
-                sx={{rowGap:`${rowGap}px`, columnGap:`${colGap}px`}}
-                >  
+                sx={{
+                    rowGap: `${rowGap}px`,
+                    columnGap: `${colGap}px`,
+                    paddingTop: `${padding.top}px`,
+                    paddingBottom: `${padding.bottom}px`
+                }}
+            >
                 {formCtrls.map(ctrl => ctrl)}
             </Box>
             <Stack flex={relActions}
@@ -33,9 +42,9 @@ const ActionGrid = ({ formCtrls, formActions, config , startFlex}) => {
                 alignItems={'flex-end'}
                 height={'100%'}
                 width={'100%'}
-                p={0} m={0} 
+                p={0} m={0}
                 spacing={`${colGap}px`}>
-               {formActions.map(action => action)}
+                {formActions.map(action => action)}
             </Stack>
         </Stack>
     )

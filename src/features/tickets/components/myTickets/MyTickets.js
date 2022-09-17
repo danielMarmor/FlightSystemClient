@@ -7,7 +7,8 @@ import {
     HorizonStack,
     SubHeaderTypography,
     FormButton,
-    CenterBox
+    CenterBox,
+    FormFrameBoxPadding
 } from '../../../../app/components/FormStyles'
 import { DataGrid } from '@mui/x-data-grid';
 import { Typography } from '@mui/material';
@@ -19,9 +20,15 @@ import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
 import { TicketsErrorTemplate, TicketsSuccesTemplate } from '../../../../constants/enums';
 import { numberWithCommas } from '../../../../utilities/strings';
 import NoResults from '../../../../app/components/NoResults';
+import { getWindowSize, layoutVerticalMarginVh, appBarHeight } from '../../../../app/components/layout/layout';
+import { mainSurfaceTopPadding } from '../../../../App';
 import moment from 'moment';
 
 const primaryColor = '#15291b';
+const headingHeight = 40;
+const headingMarginBottom = 5;
+const searchLineHeight = 40;
+const gridTopMargin = 10;
 
 const MyTickets = () => {
     const navigate = useNavigate();
@@ -32,7 +39,7 @@ const MyTickets = () => {
     const sumAmountTickets = tickets.reduce((a, b) => { return a + parseFloat(b.price) }, 0).toFixed(2);
 
     const getCountryImageUrl = (name) => {
-        const countryFlagUrl = `url(${endpoints.countriesFlags}${name})`;
+        const countryFlagUrl = (`url(${endpoints.countriesFlags}${name})`).replace(' ', '%20');
         return countryFlagUrl;
     }
 
@@ -56,6 +63,22 @@ const MyTickets = () => {
     }
     const handleError = (err) => {
         dispatch(catchAppError(TicketsErrorTemplate(err.message)));
+    }
+
+    const getGridHeight=()=>{
+        const windowHeight = getWindowSize().innerHeight;
+        const gridCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - (2 * FormFrameBoxPadding)
+            - headingHeight
+            - headingMarginBottom
+            - searchLineHeight
+            - gridTopMargin;
+            // - securitySize;
+        const gridHeight = Math.round(gridCalclatedHeight);
+        return gridHeight;
     }
 
     const columns = [
@@ -182,7 +205,7 @@ const MyTickets = () => {
     }
     else {
         renderTickets = (
-            <div style={{ height: 475, width: '100%', overflow: 'auto', marginTop: 10 }}>
+            <div style={{ height: getGridHeight(), width: '100%', overflow: 'auto', marginTop: gridTopMargin }}>
                 <DataGrid
                     rows={tickets}
                     columns={columns}
@@ -219,12 +242,12 @@ const MyTickets = () => {
         }}>
             <VerticalStack>
                 {/* HEADER */}
-                <HorizonStack height={'40px'}
+                <HorizonStack height={`${headingHeight}px`}
                     sx={{
                         borderRadius: '4px',
                         backgroundColor: primaryColor,
                         paddingLeft: '10px',
-                        marginBottom: '5px'
+                        marginBottom: `${headingMarginBottom}px`
                     }}>
                     <SubHeaderTypography flex={0.3} sx={{ textAlign: 'left' }}>
                         Purchases

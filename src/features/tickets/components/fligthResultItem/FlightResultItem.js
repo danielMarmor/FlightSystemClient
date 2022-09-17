@@ -175,8 +175,8 @@ const FlightResultItem = (props) => {
   const logoWidth = 100;
   const logoHeight = 40;
   const airlineLogoUrl = !flight.airline_iata || flight.airline_iata.length < 2 ? null : `url(${airConfig.logoPrefix}${logoWidth}/${logoHeight}/${flight.airline_iata}${airConfig.logoPostfix})`
-  const origCountryFlag = `url(${endpoints.countriesFlags}${flight.origin_country_name})`;
-  const destCountryFlag = `url(${endpoints.countriesFlags}${flight.dest_country_name})`;
+  const origCountryFlag = (`url(${endpoints.countriesFlags}${flight.origin_country_name})`).replace(' ', '%20');
+  const destCountryFlag = (`url(${endpoints.countriesFlags}${flight.dest_country_name})`).replace(' ', '%20');
 
   const flightDuration = FlightModel.getDurationFormat(flight.departure_time, flight.landing_time);
   return (

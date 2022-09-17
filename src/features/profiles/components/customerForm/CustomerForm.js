@@ -37,7 +37,7 @@ import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { FormControl, InputLabel, Select, OutlinedInput, MenuItem, IconButton, Typography } from '@mui/material';
 import { GenerateProfilePhoto } from '../../../../api/photoGenrator';
 import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
-import Error from '../../../../app/components/Error';
+import ErrorPage from '../../../../app/components/ErrorPage';
 
 const CustomerForm = () => {
     const navigate = useNavigate();
@@ -119,7 +119,7 @@ const CustomerForm = () => {
             if (!details.gender) {
                 handleError({ message: 'Please select Man/Woman' });
                 return;
-            }        
+            }
             setPhotoIndicators('init');
 
             const search = `${details.gender} face`
@@ -206,36 +206,36 @@ const CustomerForm = () => {
     const formCtrls = [
         //children, name, label, details, icon, handleChange
         //USER NAME
-        <IconTextBox name={'username'} label={'User Name'} details={details} validation={validations(fields.username)}
+        <IconTextBox key={1} name={'username'} label={'User Name'} details={details} validation={validations(fields.username)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'password'} label={'Password'} details={details} validation={validations(fields.password)}
+        <IconTextBox key={2} name={'password'} label={'Password'} details={details} validation={validations(fields.password)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'email'} label={'Email'} details={details} validation={validations(fields.email)}
+        <IconTextBox key={3} name={'email'} label={'Email'} details={details} validation={validations(fields.email)}
             icon={<EmailIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
+        <IconTextBox key={4} name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'first_name'} label={'First Name'} details={details} validation={validations(fields.first_name)}
+        <IconTextBox key={5} name={'first_name'} label={'First Name'} details={details} validation={validations(fields.first_name)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'last_name'} label={'Last Name'} details={details} validation={validations(fields.last_name)}
+        <IconTextBox key={6} name={'last_name'} label={'Last Name'} details={details} validation={validations(fields.last_name)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'phone_number'} label={'Phone Number'} details={details} validation={validations(fields.phone_number)}
+        <IconTextBox key={7} name={'phone_number'} label={'Phone Number'} details={details} validation={validations(fields.phone_number)}
             icon={<LocalPhoneIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'credit_card_number'} label={'Credit Card Number'} details={details} validation={validations(fields.credit_card_number)}
+        <IconTextBox key={8} name={'credit_card_number'} label={'Credit Card Number'} details={details} validation={validations(fields.credit_card_number)}
             icon={<AddCardIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'address'} label={'Home Address'} details={details} validation={validations(fields.address)}
+        <IconTextBox key={9} name={'address'} label={'Home Address'} details={details} validation={validations(fields.address)}
             icon={<HomeIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <IconTextBox name={'addressCountry'} label={'Country'} details={details}
+        <IconTextBox key={10} name={'addressCountry'} label={'Country'} details={details}
             icon={<FlagIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
 
-        <FormControl fullWidth>
+        <FormControl key={11} fullWidth>
             <InputLabel shrink={true}>Gender For Photo</InputLabel>
             <Select
                 size="small"
@@ -255,15 +255,18 @@ const CustomerForm = () => {
                 <MenuItem key={2} value={'woman'}>Woman</MenuItem>
             </Select>
         </FormControl>,
-        <IconButton sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            padding: '0px 0px 0px 5px'
-        }}>
+        <IconButton
+            key={12}
+            onClick={() => handleGeneratePhoto()}
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                padding: '0px 0px 0px 5px'
+            }}
+        >
             <AddAPhotoIcon
-                onClick={handleGeneratePhoto}
                 sx={{ color: '#15291b', fontSize: '40px' }} />
             <Typography variant='body2' component='div'
                 sx={{ color: '#15291b', marginLeft: '5px' }}>
@@ -274,13 +277,13 @@ const CustomerForm = () => {
 
 
     const formActions = [
-        <FormButton type='submit'
+        <FormButton key={1} type='submit'
             style={{ color: 'white', flex: '1' }}
         // onClick={() => handleSubmit()}
         >
             Save
         </FormButton>,
-        <FormButton
+        <FormButton key={2}
             style={{ color: 'white', flex: '1' }}
             onClick={() => handleCancel()}
         >
@@ -301,17 +304,23 @@ const CustomerForm = () => {
         gaps: {
             rowGap: 25,
             colGap: 20
+        },
+        padding: {
+            top: 15,
+            bottom: 10,
+            right: 5,
+            left: 5
         }
     };
 
     let renderPhoto;
-    if (photoLoading){
-        renderPhoto =  (<CircularIndeterminate />);
+    if (photoLoading) {
+        renderPhoto = (<CircularIndeterminate />);
     }
-    else if (photoError){
-        renderPhoto = (<Error />);
+    else if (photoError) {
+        renderPhoto = (<ErrorPage />);
     }
-    else{
+    else {
         renderPhoto = (<CenterBox id='centerBox' sx={{
             width: '100%',
             height: '100%',
@@ -329,7 +338,7 @@ const CustomerForm = () => {
         <DoubleForm
             header={
                 <HorizonStack>
-                    <HorizonStack width={'50%'}
+                    <HorizonStack width={'100%'}
                         justifyContent={'flex-start'}>
                         <CenterBox width={'40px'} height={'40px'}>
                             <Avatar

@@ -8,6 +8,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { CssBaseline, makeStyles } from '@mui/material';
 import { QueryClient, QueryClientProvider } from 'react-query'
+import { stopReportingRuntimeErrors } from "react-error-overlay";
 
 const theme = createTheme({
   palette: {
@@ -25,6 +26,7 @@ const theme = createTheme({
 console.log('index start');
 
 
+
 const queryClient = new QueryClient({
   defaultOptions:{
     queries:{
@@ -34,6 +36,7 @@ const queryClient = new QueryClient({
   }
 });
 
+stopReportingRuntimeErrors();
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

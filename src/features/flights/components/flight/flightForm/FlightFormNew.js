@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { FlightModel, costPerKm, speed } from '../../../models/flightModel';
 import DoubleForm from '../../../../../app/components/layout/DoubleForm';
 import ActionGrid from '../../../../../app/components/ActionGrid';
-import { AutoCompleteBox } from '../../../../../app/components/FormStyles';
+import { AutoCompleteBox, DatePickerStyle } from '../../../../../app/components/FormStyles';
 import { SelectAirline, SelectFlightById } from '../../../fligthSlice';
 import { CompareByCountryName } from '../../../../../utilities/compare';
 import { CapacityModels } from '../../../../../constants/commonLists';
@@ -75,8 +75,8 @@ const FlightFormNew = ({ countries }) => {
   //HEADER 
   const [flightData, setFlightData] = useState(initFlight);
 
-  const origCountryFlagUrl = flightData.origin_country_name ? `url(${endpoints.countriesFlags}${flightData.origin_country_name})` : null;
-  const destCountryFlagUrl = flightData.destination_country_name ? `url(${endpoints.countriesFlags}${flightData.destination_country_name})` : null;
+  const origCountryFlagUrl = flightData.origin_country_name ? (`url(${endpoints.countriesFlags}${flightData.origin_country_name})`).replace(' ', '%20'): null;
+  const destCountryFlagUrl = flightData.destination_country_name ? (`url(${endpoints.countriesFlags}${flightData.destination_country_name})`).replace(' ', '%20') : null;
 
   useEffect(() => {
     try {
@@ -250,10 +250,16 @@ const FlightFormNew = ({ countries }) => {
     gaps: {
       rowGap: 25,
       colGap: 20
+    },
+    padding: {
+      top: 10,
+      bottom: 10,
+      right: 5,
+      left: 5
     }
   };
   const formCtrls = [
-    <AutoCompleteBox
+    <AutoCompleteBox key={1}
       freeSolo
       id="originCountry"
       name="originCountry"
@@ -284,7 +290,8 @@ const FlightFormNew = ({ countries }) => {
                 backgroundSize: 'cover',
                 width: '2.1rem',
                 height: '1.4rem',
-                backgroundRepeat: 'no-repeat'
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center'
               }}>
               </div>
             </InputAdornment>
@@ -295,7 +302,7 @@ const FlightFormNew = ({ countries }) => {
         />
       )}
     />,
-    <DateTimePicker
+    <DateTimePicker key={2}
       label="Departure Time"
       value={flightData.departure_time || ''}
       inputFormat="DD/MM/yyyy HH:mm"
@@ -303,7 +310,11 @@ const FlightFormNew = ({ countries }) => {
       onChange={(newValue) => {
         handleDepartureChanged(newValue);
       }}
+      // PopperProps={{
+      //   sx: DatePickerStyle
+      // }}
       InputAdornmentProps={{ position: 'start' }}
+      InputProps={{ sx: { "& .MuiSvgIcon-root": { color: '#15291b' } } }}
       renderInput={(params) =>
         <TextField
           required={validations(fields.departure_time).required}
@@ -316,7 +327,7 @@ const FlightFormNew = ({ countries }) => {
       }
     />,
     //DEST COUNTRY
-    <AutoCompleteBox
+    <AutoCompleteBox key={3}
       freeSolo
       id="destCountry"
       name="destCountry"
@@ -347,7 +358,8 @@ const FlightFormNew = ({ countries }) => {
                 backgroundSize: 'cover',
                 width: '2.1rem',
                 height: '1.4rem',
-                backgroundRepeat: 'no-repeat'
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center'
               }}>
               </div>
             </InputAdornment>
@@ -359,7 +371,7 @@ const FlightFormNew = ({ countries }) => {
       )}
     />,
     //LANDING TIME
-    <DateTimePicker
+    <DateTimePicker key={4}
       label="Landing Time"
       value={flightData.landing_time || ''}
       inputFormat="DD/MM/yyyy HH:mm"
@@ -367,7 +379,11 @@ const FlightFormNew = ({ countries }) => {
       onChange={(newValue) => {
         handleLandingChanged(newValue);
       }}
+      // PopperProps={{
+      //   sx: DatePickerStyle
+      // }}
       InputAdornmentProps={{ position: 'start' }}
+      InputProps={{ sx: { "& .MuiSvgIcon-root": { color: '#15291b' } } }}
       renderInput={(params) =>
         <TextField
           required={validations(fields.landing_time).required}
@@ -380,7 +396,7 @@ const FlightFormNew = ({ countries }) => {
       }
     />,
     //PLAIN AND CAPACITY (NUM SEATS) 
-    <FormControl fullWidth>
+    <FormControl key={5} fullWidth>
       <InputLabel shrink={true}>Capacity</InputLabel>
       <Select
         size="small"
@@ -403,7 +419,7 @@ const FlightFormNew = ({ countries }) => {
         )}
       </Select>
     </FormControl>,
-    <TextField size='small'
+    <TextField key={6} size='small'
       name='distance'
       label="Distance (Km)"
       variant='outlined'
@@ -423,7 +439,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={7} size='small'
       name='price'
       label="Price Per Ticket"
       variant='outlined'
@@ -442,7 +458,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={8} size='small'
       name='fuelCost'
       label="Fuel Cost/ Km"
       variant='outlined'
@@ -459,7 +475,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={9} size='small'
       name='totalIncome'
       label="Total Income (Potential)"
       variant='outlined'
@@ -476,7 +492,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={10} size='small'
       name='totaCost'
       label="Total Cost"
       variant='outlined'
@@ -493,7 +509,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={11} size='small'
       name='profit'
       label="Profit"
       variant='outlined'
@@ -510,7 +526,7 @@ const FlightFormNew = ({ countries }) => {
         </InputAdornment>
       }}
     />,
-    <TextField size='small'
+    <TextField key={12} size='small'
       name='margin'
       label="Margin (%)"
       variant='outlined'
@@ -530,12 +546,12 @@ const FlightFormNew = ({ countries }) => {
 
   ];
   const formActions = [
-    <FormButton type='submit'
+    <FormButton key={1} type='submit'
       style={{ color: 'white', flex: '1' }}
     >
       Save
     </FormButton>,
-    <FormButton
+    <FormButton key={2}
       style={{ color: 'white', flex: '1' }}
       onClick={() => handleCancel()}
     >
@@ -583,11 +599,11 @@ const FlightFormNew = ({ countries }) => {
           </HorizonStack>
           <HorizonStack sx={{ width: 0.25 }}
             justifyContent={'flex-start'}>
-               <SubHeaderTypography>{`${(flight && flight.flightNumber) || ''}`}</SubHeaderTypography>
+            <SubHeaderTypography>{`${(flight && flight.flightNumber) || ''}`}</SubHeaderTypography>
           </HorizonStack>
-          <HorizonStack sx={{ width: 0.25 , paddingRight: '15px'}}
+          <HorizonStack sx={{ width: 0.25, paddingRight: '15px' }}
             justifyContent={'flex-end'}>
-               <SubHeaderTypography>{(flight && `Sold Tickets: ${flight.num_seats - flight.remaining_tickets}`) || ''}</SubHeaderTypography>
+            <SubHeaderTypography>{(flight && `Sold Tickets: ${flight.num_seats - flight.remaining_tickets}`) || ''}</SubHeaderTypography>
           </HorizonStack>
         </HorizonStack>
       }

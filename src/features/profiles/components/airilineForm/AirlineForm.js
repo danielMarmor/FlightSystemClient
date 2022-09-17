@@ -45,7 +45,7 @@ const AirlineForm = ({ countries }) => {
     const [details, setDetails] = useState({});
     const navigate = useNavigate();
 
-    const flagImageUrl = details.country_name ? `${endpoints.countriesFlags}${details.country_name}` : null;
+    const flagImageUrl = details.country_name ? (`${endpoints.countriesFlags}${details.country_name}`).replace(' ', '%20') : null;
 
     const airConfig = endpoints.airlineCompanies;
     const logoWidth = 400;
@@ -190,19 +190,19 @@ const AirlineForm = ({ countries }) => {
     const formCtrls = [
         //children, name, label, details, icon, handleChange
         //USER NAME
-        <IconTextBox name={'username'} label={'User Name'} details={details} validation={validations(fields.username)}
+        <IconTextBox key={1} name={'username'} label={'User Name'} details={details} validation={validations(fields.username)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'password'} label={'Password'} details={details} validation={validations(fields.password)}
+        <IconTextBox key={2} name={'password'} label={'Password'} details={details} validation={validations(fields.password)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'email'} label={'Email'} details={details} validation={validations(fields.email)}
+        <IconTextBox key={3} name={'email'} label={'Email'} details={details} validation={validations(fields.email)}
             icon={<EmailIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
+        <IconTextBox key={4} name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validations(fields.confirmPassword)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'name'} label={'Airline Company Name'} details={details} validation={validations(fields.name)}
+        <IconTextBox key={5} name={'name'} label={'Airline Company Name'} details={details} validation={validations(fields.name)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'iata'} label={'Aviation Symbol'} details={details} validation={validations(fields.iata)}
+        <IconTextBox key={6} name={'iata'} label={'Aviation Symbol'} details={details} validation={validations(fields.iata)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <AutoCompleteBox
+        <AutoCompleteBox key={7}
             freeSolo
             id="homeCountry"
             name="country_name"
@@ -240,7 +240,7 @@ const AirlineForm = ({ countries }) => {
                 />
             )}
         />,
-        <NavLink to='/Flights' style={{ fontSize: '0.9rem' }}
+        <NavLink key={8} to='/Flights' style={{ fontSize: '0.9rem' }}
             onClick={() => handleAviationSymbolInfo}>
             About Aviation Symbol
         </NavLink>
@@ -248,13 +248,13 @@ const AirlineForm = ({ countries }) => {
 
 
     const formActions = [
-        <FormButton
+        <FormButton key={1}
             style={{ color: 'white', flex: '1' }}
             type='submit'
         >
             Save
         </FormButton>,
-        <FormButton
+        <FormButton key={2}
             style={{ color: 'white', flex: '1' }}
             onClick={() => handleCancel()}
         >
@@ -265,7 +265,7 @@ const AirlineForm = ({ countries }) => {
 
     const formConfig = {
         proportions: {
-            relGrid: 6,
+            relGrid: 3,
             relActions: 1
         },
         grdDimentions: {
@@ -273,8 +273,14 @@ const AirlineForm = ({ countries }) => {
             vert: 6
         },
         gaps: {
-            rowGap: 30,
+            rowGap: 35,
             colGap: 20
+        },
+        padding :{
+          top : 20,
+          bottom : 10,
+          right : 5,
+          left : 5
         }
     };
     return (

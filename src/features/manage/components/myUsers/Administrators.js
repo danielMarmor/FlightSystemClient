@@ -15,9 +15,20 @@ import { VariableSizeGrid as Grid } from 'react-window'
 import NoResults from '../../../../app/components/NoResults';
 import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
 import { useDispatch } from 'react-redux';
-import Error from '../../../../app/components/Error';
+import ErrorPage from '../../../../app/components/ErrorPage';
+import { getWindowSize, layoutVerticalMarginVh, appBarHeight, drawerWidth } from '../../../../app/components/layout/layout';
+import { mainSurfaceHorizontalPadding } from '../../../../App';
+import { tabsMarginBottom } from './MyUsers';
+import { FormFrameBoxPadding } from '../../../../app/components/FormStyles';
+import { totalGridSurface, mainSurfaceTopPadding,  mainSurfacWidthProportion} from '../../../../App';
 
 const searchInputsHeight = 24;
+const tabsHeight = 48;
+const searchHeight = 40;
+const gridMarginTop = 10;
+const formBoxFrameBorder = 8;
+const securitySize = 5;
+
 
 const initFilters = {
     search: ''
@@ -58,7 +69,7 @@ const AdministratorsSearch = ({ fetchAdministrators }) => {
 
     return ([
         //SEARCH LINE
-        <Box sx={{ flex: 5 }}>
+        <Box key={1} sx={{ flex: 5 }}>
             <TextField size='small'
                 name='search'
                 placeholder='search'
@@ -80,7 +91,7 @@ const AdministratorsSearch = ({ fetchAdministrators }) => {
                 }}
             />
         </Box>,
-        <Box sx={{ flex: 1 }}>
+        <Box key={2} sx={{ flex: 1 }}>
             <FormButton variant="contained"
                 onClick={() => handelAddNew()}
                 sx={{
@@ -92,7 +103,7 @@ const AdministratorsSearch = ({ fetchAdministrators }) => {
             >+
             </FormButton>
         </Box>,
-        <FormButton variant="contained"
+        <FormButton key={3} variant="contained"
             onClick={() => handleSearch()}
             sx={{
                 height: searchInputsHeight + 2,
@@ -156,6 +167,34 @@ const Administrators = () => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)));
     }
 
+    const getGridWidth = () => {
+        const windowWidth = getWindowSize().innerWidth;
+        const gridSurface = windowWidth  - drawerWidth;
+        const workSurface = (mainSurfacWidthProportion/totalGridSurface) *gridSurface;
+        const calclatedWidth = workSurface 
+                             - (2 * mainSurfaceHorizontalPadding)
+                             - (2 * FormFrameBoxPadding)
+        const gridWidth = Math.round(calclatedWidth);
+        return gridWidth;               
+    }
+
+    const getGridHeight = () => {
+        const windowHeight = getWindowSize().innerHeight;
+        const gridCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - formBoxFrameBorder
+            - (2 * FormFrameBoxPadding)
+            - tabsHeight
+            - tabsMarginBottom
+            - searchHeight
+            - gridMarginTop
+            - securitySize;
+        const gridHeight = Math.round(gridCalclatedHeight);
+        return gridHeight;
+    }
+
     useEffect(() => {
         fetchAdministrators(initFilters);
     }, []);
@@ -164,8 +203,8 @@ const Administrators = () => {
     if (isLoading) {
         renderAdministrators = (<CircularIndeterminate />);
     }
-    else if (isError){
-        renderAdministrators =  (<Error />);
+    else if (isError) {
+        renderAdministrators = (<ErrorPage />);
     }
     else if (!adminisirators || adminisirators.length == 0) {
         renderAdministrators = (<NoResults message={'Oops.. No Results. Extend your Search!'} />);
@@ -173,8 +212,8 @@ const Administrators = () => {
     else {
         const columnsNumber = 2;
         const rowsNumber = Math.ceil(adminisirators.length / 2);
-        const totalWidth = 884;
-        const totalHeight = 435;
+        const totalWidth = getGridWidth();
+        const totalHeight = getGridHeight();
         const colWidth = 442;
         const rowHeight = 110;
 
@@ -204,118 +243,6 @@ const Administrators = () => {
             >
                 {Cell}
             </Grid>)
-
-
-        // const rows = adminisirators;
-        // const columns = [
-        //     {
-        //         field: 'id',
-        //         headerName: 'Id',
-        //         flex: 1.5,
-        //         headerAlign: 'center',
-        //         headerClassName: 'dataGridHeader',
-        //         align: 'center',
-        //         cellClassName: 'dg-alignCenter'
-        //     }
-        //     ,
-        //     {
-        //         field: 'edit',
-        //         headerName: 'Edit',
-        //         flex: 1.5,
-        //         headerAlign: 'center',
-        //         headerClassName: 'dataGridHeader',
-        //         align: 'center',
-        //         cellClassName: 'dg-alignCenter',
-        //         renderCell: (params) => (
-        //             <IconButton sx={{ color: '#15291b' }}>
-        //                 <EditIcon />
-        //             </IconButton>
-        //         )
-        //     },
-        //     {
-        //         field: 'profile',
-        //         headerName: '',
-        //         flex: 1.5,
-        //         headerAlign: 'center',
-        //         align: 'center',
-        //         headerClassName: 'dataGridHeader',
-        //         cellClassName: 'dg-alignCenter',
-        //         renderCell: (params) => (
-        //             <NavLink to={'/Admin/Profile'}
-        //                 style={{ textDecoration: 'none' }}>
-        //                 Profile
-        //             </NavLink>
-        //         )
-        //     },
-        //     {
-        //         field: 'first_name',
-        //         headerName: 'First Name',
-        //         flex: 2.5,
-        //         headerAlign: 'center',
-        //         headerClassName: 'dataGridHeader',
-        //         align: 'center',
-        //         cellClassName: 'dg-alignCenter'
-        //     },
-        //     {
-        //         field: 'last_name',
-        //         headerName: 'Last Name',
-        //         flex: 2.5,
-        //         headerClassName: 'dataGridHeader',
-        //         headerAlign: 'center',
-        //         align: 'center',
-        //         cellClassName: 'dg-alignCenter'
-        //     },
-        //     {
-        //         field: 'email',
-        //         headerName: 'Email',
-        //         flex: 4,
-        //         headerClassName: 'dataGridHeader',
-        //         headerAlign: 'left',
-        //         align: 'left',
-        //         cellClassName: 'dg-alignCenter'
-        //     },
-        //     {
-        //         field: 'delete',
-        //         headerName: 'Delete',
-        //         flex: 1.5,
-        //         headerClassName: 'dataGridHeader',
-        //         headerAlign: 'center',
-        //         align: 'center',
-        //         cellClassName: 'dg-alignCenter',
-        //         renderCell: (params) => (
-        //             <IconButton sx={{ color: '#15291b' }}>
-        //                 <DeleteIcon />
-        //             </IconButton>
-        //         )
-        //     }
-        // ]
-        // renderAdministrators = (
-        //     <div style={{ height: 425, width: '100%', overflow: 'auto', marginTop: 10 }}>
-        //         <DataGrid
-        //             rows={rows}
-        //             columns={columns}
-        //             pageSize={12}
-        //             rowHeight={36}
-        //             hideFooter 
-        //             sx={{
-        //                 padding: '0px !important',
-        //                 margin: '0px !important',
-        //                 border: '2px solid #15291b',
-        //                 borderRadius : 0,
-        //                 '& .MuiDataGrid-columnHeaders': {
-        //                     height: '36px !important',
-        //                     minHeight: '36px !important',
-        //                     maxHeight: '36px !important',
-        //                     lineHeight: '36px !important'
-        //                 },
-        //                 '& .MuiDataGrid-columnHeaderTitle': {
-        //                     fontWeight: 'bold'
-        //                 }
-        //             }}
-
-        //         />
-        //     </div>
-        // )
     }
     return (
         <>

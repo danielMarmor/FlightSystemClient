@@ -3,7 +3,7 @@ import { TextField, Button, InputAdornment } from "@mui/material";
 import { Box, Stack, Typography } from "@mui/material";
 import Autocomplete from '@mui/material/Autocomplete';
 
-
+export const FormFrameBoxPadding = 10;
 export const primaryColor = '#15291b';
 
 export const FormFrameBox = styled(Box)(({ theme }) => ({
@@ -12,7 +12,7 @@ export const FormFrameBox = styled(Box)(({ theme }) => ({
     display: 'flex',
     justifyContent: 'space-around',
     alignItems: 'center',
-    padding: '10px',
+    padding: `${FormFrameBoxPadding}px`,
     margin: 0,
     border: `4px solid ${primaryColor}`,
     borderRadius: '4px',
@@ -112,7 +112,7 @@ export const PrimaryTextTypography = ({ children, ...props }) => {
         sx={{
             whiteSpace: 'nowrap',
             overflow: 'hidden',
-            textAlign : 'left'
+            textAlign: 'left'
         }}
         {...props}
     >
@@ -226,10 +226,20 @@ export const IconStack = ({ icon, label, value, proportions }) => {
     </HorizonStack >)
 }
 
-export const IconTextBox = ({ children, name, label, details, icon, handleChange, validation, ...props }) => {
-    
+export const IconTextBox = ({
+    children,
+    name,
+    label,
+    details,
+    icon,
+    handleChange,
+    validation,
+    readOnly,
+    ...props
+}) => {
+
     let req, maxLength, type, mask;
-    if (validation){
+    if (validation) {
         req = validation.required;
         maxLength = validation.maxLength;
         type = validation.type;
@@ -246,7 +256,8 @@ export const IconTextBox = ({ children, name, label, details, icon, handleChange
         onChange={handleChange}
         inputProps={{ maxLength: maxLength }}
         InputProps={{
-            fontSize:'0.8rem',
+            readOnly : readOnly || false,
+            fontSize: '0.8rem',
             type: type,
             startAdornment: <InputAdornment position="start">
                 {icon}
@@ -255,9 +266,9 @@ export const IconTextBox = ({ children, name, label, details, icon, handleChange
         sx={{
             boxSizing: 'border-box',
             borderColor: primaryColor,
-            '& .MuiFormLabel-root':{
-                color :primaryColor,
-                fontWeight : '700'
+            '& .MuiFormLabel-root': {
+                color: primaryColor,
+                fontWeight: '700'
             }
         }}
 
@@ -266,5 +277,35 @@ export const IconTextBox = ({ children, name, label, details, icon, handleChange
         {children}
     </TextField>
     )
+}
+
+export const DatePickerStyle = {
+    "& .MuiPaper-root": {
+        backgroundColor: "white",
+        border: '4px solid #15291b',
+        borderRadius: '4px'
+    },
+    "& .MuiCalendarPicker-root": {
+        backgroundColor: 'white'
+    },
+    "& .MuiPickersDay-dayWithMargin": {
+        color: "white",
+        backgroundColor: '#15291b',
+        borderRadius: '0px'
+    },
+    "& .MuiPickersDay-dayWithMargin:hover": {
+        color: '#C00000',
+        fontWeight: '700',
+        backgroundColor: '#f5c242',
+        borderRadius: '0px'
+    },
+    "& .MuiTabs-root": { backgroundColor: "rgba(120, 120, 120, 0.4)" },
+    "& .MuiTypography-root": {
+        height: '24px',
+        backgroundColor: '#f5c242',
+        marginBottom: '5px',
+        fontWeight: '800',
+        color: '#C00000'
+    }
 }
 

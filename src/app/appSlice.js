@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit/dist";
 import { appActions, entries, status } from "../constants/enums";
 import { combineHost } from "../constants/configuration";
 import { client } from "../api/client";
+import { FastRewind } from "@mui/icons-material";
 
 const initialState = {
     errorStatus: status.idle,
@@ -32,6 +33,9 @@ const appSlice = createSlice({
         resetSuccessMessage(state, action) {
             state.successStatus = status.idle;
             state.success = null;
+        },
+        showIdentityName(state, action) {
+            state.showName = action.payload;
         }
     },
     extraReducers: builder => {
@@ -77,6 +81,8 @@ export const fetchCountries = createAsyncThunk(appActions.fetchCountries, async 
     const countries = await client.get(endpoint, null, null);
     return countries;
 });
+
+
 
 
 export default appSlice.reducer;

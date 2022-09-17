@@ -265,7 +265,6 @@ const CustomerSignUp = () => {
                 name="addressBase"
                 size="small"
                 label="Address"
-                value={details.credit_card_number || ''}
                 required={validations(fields.address).required}
                 type={validations(fields.address).type}
                 helperText=""

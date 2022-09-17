@@ -144,7 +144,7 @@ const SeatPicker = ({ model, dimentions, currentSelected, tickets }) => {
     const matrix = getMatrix();
 
     const seatsDescription = matrix.map(cell => {
-      return (<Seat width={cellWidth}
+      return (<Seat key={cell.index} width={cellWidth}
         height={cellHeight}
         cell={cell}
         currentSelected={currentSelected}

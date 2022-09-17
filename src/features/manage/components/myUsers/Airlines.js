@@ -10,7 +10,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import { AutoCompleteBox } from '../../../../app/components/FormStyles';
+import { AutoCompleteBox, FormFrameBoxPadding } from '../../../../app/components/FormStyles';
 import FlagIcon from '@mui/icons-material/Flag';
 import { useEffect } from 'react';
 import { ProfileErrorTemplate } from '../../../../constants/enums';
@@ -22,10 +22,19 @@ import { VariableSizeGrid as Grid } from 'react-window'
 import { catchAppError } from '../../../../app/appSlice';
 import NoResults from '../../../../app/components/NoResults';
 import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
-import Error from '../../../../app/components/Error';
+import ErrorPage from '../../../../app/components/ErrorPage';
 import { useDispatch } from 'react-redux';
+import { getWindowSize , layoutVerticalMarginVh, appBarHeight ,drawerWidth} from '../../../../app/components/layout/layout';
+import { mainSurfaceTopPadding , mainSurfacWidthProportion,
+    totalGridSurface, mainSurfaceHorizontalPadding} from '../../../../App';
+import { tabsMarginBottom } from './MyUsers';
 
 const inputHeights = '24px';
+const tabsHeight= 48;
+const searchHeight = 40;
+const gridMarginTop = 10;
+const formBoxFrameBorder = 8;
+const securitySize = 5;
 
 const initFilters = {
     search: '',
@@ -99,7 +108,7 @@ const AirlinesSearch = ({ fetchAirlines, countries }) => {
     }
     return [
         //SEARCH LINE
-        <Box sx={{ minWidth: 200 }}>
+        <Box key={1} sx={{ minWidth: 200 }}>
             <TextField size='small'
                 name='search'
                 placeholder='search'
@@ -124,7 +133,7 @@ const AirlinesSearch = ({ fetchAirlines, countries }) => {
             />
         </Box >,
         //ONLY ACTIVE
-        <Box sx={{ minWidth: 200 }}>
+        <Box key={2} sx={{ minWidth: 200 }}>
             <FormControl fullWidth>
                 <FormControlLabel
                     control={<Checkbox
@@ -141,7 +150,7 @@ const AirlinesSearch = ({ fetchAirlines, countries }) => {
             </FormControl>
         </Box>,
         //SELCT COUNTRY
-        <AutoCompleteBox
+        <AutoCompleteBox key={3}
             freeSolo
             sx={{ width: 140 }}
             id="homeCountry"
@@ -176,7 +185,7 @@ const AirlinesSearch = ({ fetchAirlines, countries }) => {
                 />
             )}
         />,
-        <Box>
+        <Box key={4}>
             <FormButton variant="contained"
                 onClick={() => handleAddNew()}
                 sx={{
@@ -188,7 +197,7 @@ const AirlinesSearch = ({ fetchAirlines, countries }) => {
             >+
             </FormButton>
         </Box>,
-        <FormButton variant="contained"
+        <FormButton key={5} variant="contained"
             onClick={() => handleSearch()}
             sx={{
                 height: '26px',
@@ -252,6 +261,34 @@ const Airlines = ({ countries }) => {
         dispatch(catchAppError(ProfileErrorTemplate(err.message)))
     }
 
+    const getGridWidth = () => {
+        const windowWidth = getWindowSize().innerWidth;
+        const gridSurface = windowWidth  - drawerWidth;
+        const workSurface = (mainSurfacWidthProportion/totalGridSurface) *gridSurface;
+        const calclatedWidth = workSurface 
+                             - (2 * mainSurfaceHorizontalPadding)
+                             - (2 * FormFrameBoxPadding)
+        const gridWidth = Math.round(calclatedWidth);
+        return gridWidth;               
+    }
+
+    const getGridHeight = () => {
+        const windowHeight = getWindowSize().innerHeight;
+        const gridCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - formBoxFrameBorder
+            - (2 * FormFrameBoxPadding)
+            - tabsHeight
+            - tabsMarginBottom
+            - searchHeight
+            - gridMarginTop
+            - securitySize;
+        const gridHeight = Math.round(gridCalclatedHeight);
+        return gridHeight;
+    }
+
     useEffect(() => {
         fetchAirlines(initFilters);
     }, []);
@@ -261,7 +298,7 @@ const Airlines = ({ countries }) => {
         renderAirlines = (<CircularIndeterminate />);
     }
     else if (isError) {
-        renderAirlines = (<Error />);
+        renderAirlines = (<ErrorPage />);
     }
     else if (!airlines || airlines.length == 0) {
         renderAirlines = (<NoResults message={'Oops.. No Results. Extend your Search!'} />);
@@ -269,8 +306,8 @@ const Airlines = ({ countries }) => {
     else {
         const columnsNumber = 2;
         const rowsNumber = Math.ceil(airlines.length / 2);
-        const totalWidth = 884;
-        const totalHeight = 435;
+        const totalWidth = getGridWidth();
+        const totalHeight = getGridHeight();
         const colWidth = 442;
         const rowHeight = 110;
 

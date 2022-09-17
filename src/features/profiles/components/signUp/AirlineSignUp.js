@@ -28,7 +28,7 @@ const AirlineSignUp = ({ countries }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
-    const flagImageUrl = details.country_name ? `url(${endpoints.countriesFlags}${details.country_name})` : null;
+    const flagImageUrl = details.country_name ? (`url(${endpoints.countriesFlags}${details.country_name})`).replace(' ', '%20') : null;
 
     const airConfig = endpoints.airlineCompanies;
     const airlineLogoUrl = !details.iata || details.iata.length < 2 ? null : `url(${airConfig.logoPrefix}${airConfig.reqWidth}/${airConfig.reqHeight}/${details.iata}${airConfig.logoPostfix})`

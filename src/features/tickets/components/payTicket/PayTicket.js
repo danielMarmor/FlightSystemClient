@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { useNavigate, useParams } from 'react-router-dom'
 import ActionGrid from '../../../../app/components/ActionGrid'
 import DoubleForm from '../../../../app/components/layout/DoubleForm'
-import { catchAppError  ,showSuccessMessage} from '../../../../app/appSlice'
-import { OrderErrorTemplate,  OrderSuccessTemplate } from '../../../../constants/enums'
+import { catchAppError, showSuccessMessage } from '../../../../app/appSlice'
+import { OrderErrorTemplate, OrderSuccessTemplate, OrderLostTemplate } from '../../../../constants/enums'
 import { fetchFlightById, orderDetailsChanged, SelectOrderDetails, addTicket } from '../../ticketsSlice';
 import { fetchCustomerById, SelectIdentityId, SelectFirstName } from '../../../profiles/profilesSlice'
 import { endpoints } from '../../../../constants/configuration'
@@ -31,6 +31,7 @@ import {
     FormButton,
     IconTextBox
 } from '../../../../app/components/FormStyles'
+import NoResults from '../../../../app/components/NoResults'
 
 const primaryColor = '#15291b';
 
@@ -60,18 +61,18 @@ const PayTicket = () => {
     const handleBack = () => {
         navigate(-1);
     }
-    const handleSubmit = async(e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        try { 
-            const ticketData ={
+        try {
+            const ticketData = {
                 flight_id: flight.id,
-                customer_id : customer.id,
-                position : orderDetails.seat
+                customer_id: customer.id,
+                position: orderDetails.seat
             }
             const ticket = await dispatch(addTicket(ticketData)).unwrap();
-            const homeUrl  ='/MyTickets';
+            const homeUrl = '/MyTickets';
             dispatch(showSuccessMessage
-                (OrderSuccessTemplate(`Ticket number ${ticket.id} created. See you on board, ${customerFirstName}!`, homeUrl))); 
+                (OrderSuccessTemplate(`Ticket number ${ticket.id} created. See you on board, ${customerFirstName}!`, homeUrl)));
         }
         catch (err) {
             handleError(err);
@@ -103,8 +104,19 @@ const PayTicket = () => {
             handleError(err);
         }
     }, []);
+
+    useEffect(() => {
+        if (!orderDetails.seat) {
+            const message = `Data is lost. Please recreate order`;
+            const orderTicketUrl = `/Ticket/Order/${flightId}`;
+            dispatch(showSuccessMessage
+                (OrderLostTemplate(message, orderTicketUrl)));
+
+        }
+    }, [])
+
     const formCustomerCtrls = [
-        <HorizonStack sx={{ borderBottom: '1px solid black', paddingLeft: '7px' }}>
+        <HorizonStack key={1} sx={{ borderBottom: '1px solid black', paddingLeft: '7px' }}>
             <Typography flex={2} component={'div'} variant={'h6'}
                 sx={{ fontWeight: 'bolder', fontSize: '1.3rem', padding: '0px 0px 5px 10px' }}>
                 Servix Secured
@@ -130,25 +142,25 @@ const PayTicket = () => {
                 </CenterBox>
             </Box>
         </HorizonStack>,
-        <IconTextBox name={'first_name'} label={'First Name'} details={customer || {}} readonly={'true'}
+        <IconTextBox key={2} name={'first_name'} label={'First Name'} details={customer || {}} readOnly={true}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
-        <IconTextBox name={'last_name'} label={'Last Name'} details={customer || {}} readonly={'true'}
+        <IconTextBox key={3} name={'last_name'} label={'Last Name'} details={customer || {}} readOnly={true}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
-        <IconTextBox name={'phone_number'} label={'Phone Number'} details={customer || {}} readonly={'true'}
+        <IconTextBox key={4} name={'phone_number'} label={'Phone Number'} details={customer || {}} readOnly={true}
             icon={<LocalPhoneIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
-        <IconTextBox name={'email'} label={'Email'} details={customer || {}}
+        <IconTextBox key={5} name={'email'} label={'Email'} details={customer || {}}
             icon={<EmailIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
-        <IconTextBox name={'address'} label={'Home Address'} details={customer || {}} readonly={'true'}
+        <IconTextBox key={6} name={'address'} label={'Home Address'} details={customer || {}} readOnly={true}
             icon={<HomeIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
     ];
     const formCustomerActions = [
-        <FormButton
+        <FormButton key={1}
             style={{ color: 'white', flex: '1' }}
             onClick={() => handleBack()}
         >
             Back To Order
         </FormButton>,
-        <FormButton
+        <FormButton key={2}
             style={{ color: 'white', flex: '1' }}
             onClick={() => handleCancel()}
         >
@@ -167,10 +179,16 @@ const PayTicket = () => {
         gaps: {
             rowGap: 20,
             colGap: 20
+        },
+        padding: {
+            top: 10,
+            bottom: 10,
+            right: 5,
+            left: 5
         }
     }
     const formPaymentActions = [
-        <FormButton type='submit'
+        <FormButton key={1} type='submit'
             sx={{
                 backgroundColor: '#f7c602 !important',
                 color: 'black',
@@ -182,7 +200,7 @@ const PayTicket = () => {
         </FormButton>
     ];
     const formPaymentCtrls = [
-        <Box flex={3} sx={{ gridRowEnd: 'span 3', gridColumnEnd: 'span 2' }}
+        <Box  key={1} flex={3} sx={{ gridRowEnd: 'span 3', gridColumnEnd: 'span 2' }}
             height={'100%'}
             m={0} p={0}
             display={'flex'}
@@ -202,18 +220,18 @@ const PayTicket = () => {
             }}>
             </CenterBox>
         </Box>,
-        <IconTextBox name={'priceText'} label={'Total Charge:'} details={flight || {}} readonly={'true'}
+        <IconTextBox key={2} name={'priceText'} label={'Total Charge:'} details={flight || {}} readOnly={true}
             sx={{ gridColumnEnd: 'span 2' }}
             icon={<MonetizationOnIcon sx={{ color: primaryColor }} />} handleChange={handleCustomerChange} />,
 
-        <IconTextBox name={'credit_card_number'} label={'Credit Card Number'} details={orderDetails || {}}
+        <IconTextBox  key={3} name={'credit_card_number'} label={'Credit Card Number'} details={orderDetails || {}}
             sx={{ gridColumnEnd: 'span 2' }} validation={validations(fields.credit_card_number)}
             icon={< AddCardIcon sx={{ color: primaryColor }} />} handleChange={handlePaymentChange} />,
 
-        <IconTextBox name={'expirationDate'} label={'Expires'} details={orderDetails || {}} validation={validations(fields.expirationDate)}
+        <IconTextBox key={4} name={'expirationDate'} label={'Expires'} details={orderDetails || {}} validation={validations(fields.expirationDate)}
             icon={<HourglassTopIcon sx={{ color: primaryColor }} />} handleChange={handlePaymentChange} />,
 
-        <IconTextBox name={'securityCode'} label={'Security'} details={orderDetails || {}} validation={validations(fields.securityCode)}
+        <IconTextBox key={5} name={'securityCode'} label={'Security'} details={orderDetails || {}} validation={validations(fields.securityCode)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handlePaymentChange} />
 
 
@@ -231,8 +249,15 @@ const PayTicket = () => {
         gaps: {
             rowGap: 20,
             colGap: 20
+        },
+        padding: {
+            top: 0,
+            bottom: 0,
+            right: 5,
+            left: 5
         }
     }
+
     return (
         <DoubleForm
             header={

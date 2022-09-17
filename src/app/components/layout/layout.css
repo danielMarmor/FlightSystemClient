@@ -2,10 +2,18 @@
     background: red;   
 }
 
-.imgLogo{
-   
+.imgLogo{ 
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
 }
+
+.fade-in {
+  transition: opacity 1s ease;
+}
+.fade-out {
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+

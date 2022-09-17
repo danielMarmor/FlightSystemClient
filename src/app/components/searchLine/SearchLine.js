@@ -16,16 +16,18 @@ const SearchLine = (props) => {
             padding: '0',
             margin: '0',
             border: '4px solid #15291b',
-            width:'100%'
+            width: '100%'
         }}
         >
             <Stack spacing={0} padding={'5px'}
-                sx={{height : 1}}
+                sx={{ height: 1 }}
                 direction='row'
                 alignItems='center'
                 justifyContent='space-between'
             >
-                {panelItmes.map(item => item)}
+                {panelItmes.map((item, index) => {
+                    return { ...item, key: index }
+                })}
             </Stack>
         </div>
     )

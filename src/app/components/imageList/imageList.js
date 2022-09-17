@@ -4,6 +4,7 @@ import coloseum from '../../../assets/coloseum.jpg';
 import italy2 from '../../../assets/italy2.jpg';
 import pariz from '../../../assets/pariz.jpg';
 import flights4 from '../../../assets/flights4.jpg';
+import ChinaHouse from '../../../assets/ChinaHouse.jpg';
 
 const ImageList = () => {
     return (
@@ -16,28 +17,28 @@ const ImageList = () => {
                 backgroundImage: `url(${coloseum})`,
                 backgroundSize: 'cover',
                 width: '162px',
-                height: '130px',
+                height: '128px',
                 backgroundRepeat: 'no-repeat'
             }}></div>
              <div style={{
                 backgroundImage: `url(${italy2})`,
                 backgroundSize: 'cover',
                 width: '162px',
-                height: '130px',
+                height: '128px',
                 backgroundRepeat: 'no-repeat'
             }}></div>
              <div style={{
                 backgroundImage: `url(${pariz})`,
                 backgroundSize: 'cover',
                 width: '162px',
-                height: '130px',
+                height: '128px',
                 backgroundRepeat: 'no-repeat'
             }}></div>
              <div style={{
-                backgroundImage: `url(${flights4})`,
+                backgroundImage: `url(${ChinaHouse})`,
                 backgroundSize: 'cover',
                 width: '162px',
-                height: '130px',
+                height: '128px',
                 backgroundRepeat: 'no-repeat'
             }}></div>
     </Stack>

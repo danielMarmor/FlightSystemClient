@@ -89,49 +89,49 @@ const CustomerDetails = () => {
     }, []);
     const formCtrls = [
         //(1)FULL NAME
-        <IconStack
+        <IconStack key={1}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Full Name:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{`${details.first_name || ''} ${details.last_name || ''}`}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(2) USER NAME
-        <IconStack
+        <IconStack key={2}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>User Name:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.username || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(3) PASSWORD
-        <IconStack
+        <IconStack key={3}
             icon={<LockIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Password:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.password || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(4)EMAIL
-        <IconStack
+        <IconStack key={4}
             icon={<EmailIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Email:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.email || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(5)PHONE
-        <IconStack
+        <IconStack key={5}
             icon={<LocalPhoneIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Phone Num:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.phone_number || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(6)CREDIT CARD
-        <IconStack
+        <IconStack key={6}
             icon={<AddCardIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Credit Card:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.credit_card_number || ''}</SecTextTypography>}
             proportions={iconStackProportions}
         />,
         //(7)ADDRESS
-        <IconStack
+        <IconStack key={7}
             icon={<HomeIcon sx={{ color: primaryColor }} />}
             label={<PrimaryTextTypography>Aderess:</PrimaryTextTypography>}
             value={<SecTextTypography sx={{ width: '100px' }}>{details.address || ''}</SecTextTypography>}
@@ -155,13 +155,19 @@ const CustomerDetails = () => {
         gaps: {
             rowGap: 20,
             colGap: 20
+        },
+        padding :{
+          top : 10,
+          bottom : 10,
+          right : 5,
+          left : 5
         }
     }
     return (
         <DoubleForm
             header={
                 <HorizonStack>
-                    <HorizonStack width={'50%'}
+                    <HorizonStack width={'75%'}
                         justifyContent={'flex-start'}>
                         <CenterBox width={'40px'} height={'40px'}>
                             <Avatar
@@ -184,7 +190,7 @@ const CustomerDetails = () => {
                             </SubHeaderTypography>
                         </LeftCenterBox>
                     </HorizonStack>
-                    <HorizonStack width={'50%'}
+                    <HorizonStack width={'25%'}
                         justifyContent={'flex-end'}>
                         <IconButton onClick={() => handleBack()} sx={{ padding: '0px', margin: '0px' }}>
                             <ArrowBackIosNewIcon sx={{ color: 'white', marginRight: '20px', fontSize: '26px' }}

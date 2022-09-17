@@ -16,6 +16,10 @@ import { catchAppError } from '../../../../app/appSlice'
 import { ProfileErrorTemplate, userType } from '../../../../constants/enums'
 import { SelectMyUsersType, myUsersTypeChanged } from '../../manageSlice';
 
+
+const tabsHeight = 45;
+export const tabsMarginBottom = 10;
+
 TabPanel.propTypes = {
     children: PropTypes.node,
     index: PropTypes.number.isRequired,
@@ -56,13 +60,15 @@ const MyUsers = ({ countries }) => {
         }}>
             <FormBox>
                 <Tabs id='tabs' value={value} onChange={handleChange}
-                    textColor="white"
                     indicatorColor="white"
-                    sx={{ backgroundColor: '#15291b', marginBottom: '10px'}}>
+                    sx={{
+                        backgroundColor: '#15291b',
+                        height: `${tabsHeight}px`,
+                        marginBottom: `${tabsMarginBottom}px`
+                    }}>
                     <Tab  {...a11yProps(0)}
                         sx={{
                             width: '33.4%',
-                            color: 'white',
                             paddingLeft: '0rem',
                             display: 'flex',
                             flexDirection: 'row',
@@ -73,13 +79,13 @@ const MyUsers = ({ countries }) => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
+                            color: 'white',
                             textDecoration: value === 0 ? 'underline' : 'none'
                         }}><PeopleAltIcon /> CUSTOMERS </div>}
                     />
                     <Tab  {...a11yProps(1)}
                         sx={{
                             width: '33.3%',
-                            color: 'white',
                             paddingLeft: '0rem',
                             display: 'flex',
                             flexDirection: 'row',
@@ -90,13 +96,13 @@ const MyUsers = ({ countries }) => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
+                            color: 'white',
                             textDecoration: value === 1 ? 'underline' : 'none'
                         }}><AirlinesIcon /> AIRLINES </div>}
                     />
                     <Tab  {...a11yProps(2)}
                         sx={{
                             width: '33.3%',
-                            color: 'white',
                             paddingLeft: '0rem',
                             display: 'flex',
                             flexDirection: 'row',
@@ -107,6 +113,7 @@ const MyUsers = ({ countries }) => {
                             display: 'flex',
                             flexDirection: 'row',
                             alignItems: 'center',
+                            color: 'white',
                             textDecoration: value === 2 ? 'underline' : 'none'
                         }}><AdminPanelSettingsIcon /> Administrators </div>}
                     />

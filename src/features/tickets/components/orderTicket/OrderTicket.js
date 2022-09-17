@@ -279,7 +279,7 @@ const OrderTicket = () => {
                                 <FormControlLabel
                                     control={<Checkbox
                                         name='accept'
-                                        checked={orderDetails.accept}
+                                        checked={orderDetails.accept || false}
                                         onChange={handleCheckedChanged}
                                         sx={{ color: '#15291b' }}
                                     />}

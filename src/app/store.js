@@ -10,7 +10,11 @@ export default configureStore({
         app : appReducer,
         tickets: ticketsReducer,
         flights: flightsReducer,
-        manage : manageReducer,
+    manage : manageReducer,
         profile: profileReducer
-    }
+    },
+    middleware :(getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    })
 });

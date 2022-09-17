@@ -17,7 +17,7 @@ TabPanel.propTypes = {
 };
 
 
-const SignUp = ({countries}) => {
+const SignUp = ({ countries }) => {
     const [value, setValue] = useState(0);
 
     const handleChange = (event, newValue) => {
@@ -32,28 +32,28 @@ const SignUp = ({countries}) => {
         }}>
             <FormBox>
                 <Tabs id='tabs' value={value} onChange={handleChange}
-                    textColor="white"
                     indicatorColor="white"
                     sx={{ backgroundColor: '#15291b' }}>
                     <Tab sx={{
                         width: '50%',
-                        color: 'white',
                         paddingLeft: '0rem',
                         display: 'flex',
                         flexDirection: 'row',
                         justifyContent: 'flex-start'
                     }}
-                        label={<div style={{
-                            paddingLeft: '1rem',
-                            display: 'flex',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            textDecoration: value === 0 ? 'underline' : 'none'
-                        }}><PeopleAltIcon /> CUSTOMERS </div>}
+                        label=
+                        {
+                            <div style={{
+                                paddingLeft: '1rem',
+                                display: 'flex',
+                                color: 'white',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                textDecoration: value === 0 ? 'underline' : 'none'
+                            }}><PeopleAltIcon /> CUSTOMERS </div>}
                     />
                     <Tab sx={{
                         width: '50%',
-                        color: 'white',
                         paddingLeft: '0rem',
                         display: 'flex',
                         flexDirection: 'row',
@@ -62,6 +62,7 @@ const SignUp = ({countries}) => {
                         label={<div style={{
                             paddingLeft: '1.4rem',
                             display: 'flex',
+                            color: 'white',
                             flexDirection: 'row',
                             alignItems: 'center',
                             textDecoration: value === 1 ? 'underline' : 'none'
@@ -74,7 +75,7 @@ const SignUp = ({countries}) => {
                 </TabPanel>
                 <TabPanel id='TabPanel2' value={value} index={1}>
                     {/* AIRLINES */}
-                    <AirlineSignUp countries={countries}/>
+                    <AirlineSignUp countries={countries} />
                 </TabPanel>
             </FormBox>
         </FormFrameBox>

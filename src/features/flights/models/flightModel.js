@@ -22,8 +22,8 @@ export class FlightModel {
             ...data
         }
     }
-    retval =() => { return this.updated }
-    distance=()=>{return this.updated.distance}
+    retval = () => { return this.updated }
+    distance = () => { return this.updated.distance }
 
     originCountryUpdated = async (originCountryName) => {
         if (!originCountryName) {
@@ -197,6 +197,9 @@ export class FlightModel {
             this.updated.markers = [];
         }
         const markerLocation = await getLocation(requestedPosition)
+        if (!markerLocation) {
+            return;
+        }
         const newMarker = {
             markerType: markerType,
             markerName: requestedPosition,
@@ -254,17 +257,17 @@ export class FlightModel {
         const capacityMode = CapacityModels.find(cap => cap.numSeats == entity.num_seats);
         const mapToFlight = {
             flightNumber: `${entity.airline_iata}-${entity.flight_id}`,
-            airline_company_id :entity.airline_company_id,
-            origin_country_id : entity.origin_country_id,
+            airline_company_id: entity.airline_company_id,
+            origin_country_id: entity.origin_country_id,
             origin_country_name: entity.origin_country_name,
             departure_time: moment(entity.departure_time, 'DD/MM/YYYY HH:mm:SS'),
-            destination_country_id :entity.destination_country_id,
+            destination_country_id: entity.destination_country_id,
             destination_country_name: entity.dest_country_name,
             landing_time: moment(entity.landing_time, 'DD/MM/YYYY HH:mm:SS'),
             capacityModelId: capacityMode.id,
-            num_seats : entity.num_seats,
-            remaining_tickets : entity.remaining_tickets,
-            disable_changes : entity.remaining_tickets < entity.num_seats,
+            num_seats: entity.num_seats,
+            remaining_tickets: entity.remaining_tickets,
+            disable_changes: entity.remaining_tickets < entity.num_seats,
             distance: entity.distance,
             price: entity.price
         }
@@ -276,35 +279,38 @@ export class FlightModel {
         return mapToFlight;
     }
 
-    addMarkers =async(originCountryName, destCountryName)=>{
-        if (!originCountryName ||!destCountryName){
+    addMarkers = async (originCountryName, destCountryName) => {
+        if (!originCountryName || !destCountryName) {
             return;
         }
         const existMarkers = this.updated.markers && this.updated.markers.length > 0;
         if (!existMarkers) {
             this.updated.markers = [];
         }
-        const originCountry =this.countries.find(cou =>cou.name == originCountryName); 
+        const originCountry = this.countries.find(cou => cou.name == originCountryName);
         const originPosition = `${originCountry.city}, ${originCountry.name}`;
 
-        const destCountry =this.countries.find(cou =>cou.name == destCountryName); 
+        const destCountry = this.countries.find(cou => cou.name == destCountryName);
         const destPosition = `${destCountry.city}, ${destCountry.name}`;
 
         const originLocation = await getLocation(originPosition);
-        const originMarker = {
-            markerType: 'origin',
-            markerName: originPosition,
-            markerLocation: originLocation
+        if (originLocation) {
+            const originMarker = {
+                markerType: 'origin',
+                markerName: originPosition,
+                markerLocation: originLocation
+            }
+            this.updated.markers.push(originMarker);
         }
-        this.updated.markers.push(originMarker);
-
         const destLocation = await getLocation(destPosition)
-        const destMarker = {
-            markerType: 'dest',
-            markerName: destPosition,
-            markerLocation: destLocation
+        if (destLocation) {
+            const destMarker = {
+                markerType: 'dest',
+                markerName: destPosition,
+                markerLocation: destLocation
+            }
+            this.updated.markers.push(destMarker);
         }
-        this.updated.markers.push(destMarker);
 
         this.focusMarker();
 
@@ -354,14 +360,14 @@ export class FlightModel {
         });
         return orderedFlights;
     }
-    static getDurationFormat = (departure, landing) =>{
+    static getDurationFormat = (departure, landing) => {
         const diferenceMinutes = moment
-          .duration(moment(landing, 'YYYY/MM/DD HH:mm')
-            .diff(moment(departure, 'YYYY/MM/DD HH:mm'))
-          ).asMinutes();
+            .duration(moment(landing, 'YYYY/MM/DD HH:mm')
+                .diff(moment(departure, 'YYYY/MM/DD HH:mm'))
+            ).asMinutes();
         const duration = moment.duration(diferenceMinutes, 'minutes');
         const durationFormat = duration.format('HH:mm')
-        return durationFormat; 
-      }
+        return durationFormat;
+    }
 
 }

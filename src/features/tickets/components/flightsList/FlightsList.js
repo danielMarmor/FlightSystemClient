@@ -6,7 +6,7 @@ import { AutoCompleteBox } from '../../../../app/components/FormStyles';
 import { DatePicker } from '@mui/x-date-pickers';
 import FlagIcon from '@mui/icons-material/Flag';
 import { CompareByCountryName } from '../../../../utilities/compare';
-import { FormButton, FormFrameBox } from '../../../../app/components/FormStyles'
+import { FormButton, FormFrameBox, DatePickerStyle } from '../../../../app/components/FormStyles'
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import SearchLine from '../../../../app/components/searchLine/SearchLine';
@@ -16,11 +16,17 @@ import FlightSearchResults from '../flightsSearchResults/FlightSearchResults';
 import { FlightSearchErrorTemplate } from '../../../../constants/enums';
 import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
 import { SelectSearchParams, flitersChanged } from '../../ticketsSlice';
+import { MuiClasses } from '../../../../constants/enums';
 import moment from 'moment';
 import Banners from '../banners';
 
-const bannerPannelHeight = 45;
+export const bannerPannelHeight = 45;
+export const bannerMarginBottom = 10;
+export const searchPannelHeight = 48;
+export const flightResultsMarginTop = 15;
+
 const searchInputsHeight = 24;
+
 
 const FORMAT = 'DD/MM/YYYY';
 
@@ -139,7 +145,7 @@ const FlightsSearch = ({ handleSearch, countries }) => {
           handleCountryChange('origin', name)
 
         }}
-        clearable
+        //clearable
         options={countries.map((option) => option.name).sort(CompareByCountryName)}
         renderInput={(params) => (
           <TextField
@@ -184,17 +190,20 @@ const FlightsSearch = ({ handleSearch, countries }) => {
     </Box>,
     <Box sx={{ flex: 1 }}>
       <DatePicker
-        clearable
+        //clearable
         onChangeRaw={handleDateChangeRaw}
         value={filters.start_date || ''}
         inputFormat="DD/MM/YYYY"
         placeholder='Departure'
         width={'90%'}
+        // PopperProps={{
+        //   sx: DatePickerStyle
+        // }}
         sx={{ backgroundColor: 'white', border: '1px soiid black' }}
         onChange={(newValue) => {
           handleDateChange('start', newValue);
         }}
-        InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
+        InputAdornmentProps={{ position: 'start', color: '#15291b' }}
         renderInput={(params) =>
           <TextField fontSize={'0.9rem'}
             placeholder='Departure'
@@ -206,9 +215,21 @@ const FlightsSearch = ({ handleSearch, countries }) => {
               height: searchInputsHeight,
               border: '1px solid black',
               textAlign: 'center',
+              '& .MuiInputBase-root': {
+                height: 22
+              },
+              '& .MuiInputBase-input': {
+                padding: '0px'
+              },
+              '& .MuiInputAdornment-root': {
+                paddingLeft: '5px'
+              },
               '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                 borderBottom: 'none'
 
+              },
+              '& .MuiSvgIcon-root': {
+                color: '#15291b'
               }
             }}
             size="small"
@@ -272,15 +293,18 @@ const FlightsSearch = ({ handleSearch, countries }) => {
     </Box>,
     <Box sx={{ flex: 1 }}>
       <DatePicker
-        clearable
+        //clearable
         onChangeRaw={handleDateChangeRaw}
         value={filters.end_date || ''}
         inputFormat="DD/MM/YYYY"
         placeholder='Landing'
+        // PopperProps={{
+        //   sx: DatePickerStyle
+        // }}
         onChange={(newValue) => {
           handleDateChange('end', newValue);
         }}
-        InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
+        InputAdornmentProps={{ position: 'start', color: '#15291b'}}
         renderInput={(params) =>
           <TextField
             {...params}
@@ -296,9 +320,21 @@ const FlightsSearch = ({ handleSearch, countries }) => {
               width: '90%',
               height: searchInputsHeight,
               border: '1px solid black',
+              '& .MuiInputBase-root': {
+                height: 22
+              },
+              '& .MuiInputBase-input': {
+                padding: '0px'
+              },
+              '& .MuiInputAdornment-root': {
+                paddingLeft: '5px'
+              },
               '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                 borderBottom: 'none'
 
+              },
+              '& .MuiSvgIcon-root': {
+                color: '#15291b'
               }
             }}
             size="small"
@@ -307,7 +343,7 @@ const FlightsSearch = ({ handleSearch, countries }) => {
         }
       />
     </Box>,
-    <Box sx={{ flex: 0.5 }}>
+    <Box key={5} sx={{ flex: 0.5 }}>
       <FormButton variant="contained"
         onClick={() => handleSearchFromParams()}
         sx={{
@@ -373,10 +409,6 @@ const FlightsList = ({ countries }) => {
     height: '40px'
   }
 
-  let renderFlights;
-  if (isLoading){
-
-  }
   return (
     <FormFrameBox sx={{
       width: '100%',
@@ -401,9 +433,10 @@ const FlightsList = ({ countries }) => {
           height={bannerPannelHeight}
           sx={{
             backgroundColor: primaryColor,
-            padding: '0px'
+            padding: '0px',
+            marginBottom:'10px'
           }}
-          marginBottom={'10px'}
+          
         >
           <Banners />
         </Box>

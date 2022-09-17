@@ -9,7 +9,7 @@ import EmailIcon from '@mui/icons-material/Email';
 import { FormButton, IconTextBox, primaryColor } from '../../../../app/components/FormStyles';
 import { useNavigate, useParams } from 'react-router-dom'
 import { fetchAdminById, addAdministrator, editAdministrator as editAdminByPeerAdmin } from '../../../manage/manageSlice';
-import { editAdministrator  as editAdminBySelf, SelectIdentityId} from '../../profilesSlice';
+import { editAdministrator as editAdminBySelf, SelectIdentityId } from '../../profilesSlice';
 import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
 import { ProfileErrorTemplate, ProfileSuccessTemplate, fields, messages } from '../../../../constants/enums';
 import { AdminValidations as validators } from '../../../../models/validation';
@@ -21,14 +21,14 @@ import { FormControl, InputLabel, Select, Typography, IconButton, OutlinedInput,
 import AddAPhotoIcon from '@mui/icons-material/AddAPhoto';
 import { GenerateProfilePhoto } from '../../../../api/photoGenrator';
 import CircularIndeterminate from '../../../../app/components/waitIndicator/waitIndicator';
-import Error from '../../../../app/components/Error';
+import ErrorPage from '../../../../app/components/ErrorPage';
 
 const AdminForm = () => {
     const navigate = useNavigate();
     const { mode, administratorId } = useParams();
 
     const dispatch = useDispatch();
-    const identityId= useSelector(SelectIdentityId);
+    const identityId = useSelector(SelectIdentityId);
 
     const [details, setDetails] = useState({});
 
@@ -62,22 +62,22 @@ const AdminForm = () => {
             administratorId: administratorId,
             adminData: details
         }
-        if (isUpdatingSelf){ //ADMIN UPDATING HIMSELF ====PROFILE SLICE
+        if (isUpdatingSelf) { //ADMIN UPDATING HIMSELF ====PROFILE SLICE
             const response = await dispatch(editAdminBySelf(updateAdminData)).unwrap();
             const successUrl = `/Profile/Admin/Details/${administratorId}`;
             dispatch(showSuccessMessage
                 (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
         }
         //ADMIN UPDATING HIS COLLEAGE === MANAGE SLICE
-        else{
+        else {
             const response = await dispatch(editAdminByPeerAdmin(updateAdminData)).unwrap();
             const successUrl = `/Profile/Admin/Details/${administratorId}`;
             dispatch(showSuccessMessage
                 (ProfileSuccessTemplate(messages.succefulyCommited, successUrl)));
         }
-       
+
     }
-    const isUpdatingSelf =(administratorId)=>{
+    const isUpdatingSelf = (administratorId) => {
         return administratorId === identityId;
     }
     const handleSubmit = async (e) => {
@@ -193,19 +193,19 @@ const AdminForm = () => {
     const formCtrls = [
         //children, name, label, details, icon, handleChange
         //USER NAME
-        <IconTextBox name={'username'} label={'User Name'} details={details} validation={validators(fields.username)}
+        <IconTextBox key={1} name={'username'} label={'User Name'} details={details} validation={validators(fields.username)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'password'} label={'Password'} details={details} validation={validators(fields.password)}
+        <IconTextBox key={2} name={'password'} label={'Password'} details={details} validation={validators(fields.password)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'email'} label={'Email'} details={details} validation={validators(fields.email)}
+        <IconTextBox key={3} name={'email'} label={'Email'} details={details} validation={validators(fields.email)}
             icon={<EmailIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validators(fields.confirmPassword)}
+        <IconTextBox key={4} name={'confirmPassword'} label={'Confirm Password'} details={details} validation={validators(fields.confirmPassword)}
             icon={<LockIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'first_name'} label={'First Name'} details={details} validation={validators(fields.first_name)}
+        <IconTextBox key={5} name={'first_name'} label={'First Name'} details={details} validation={validators(fields.first_name)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <IconTextBox name={'last_name'} label={'Last Name'} details={details} validation={validators(fields.last_name)}
+        <IconTextBox key={6} name={'last_name'} label={'Last Name'} details={details} validation={validators(fields.last_name)}
             icon={<AccountCircleIcon sx={{ color: primaryColor }} />} handleChange={handleChange} />,
-        <FormControl fullWidth>
+        <FormControl key={7} fullWidth>
             <InputLabel shrink={true}>Gender For Photo</InputLabel>
             <Select
                 size="small"
@@ -225,15 +225,18 @@ const AdminForm = () => {
                 <MenuItem key={2} value={'woman'}>Woman</MenuItem>
             </Select>
         </FormControl>,
-        <IconButton sx={{
-            display: 'flex',
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-            padding: '0px 0px 0px 5px'
-        }}>
+        <IconButton
+            key={8}
+            onClick={() => handleGeneratePhoto()}
+            sx={{
+                display: 'flex',
+                flexDirection: 'row',
+                justifyContent: 'flex-start',
+                alignItems: 'center',
+                padding: '0px 0px 0px 5px'
+            }}>
             <AddAPhotoIcon
-                onClick={handleGeneratePhoto}
+
                 sx={{ color: '#15291b', fontSize: '40px' }} />
             <Typography variant='body2' component='div'
                 sx={{ color: '#15291b', marginLeft: '5px' }}>
@@ -243,12 +246,12 @@ const AdminForm = () => {
     ]
 
     const formActions = [
-        <FormButton type='submit'
+        <FormButton key={1} type='submit'
             style={{ color: 'white', flex: '1' }}
         >
             Save
         </FormButton>,
-        <FormButton
+        <FormButton key={2}
             style={{ color: 'white', flex: '1' }}
             onClick={() => handleCancel()}
         >
@@ -259,7 +262,7 @@ const AdminForm = () => {
 
     const formConfig = {
         proportions: {
-            relGrid: 6,
+            relGrid: 4,
             relActions: 1
         },
         grdDimentions: {
@@ -267,19 +270,25 @@ const AdminForm = () => {
             vert: 6
         },
         gaps: {
-            rowGap: 30,
+            rowGap: 35,
             colGap: 20
+        },
+        padding: {
+            top: 15,
+            bottom: 10,
+            right: 5,
+            left: 5
         }
     };
 
     let renderPhoto;
-    if (photoLoading){
-        renderPhoto =  (<CircularIndeterminate />);
+    if (photoLoading) {
+        renderPhoto = (<CircularIndeterminate />);
     }
-    else if (photoError){
-        renderPhoto = (<Error />);
+    else if (photoError) {
+        renderPhoto = (<ErrorPage />);
     }
-    else{
+    else {
         renderPhoto = (<CenterBox id='centerBox' sx={{
             width: '100%',
             height: '100%',
@@ -297,7 +306,7 @@ const AdminForm = () => {
         <DoubleForm
             header={
                 <HorizonStack>
-                    <HorizonStack width={'50%'}
+                    <HorizonStack width={'100%'}
                         justifyContent={'flex-start'}>
                         <CenterBox width={'40px'} height={'40px'}>
                             <Avatar
@@ -316,7 +325,7 @@ const AdminForm = () => {
                         </CenterBox>
                         <LeftCenterBox sx={{ paddingLeft: '5px' }}>
                             <SubHeaderTypography fontSize={'1.5rem'}>
-                                {!details.id ? 'New Profile' : `(${details.id || ''}) ${details.first_name || ''} ${details.last_name || ''}`}
+                                {!details.id ? 'New Profile' : `(${details.id || ''}) ${details.first_name || ''} ${details.last_name || ''}    ${details.id && '(Adminstrator)'}`}
                             </SubHeaderTypography>
                         </LeftCenterBox>
                     </HorizonStack>

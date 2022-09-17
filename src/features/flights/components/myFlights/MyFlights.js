@@ -21,11 +21,31 @@ import { useNavigate, NavLink } from 'react-router-dom';
 import { removeFlight } from '../../fligthSlice';
 import { catchAppError, showSuccessMessage } from '../../../../app/appSlice';
 import { FlightErrorTemplate, FlightSuccessTemplate } from '../../../../constants/enums';
+import { getWindowSize, appBarHeight, layoutVerticalMarginVh } from '../../../../app/components/layout/layout';
+import { FormFrameBoxPadding } from '../../../../app/components/FormStyles';
+import { mainSurfaceTopPadding } from '../../../../App';
+import { numberWithCommas } from '../../../../utilities/strings';
+import { DatePickerStyle } from '../../../../app/components/FormStyles';
+import NoResults from '../../../../app/components/NoResults';
+import moment from 'moment';
+
 
 const searchInputsHeight = 24;
+const headingHeight = 40;
+const headingMarginBottom = 10;
+const searchLineHeight = 48;
+const gridTopMargin = 5;
+const gridBorders = 8;
+const securitySize = 5;
+//const gridMarginTop = 10;
+
+const initFilters = {
+    fromDate: moment().add(-1, 'year'),
+    toDate: moment().add(1, 'year')
+}
 
 const FlightsSearch = ({ countries }) => {
-    const [filters, setFilters] = useState({});
+    const [filters, setFilters] = useState(initFilters);
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
@@ -77,6 +97,7 @@ const FlightsSearch = ({ countries }) => {
         dispatch(catchAppError(FlightErrorTemplate(err.message)))
     }
 
+
     useEffect(() => {
         try {
             dispatch(flitersChanged({}));
@@ -88,8 +109,8 @@ const FlightsSearch = ({ countries }) => {
 
     return ([
         //SEARCH LINE
-        <Box sx={{ flex: 1 }}>
-            <AutoCompleteBox
+        <Box key={1} sx={{ flex: 1 }}>
+            <AutoCompleteBox 
                 freeSolo
                 id="fromCountry"
                 name="fromCountry"
@@ -142,16 +163,19 @@ const FlightsSearch = ({ countries }) => {
                 )}
             />
         </Box>,
-        <Box sx={{ flex: 1 }}>
+        <Box key={2} sx={{ flex: 1 }}>
             <DatePicker
                 value={filters.fromDate || ''}
                 inputFormat="DD/MM/YYYY"
                 width={'90%'}
+                // PopperProps={{
+                //     sx: DatePickerStyle
+                // }}
                 sx={{ backgroundColor: 'white', border: '1px soiid black' }}
                 onChange={(newValue) => {
                     handleDateChange('from', newValue);
                 }}
-                InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
+                InputAdornmentProps={{ position: 'start', color: '#15291b' }}
                 renderInput={(params) =>
                     <TextField fontSize={'0.9rem'}
                         placeholder={"DD/MM/YYYY"}
@@ -162,9 +186,21 @@ const FlightsSearch = ({ countries }) => {
                             height: searchInputsHeight,
                             border: '1px solid black',
                             textAlign: 'center',
+                            '& .MuiInputBase-root': {
+                                height: 22
+                            },
+                            '& .MuiInputBase-input': {
+                                padding: '0px'
+                            },
+                            '& .MuiInputAdornment-root': {
+                                paddingLeft: '5px'
+                            },
                             '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                                 borderBottom: 'none'
 
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#15291b'
                             }
                         }}
                         size="small"
@@ -173,7 +209,7 @@ const FlightsSearch = ({ countries }) => {
                 }
             />
         </Box>,
-        <Box sx={{ flex: 1 }}>
+        <Box key={3} sx={{ flex: 1 }}>
             <AutoCompleteBox
                 freeSolo
                 id="toCountry"
@@ -226,14 +262,17 @@ const FlightsSearch = ({ countries }) => {
                 )}
             />
         </Box>,
-        <Box sx={{ flex: 1 }}>
+        <Box key={4} sx={{ flex: 1 }}>
             <DatePicker
                 value={filters.toDate || ''}
                 inputFormat="DD/MM/YYYY"
                 onChange={(newValue) => {
                     handleDateChange('to', newValue);
                 }}
-                InputAdornmentProps={{ position: 'start', color: '#15291b', marginBottom: '2px' }}
+                // PopperProps={{
+                //     sx: DatePickerStyle
+                // }}
+                InputAdornmentProps={{ position: 'start', color: '#15291b' }}
                 renderInput={(params) =>
                     <TextField
                         {...params}
@@ -248,9 +287,21 @@ const FlightsSearch = ({ countries }) => {
                             width: '90%',
                             height: searchInputsHeight,
                             border: '1px solid black',
+                            '& .MuiInputBase-root': {
+                                height: 22
+                            },
+                            '& .MuiInputBase-input': {
+                                padding: '0px'
+                            },
+                            '& .MuiInputAdornment-root': {
+                                paddingLeft: '5px'
+                            },
                             '.css-o6n57-MuiInputBase-root-MuiInput-root.Mui-error:after': {
                                 borderBottom: 'none'
 
+                            },
+                            '& .MuiSvgIcon-root': {
+                                color: '#15291b'
                             }
                         }}
                         size="small"
@@ -259,7 +310,7 @@ const FlightsSearch = ({ countries }) => {
                 }
             />
         </Box>,
-        <Box sx={{ flex: 0.5 }}>
+        <Box key={5} sx={{ flex: 0.5 }}>
             <FormButton variant="contained"
                 onClick={() => handleAddNew()}
                 sx={{
@@ -271,7 +322,7 @@ const FlightsSearch = ({ countries }) => {
             >+
             </FormButton>
         </Box>,
-        <Box sx={{ flex: 0.5 }}>
+        <Box key={6} sx={{ flex: 0.5 }}>
             <FormButton variant="contained"
                 onClick={() => handleSearch()}
                 sx={{
@@ -293,14 +344,30 @@ const MyFlights = ({ countries }) => {
     const logoHeight = 40;
     const airlineLogoUrl = airline && (!airline.iata || airline.iata.length < 2 ? null : `url(${airConfig.logoPrefix}${logoWidth}/${logoHeight}/${airline.iata}${airConfig.logoPostfix})`);
 
+    const getGridHeight = () => {
+        const windowHeight = getWindowSize().innerHeight;
+        const gridCalclatedHeight = windowHeight
+            - ((2 * layoutVerticalMarginVh) / 100 * windowHeight)
+            - appBarHeight
+            - mainSurfaceTopPadding
+            - (2 * FormFrameBoxPadding)
+            - headingHeight
+            - headingMarginBottom
+            - searchLineHeight
+            - gridTopMargin
+            - gridBorders
+        // - securitySize;
+        const gridHeight = Math.round(gridCalclatedHeight);
+        return gridHeight;
+    }
     const getCountryImageUrl = (name) => {
-        const countryFlagUrl = `url(${endpoints.countriesFlags}${name})`;
+        const countryFlagUrl = (`url(${endpoints.countriesFlags}${name})`).replace(' ', '%20');
         return countryFlagUrl;
     }
 
     const handleDelete = async (flightId, flightNumber, soldTickets) => {
         try {
-            if (soldTickets > 0){
+            if (soldTickets > 0) {
                 throw Error(`Flight No. ${flightNumber} has ${soldTickets} sold tickets. cannot cancel!`);
             }
             const response = await dispatch(removeFlight(flightId)).unwrap();
@@ -325,7 +392,11 @@ const MyFlights = ({ countries }) => {
 
     let renderMyFlights;
     if (!myFlights || myFlights.length == 0) {
-        renderMyFlights = <div></div>;
+        renderMyFlights =( 
+        <CenterBox
+            sx={{ padding: '0px', height: '400px'}}>
+            <NoResults message={'Your flights list is empty. Add flights!'} />
+        </CenterBox >);
     }
     else {
         const rows = FlightModel.getFlightsToGrid(myFlights);
@@ -368,7 +439,8 @@ const MyFlights = ({ countries }) => {
                         backgroundSize: 'cover',
                         width: '2.1rem',
                         height: '1.4rem',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center'
                     }}>
                     </div>
                 )
@@ -387,7 +459,8 @@ const MyFlights = ({ countries }) => {
                         backgroundSize: 'cover',
                         width: '2.1rem',
                         height: '1.4rem',
-                        backgroundRepeat: 'no-repeat'
+                        backgroundRepeat: 'no-repeat',
+                        backgroundPosition: 'center'
                     }}>
                     </div>
                 )
@@ -409,6 +482,9 @@ const MyFlights = ({ countries }) => {
                 headerClassName: 'dataGridHeader',
                 align: 'center',
                 cellClassName: 'dg-alignCenter',
+                valueGetter: (params) => {
+                    return `${params.row.occupance}%`
+                }
 
             },
             {
@@ -418,7 +494,11 @@ const MyFlights = ({ countries }) => {
                 headerAlign: 'center',
                 headerClassName: 'dataGridHeader',
                 align: 'center',
-                cellClassName: 'dg-alignCenter'
+                cellClassName: 'dg-alignCenter',
+                valueGetter: (params) => {
+                    return numberWithCommas(params.row.revenue)
+                }
+
             },
             {
                 field: 'cost',
@@ -427,7 +507,10 @@ const MyFlights = ({ countries }) => {
                 headerAlign: 'center',
                 headerClassName: 'dataGridHeader',
                 align: 'center',
-                cellClassName: 'dg-alignCenter'
+                cellClassName: 'dg-alignCenter',
+                valueGetter: (params) => {
+                    return numberWithCommas(params.row.cost)
+                }
             },
             {
                 field: 'profit',
@@ -436,7 +519,10 @@ const MyFlights = ({ countries }) => {
                 headerAlign: 'center',
                 headerClassName: 'dataGridHeader',
                 align: 'center',
-                cellClassName: 'dg-alignCenter'
+                cellClassName: 'dg-alignCenter',
+                valueGetter: (params) => {
+                    return numberWithCommas(params.row.profit)
+                }
             },
             {
                 field: 'edit',
@@ -472,8 +558,10 @@ const MyFlights = ({ countries }) => {
             }
         ]
 
+
+
         renderMyFlights = (
-            <div style={{ height: 435, width: '100%', overflow: 'auto', marginTop: 10 }}>
+            <div style={{ height: getGridHeight(), width: '100%', overflow: 'auto', marginTop: 10 }}>
                 <DataGrid
                     rows={rows}
                     columns={columns}

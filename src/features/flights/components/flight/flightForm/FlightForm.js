@@ -234,7 +234,7 @@ const FlightForm = ({ countries }) => {
     const handleError = (err) => {
         dispatch(catchAppError(FlightErrorTemplate(err.message)))
     }
-    
+
     const formCtrls = [
         //ORIGIN COUNTRY
         <AutoCompleteBox
@@ -291,7 +291,12 @@ const FlightForm = ({ countries }) => {
             renderInput={(params) =>
                 <TextField
                     required={validations(fields.departure_time).required}
-                    sx={{ color: 'black' }}
+                    sx={{
+                        color: 'black',
+                        '& .MuiSvgIcon-root': {
+                            color: '#15291b !important'
+                        }
+                    }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -355,7 +360,12 @@ const FlightForm = ({ countries }) => {
             renderInput={(params) =>
                 <TextField
                     required={validations(fields.landing_time).required}
-                    sx={{ color: 'black' }}
+                    sx={{
+                        color: 'black',
+                        '.MuiSvgIcon-root': {
+                            color: '#15291b !important'
+                        }
+                    }}
                     InputLabelProps={{
                         shrink: true,
                     }}
@@ -392,6 +402,7 @@ const FlightForm = ({ countries }) => {
             label="Distance (Km)"
             variant='outlined'
             type={validations(fields.distance).type}
+            readOnly={disableChanges}
             required={validations(fields.distance).required}
             onChange={handleDistanceChange}
             value={`${flightData.distance || flightData.distance == 0 ? flightData.distance : ''}`}
@@ -492,7 +503,7 @@ const FlightForm = ({ countries }) => {
                     <AttachMoneyIcon sx={{ color: primaryColor }} />
                 </InputAdornment>
             }}
-        />, 
+        />,
         <TextField size='small'
             name='margin'
             label="Margin (%)"
@@ -617,7 +628,7 @@ const FlightForm = ({ countries }) => {
                             isMarkerShown
                             googleMapURL={`https://maps.googleapis.com/maps/api/js?key=${geolocation.geocoderApiKey}&v=3.exp&libraries=geometry,drawing,places`}
                             loadingElement={<div style={{ height: `100%` }} />}
-                            containerElement={<div style={{ height: `530px` }} />}
+                            containerElement={<div style={{ height: `100%` }} />}
                             mapElement={<div style={{ height: `100%` }} />}
                             markers={flightData.markers}
                         />

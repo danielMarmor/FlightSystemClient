@@ -84,7 +84,8 @@ export const profileActions = {
     addAirline: 'profile/addAirline',
     editAirline: 'profile/editAirline',
     editAdministrator :  'profile/editAdministrator',
-    ClearProfile : 'profile/ClearProfile'
+    ClearProfile : 'profile/ClearProfile',
+    recreateSession : 'profile/recreateSession'
 }
 
 export const manageActions = {
@@ -269,6 +270,16 @@ export const TicketsSuccesTemplate = (message) => {
 
 }
 
+export const OrderLostTemplate = (message, url) => {
+    return {
+        feature: 'Order',
+        message: message,
+        details: 'Recreate order',
+        url: url
+    }
+
+}
+
 export const TicketsLoginTemplate = (message, url) => {
     return {
         feature: 'Tickets',
@@ -287,6 +298,7 @@ export const DashboardErrorTemplate = (message) => {
     }
 
 }
+
 
 
 
